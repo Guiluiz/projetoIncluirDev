@@ -260,7 +260,7 @@ class Application_Model_Aluno {
         }
     }
 
-    public function getNotaAcumulada($id_turma) {
+    public function getNotaAcumulada($id_turma, $get_label = true) {
         if (isset($this->turmas[$id_turma]) && !empty($this->turmas[$id_turma][Application_Model_Aluno::$index_notas_turma])) {
             $nota_acumulada = 0;
             $total_atividades = 0;
@@ -272,7 +272,9 @@ class Application_Model_Aluno {
                 }
             }
 
-            return '(Nota Acumulada/Total Distribuído):<b>(' . $nota_acumulada . ' / ' . $total_atividades . ')</b>';
+            if ($get_label)
+                return '(Nota Acumulada/Total Distribuído):<b>(' . $nota_acumulada . ' / ' . $total_atividades . ')</b>';
+            return $nota_acumulada . ' / ' . $total_atividades;
         }
         return 'Não há nenhuma atividade do aluno na turma especificada';
     }

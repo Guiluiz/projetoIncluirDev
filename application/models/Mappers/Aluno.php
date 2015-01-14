@@ -508,7 +508,7 @@ class Application_Model_Mappers_Aluno {
             foreach ($aluno->getCompleteTurmas() as $turma) {
                 $aux = clone $aluno;
                 $aux->limpaTurma();
-                $aux->addTurma($turma[Application_Model_Aluno::$index_turma], $turma[Application_Model_Aluno::$index_liberacao_turma], $turma[Application_Model_Aluno::$index_aprovacao_turma], $turma[Application_Model_Aluno::$index_pagamento_turma]);
+                $aux->addTurma($turma[Application_Model_Aluno::$index_turma], $turma[Application_Model_Aluno::$index_liberacao_turma], $turma[Application_Model_Aluno::$index_aprovacao_turma], $turma[Application_Model_Aluno::$index_pagamento_turma], $turma[Application_Model_Aluno::$index_faltas_turma], $turma[Application_Model_Aluno::$index_notas_turma]);
                 $array_alunos[] = $aux;
 
                 usort($array_alunos, function ($a, $b) {

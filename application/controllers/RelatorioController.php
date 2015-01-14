@@ -159,14 +159,26 @@ class RelatorioController extends Zend_Controller_Action {
                 $this->_helper->redirector->goToRoute($usuario->getUserIndex(), null, true);
 
             if ($form_opcoes_relatorio->isValid($dados))
-                $this->_helper->redirector->goToRoute(array('controller' => 'relatorio', 'action' => 'relatorio-frequencia-aluno', 'turmas' => base64_encode(serialize($form_opcoes_relatorio->getValue('turmas'))), 'formato' => $form_opcoes_relatorio->getValue('formato_saida')), null, true);
+                $this->_helper->redirector->goToRoute(array('controller' => 'relatorio', 'action' => 'relatorio-notas-aluno-turma', 'turmas' => base64_encode(serialize($form_opcoes_relatorio->getValue('turmas'))), 'formato' => $form_opcoes_relatorio->getValue('formato_saida')), null, true);
         }
 
         $this->view->form = $form_opcoes_relatorio;
     }
 
     public function relatorioNotasAlunoTurmaAction() {
-        // action body
+        $this->_helper->layout->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        $mapper_turma = new Application_Model_Mappers_Aluno();
+
+        $excel = new Aplicacao_Relatorio_Excel();
+        $resultado = $excel->getRelatorioNotasAluno($mapper_turma->getAlunosTurmaSeparados(unserialize(base64_decode($this->getParam('turmas'))), true), base64_decode($this->getParam('formato')));
+
+        if (is_null($resultado))
+            $this->_helper->redirector->goToRoute(array('controller' => 'error', 'action' => 'error', 'msg' => 'As salas escolhidas não possuem nenhum aluno cadastrado'), null, true);
+
+        if ($resultado === false)
+            $this->_helper->redirector->goToRoute(array('controller' => 'error', 'action' => 'error', 'msg' => 'Houve erro ao gerar o relatório, consulte o administrador do sistema'), null, true);
     }
 
 }

@@ -1091,11 +1091,11 @@ class Aplicacao_Relatorio_Excel {
                                         $aux_nome_turma = $aux_turma->getCompleteNomeTurma() . ' | ' . $aux_turma->horarioTurmaToString();
                                 }
                                 $sheet->setCellValue('B' . $i, $aux_nome_turma);
-                                $sheet->setCellValue('D' . $i, $aluno->getNotaAcumulada($id_turma));
+                                $sheet->setCellValue('D' . $i, $aluno->getNotaAcumulada($id_turma, false));
                             }
                         }
 
-                        $sheet->getStyle('A' . $i . ':R' . $i)->applyFromArray(
+                        $sheet->getStyle('A' . $i . ':D' . $i)->applyFromArray(
                                 array('alignment' => array(
                                         'wrap' => true,
                                         'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
@@ -1110,7 +1110,7 @@ class Aplicacao_Relatorio_Excel {
                         );
 
                         if ($i % 2 != 0) {
-                            $sheet->getStyle('A' . $i . ':R' . $i)->applyFromArray(
+                            $sheet->getStyle('A' . $i . ':D' . $i)->applyFromArray(
                                     array(
                                         'fill' => array(
                                             'type' => PHPExcel_Style_Fill::FILL_SOLID,
@@ -1126,7 +1126,7 @@ class Aplicacao_Relatorio_Excel {
 
                 $linhas += $i;
                 //$new_sheet->getStyle('A0:P' . $linhas)->getAlignment()->setWrapText(true);
-                $sheet->getStyle('A5:R5')->applyFromArray(
+                $sheet->getStyle('A5:D5')->applyFromArray(
                         array('borders' => array(
                                 'allborders' => array(
                                     'style' => PHPExcel_Style_Border::BORDER_THIN,
@@ -1144,13 +1144,13 @@ class Aplicacao_Relatorio_Excel {
                             ))
                 );
                 $sheet->getRowDimension('5')->setRowHeight(25);
-                $sheet->setTitle('Relatório Geral');
+                $sheet->setTitle('Notas de Alunos');
 
                 $data = new DateTime();
 
                 if ($formato_saida == 'xls') {
                     header('Content-Type: application/vnd.ms-excel');
-                    header('Content-Disposition: attachment;filename="relatorio_alunos_turma_' . $data->format('d_m_Y') . '.xls"');
+                    header('Content-Disposition: attachment;filename="notas_alunos_' . $data->format('d_m_Y') . '.xls"');
                     header('Cache-Control: max-age=0');
 
                     $objWriter = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
