@@ -951,22 +951,22 @@ class Aplicacao_Relatorio_Excel {
                           'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER
                           ))
                           );
-                         
-                        if ($i % 2 != 0) {
-                            $new_sheet->getStyle('A' . $i . ':' . $this->getLetra($j - 1) . $i)->applyFromArray(
-                                    array('fill' => array(
-                                            'type' => PHPExcel_Style_Fill::FILL_SOLID,
-                                            'startcolor' => array('rgb' => 'CCCCCC'),
-                                        ))
-                            );
-                        }*/
+
+                          if ($i % 2 != 0) {
+                          $new_sheet->getStyle('A' . $i . ':' . $this->getLetra($j - 1) . $i)->applyFromArray(
+                          array('fill' => array(
+                          'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                          'startcolor' => array('rgb' => 'CCCCCC'),
+                          ))
+                          );
+                          } */
 
                         $i++;
                     }
                     $linhas += $i;
                     $new_sheet->getStyle('A0:P' . $linhas)->getAlignment()->setWrapText(true);
 
-                    $new_sheet->getStyle('A6:' . $this->getLetra($j - 1) . ($i-1))->applyFromArray(
+                    $new_sheet->getStyle('A6:' . $this->getLetra($j - 1) . ($i - 1))->applyFromArray(
                             array('borders' => array(
                                     'allborders' => array(
                                         'style' => PHPExcel_Style_Border::BORDER_THIN,
@@ -1005,6 +1005,172 @@ class Aplicacao_Relatorio_Excel {
         } catch (Exception $e) {
             echo $e;
             return true;
+        }
+    }
+
+    public function getRelatorioNotasAluno($alunos, $formato_saida) {
+        try {
+            if (!empty($alunos)) {
+                set_time_limit(0);
+                @ini_set('memory_limit', '512M');
+
+                $mapper_turma = new Application_Model_Mappers_Turma();
+                //$filter = new Aplicacao_Filtros_StringSimpleFilter();
+
+                $excel = new PHPExcel();
+                $excel->getProperties()->setCreator("Projeto Incluir")
+                        ->setTitle("Notas dos Alunos");
+
+                $excel->getDefaultStyle()->getFont()
+                        ->setName('Calibri')
+                        ->setSize(12)
+                        ->setColor(new PHPExcel_Style_Color('#00000'));
+
+                $image = file_get_contents('imagens/logo-projeto-incluir.PNG');
+                file_put_contents('logo.png', $image);
+
+                $sheet = $excel->getActiveSheet();
+                $linhas = 0;
+
+                $sheet->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE);
+                $sheet->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
+                $sheet->getPageSetup()->setFitToPage(true);
+                $sheet->getPageSetup()->setFitToWidth(1);
+                $sheet->getPageSetup()->setFitToHeight(0);
+
+                $sheet->getStyle('B2')->applyFromArray(
+                        array('alignment' => array(
+                                'wrap' => true,
+                                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER
+                            ),
+                            'font' => array(
+                                'bold' => true,
+                                'underline' => true,
+                                'size' => 12
+                            ))
+                );
+
+                $sheet->setCellValue('B2', 'Notas dos Alunos');
+
+                $sheet->setCellValue('A5', 'Nome do Aluno');
+                $sheet->setCellValue('B5', 'Turma');
+                $sheet->setCellValue('C5', 'Email');
+                $sheet->setCellValue('D5', 'Nota Acumulada/Total Distribuído');
+
+                $sheet->getColumnDimension('A')->setWidth(50);
+                $sheet->getColumnDimension('B')->setAutoSize(true);
+                $sheet->getColumnDimension('C')->setAutoSize(true);
+                $sheet->getColumnDimension('D')->setAutoSize(true);
+
+                $objDrawing = new PHPExcel_Worksheet_Drawing();
+                $objDrawing->setName('Logo Projeto Incluir')
+                        ->setDescription('Logo Projeto Incluir')
+                        ->setPath('logo.png')
+                        ->setHeight(75)
+                        ->setCoordinates('A1')
+                        ->setOffsetX(20)
+                        ->setWorksheet($sheet);
+
+                $i = 6;
+                foreach ($alunos as $aluno) {
+                    if ($aluno instanceof Application_Model_Aluno) {
+                        $sheet->getRowDimension($i)->setRowHeight(20);
+
+                        $sheet->setCellValue('A' . $i, mb_strtoupper($aluno->getNomeAluno(), 'UTF-8'));
+                        $sheet->setCellValue('C' . $i, $aluno->getEmail());
+
+                        if ($aluno->hasTurmas()) {
+                            $aux_turma = '';
+                            foreach ($aluno->getCompleteTurmas() as $id_turma => $turma) {
+                                $aux_nome_turma = 'Sem Turma Definida';
+                                if (!empty($id_turma)) {
+                                    $aux_turma = $mapper_turma->buscaTurmaByID($id_turma);
+
+                                    if ($aux_turma instanceof Application_Model_Turma)
+                                        $aux_nome_turma = $aux_turma->getCompleteNomeTurma() . ' | ' . $aux_turma->horarioTurmaToString();
+                                }
+                                $sheet->setCellValue('B' . $i, $aux_nome_turma);
+                                $sheet->setCellValue('D' . $i, $aluno->getNotaAcumulada($id_turma));
+                            }
+                        }
+
+                        $sheet->getStyle('A' . $i . ':R' . $i)->applyFromArray(
+                                array('alignment' => array(
+                                        'wrap' => true,
+                                        'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                                        'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER
+                                    ),
+                                    'borders' => array(
+                                        'allborders' => array(
+                                            'style' => PHPExcel_Style_Border::BORDER_THIN,
+                                            'color' => array('argb' => '000000'),
+                                        ),
+                                    ),)
+                        );
+
+                        if ($i % 2 != 0) {
+                            $sheet->getStyle('A' . $i . ':R' . $i)->applyFromArray(
+                                    array(
+                                        'fill' => array(
+                                            'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                                            'startcolor' => array('rgb' => 'F1F1F1'),
+                                        ))
+                            );
+                        }
+
+                        $i++;
+                    }
+                }
+
+
+                $linhas += $i;
+                //$new_sheet->getStyle('A0:P' . $linhas)->getAlignment()->setWrapText(true);
+                $sheet->getStyle('A5:R5')->applyFromArray(
+                        array('borders' => array(
+                                'allborders' => array(
+                                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                                    'color' => array('argb' => '000000'),
+                                ),
+                            ),
+                            'fill' => array(
+                                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                                'startcolor' => array('rgb' => 'CCCCCC'),
+                            ),
+                            'alignment' => array(
+                                'wrap' => true,
+                                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER
+                            ))
+                );
+                $sheet->getRowDimension('5')->setRowHeight(25);
+                $sheet->setTitle('Relatório Geral');
+
+                $data = new DateTime();
+
+                if ($formato_saida == 'xls') {
+                    header('Content-Type: application/vnd.ms-excel');
+                    header('Content-Disposition: attachment;filename="relatorio_alunos_turma_' . $data->format('d_m_Y') . '.xls"');
+                    header('Cache-Control: max-age=0');
+
+                    $objWriter = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
+                    $objWriter->save('php://output');
+                } else {
+                    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                    header('Content-Disposition: attachment;filename="relatorio_alunos_turma_' . $data->format('d_m_Y') . '.xlsx"');
+                    header('Cache-Control: max-age=0');
+
+                    $objWriter = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+                    $objWriter->save('php://output');
+                }
+
+                unlink('logo.png');
+                return true;
+            }
+            return null;
+        } catch (Exception $e) {
+            echo $e;
+            return false;
         }
     }
 

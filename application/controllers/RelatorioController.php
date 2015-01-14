@@ -7,11 +7,12 @@ class RelatorioController extends Zend_Controller_Action {
     }
 
     public function indexAction() {
+        
     }
 
     public function relatorioAlunosTurmaAction() {
         //@ini_set('memory_limit', '512M');
-        
+
         $this->_helper->layout->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);
 
@@ -82,7 +83,7 @@ class RelatorioController extends Zend_Controller_Action {
 
     public function listaPresencaAction() {
         //@ini_set('memory_limit', '512M');
-        
+
         $this->_helper->layout->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);
 
@@ -137,6 +138,35 @@ class RelatorioController extends Zend_Controller_Action {
         }
 
         $this->view->form = $form_opcoes_relatorio;
+    }
+
+    public function opcoesRelatorioNotasAlunoTurmaAction() {
+        $usuario = Zend_Auth::getInstance()->getIdentity();
+
+        $this->view->title = "Projeto Incluir - Relatório de Notas de Alunos";
+        $form_opcoes_relatorio = new Application_Form_RelatorioNotaAlunos();
+
+        $mapper_turma = new Application_Model_Mappers_Turma();
+        $periodo = new Application_Model_Periodo();
+
+        $form_opcoes_relatorio->initializeTurmas($mapper_turma->buscaTurmasSimples($periodo->getIdPeriodo()));
+
+        if ($this->_request->isPost()) {
+            $dados = $this->_request->getPost();
+            $form_opcoes_relatorio->controleTurmas($dados);
+
+            if (isset($dados['cancelar']))
+                $this->_helper->redirector->goToRoute($usuario->getUserIndex(), null, true);
+
+            if ($form_opcoes_relatorio->isValid($dados))
+                $this->_helper->redirector->goToRoute(array('controller' => 'relatorio', 'action' => 'relatorio-frequencia-aluno', 'turmas' => base64_encode(serialize($form_opcoes_relatorio->getValue('turmas'))), 'formato' => $form_opcoes_relatorio->getValue('formato_saida')), null, true);
+        }
+
+        $this->view->form = $form_opcoes_relatorio;
+    }
+
+    public function relatorioNotasAlunoTurmaAction() {
+        // action body
     }
 
 }
