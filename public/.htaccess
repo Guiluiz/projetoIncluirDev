@@ -3,7 +3,7 @@ RewriteCond %{REQUEST_FILENAME} -s [OR]
 RewriteCond %{REQUEST_FILENAME} -l [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^.*$ - [NC,L]
-RewriteRule ^.*$ /projeto_incluir/projeto_incluir_dev/public/index.php [NC,L]
+RewriteRule ^.*$ /projeto_incluir/public/index.php [NC,L]
 
 
 <IfModule mod_expires.c>

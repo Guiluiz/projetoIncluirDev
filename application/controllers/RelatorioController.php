@@ -3,6 +3,7 @@
 class RelatorioController extends Zend_Controller_Action {
 
     public function init() {
+        ob_start();
         ob_clean();
     }
 
@@ -143,7 +144,7 @@ class RelatorioController extends Zend_Controller_Action {
     public function opcoesRelatorioNotasAlunoTurmaAction() {
         $usuario = Zend_Auth::getInstance()->getIdentity();
 
-        $this->view->title = "Projeto Incluir - Relatório de Notas de Alunos";
+        $this->view->title = "Projeto Incluir - Relatório de Notas/Frequências de Alunos";
         $form_opcoes_relatorio = new Application_Form_RelatorioNotaAlunos();
 
         $mapper_turma = new Application_Model_Mappers_Turma();

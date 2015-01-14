@@ -1013,7 +1013,10 @@ class Aplicacao_Relatorio_Excel {
             if (!empty($alunos)) {
                 set_time_limit(0);
                 @ini_set('memory_limit', '512M');
-
+                
+                $datas_calendario_letivo = new Application_Model_DatasAtividade();
+                $total_aulas = $datas_calendario_letivo->getQuantidadeAulas();
+                
                 $mapper_turma = new Application_Model_Mappers_Turma();
                 //$filter = new Aplicacao_Filtros_StringSimpleFilter();
 
@@ -1051,18 +1054,20 @@ class Aplicacao_Relatorio_Excel {
                             ))
                 );
 
-                $sheet->setCellValue('B2', 'Notas dos Alunos');
+                $sheet->setCellValue('B2', 'Notas/Frequências dos Alunos');
 
                 $sheet->setCellValue('A5', 'Nome do Aluno');
                 $sheet->setCellValue('B5', 'Turma');
                 $sheet->setCellValue('C5', 'Email');
                 $sheet->setCellValue('D5', 'Nota Acumulada/Total Distribuído');
-
+                $sheet->setCellValue('E5', 'Frequência (%)');
+                
                 $sheet->getColumnDimension('A')->setWidth(50);
                 $sheet->getColumnDimension('B')->setAutoSize(true);
                 $sheet->getColumnDimension('C')->setAutoSize(true);
                 $sheet->getColumnDimension('D')->setAutoSize(true);
-
+                $sheet->getColumnDimension('E')->setAutoSize(true);
+                
                 $objDrawing = new PHPExcel_Worksheet_Drawing();
                 $objDrawing->setName('Logo Projeto Incluir')
                         ->setDescription('Logo Projeto Incluir')
@@ -1092,10 +1097,11 @@ class Aplicacao_Relatorio_Excel {
                                 }
                                 $sheet->setCellValue('B' . $i, $aux_nome_turma);
                                 $sheet->setCellValue('D' . $i, $aluno->getNotaAcumulada($id_turma, false));
+                                $sheet->setCellValue('E' . $i, $aluno->getPorcentagemFaltas($id_turma, $total_aulas, true));
                             }
                         }
 
-                        $sheet->getStyle('A' . $i . ':D' . $i)->applyFromArray(
+                        $sheet->getStyle('A' . $i . ':E' . $i)->applyFromArray(
                                 array('alignment' => array(
                                         'wrap' => true,
                                         'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
@@ -1110,7 +1116,7 @@ class Aplicacao_Relatorio_Excel {
                         );
 
                         if ($i % 2 != 0) {
-                            $sheet->getStyle('A' . $i . ':D' . $i)->applyFromArray(
+                            $sheet->getStyle('A' . $i . ':E' . $i)->applyFromArray(
                                     array(
                                         'fill' => array(
                                             'type' => PHPExcel_Style_Fill::FILL_SOLID,
@@ -1126,7 +1132,7 @@ class Aplicacao_Relatorio_Excel {
 
                 $linhas += $i;
                 //$new_sheet->getStyle('A0:P' . $linhas)->getAlignment()->setWrapText(true);
-                $sheet->getStyle('A5:D5')->applyFromArray(
+                $sheet->getStyle('A5:E5')->applyFromArray(
                         array('borders' => array(
                                 'allborders' => array(
                                     'style' => PHPExcel_Style_Border::BORDER_THIN,
@@ -1150,14 +1156,14 @@ class Aplicacao_Relatorio_Excel {
 
                 if ($formato_saida == 'xls') {
                     header('Content-Type: application/vnd.ms-excel');
-                    header('Content-Disposition: attachment;filename="notas_alunos_' . $data->format('d_m_Y') . '.xls"');
+                    header('Content-Disposition: attachment;filename="notas_frequencia_alunos_' . $data->format('d_m_Y') . '.xls"');
                     header('Cache-Control: max-age=0');
 
                     $objWriter = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
                     $objWriter->save('php://output');
                 } else {
                     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-                    header('Content-Disposition: attachment;filename="relatorio_alunos_turma_' . $data->format('d_m_Y') . '.xlsx"');
+                    header('Content-Disposition: attachment;filename="notas_frequencia_alunos_' . $data->format('d_m_Y') . '.xlsx"');
                     header('Cache-Control: max-age=0');
 
                     $objWriter = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
