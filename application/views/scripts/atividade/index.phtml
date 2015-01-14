@@ -1,0 +1,41 @@
+<h2>Consultar Atividades</h2>
+
+<div id="link-cadastrar">
+    <a href = "<?php echo $this->url(array('controller' => 'atividade', 'action' => 'cadastrar'), null, true) ?>">Cadastrar Atividade</a>     
+</div>
+
+<?php echo $this->form ?>
+
+<?php if ($this->resultado_busca instanceof Zend_Paginator) : ?>
+    <?php if (count($this->resultado_busca) > 0) : ?>
+        <div id='resultado-busca'>
+            <h3>Resultados da Busca</h3>
+            <span>Foram encontrados (<?=$this->resultado_busca->getTotalItemCount() ?>) registros</span>
+            <table>
+                <tr>
+                    <th>Nome</th>
+                    <th>Data</th>
+                    <th>Valor</th>
+                    <th>Turma</th>
+                    <th colspan=2>Opções</th>
+                </tr>
+
+                <?php foreach ($this->resultado_busca as $atividade) : ?>
+                    <tr>
+                        <td><?= $atividade->getNomeAtividade() ?></td>
+                        <td><?= $atividade->getDataAtividade(true) ?></td>
+                        <td><?= $atividade->getValor() ?></td>
+                        <td><?= $atividade->getTurma()->toString() ?></td>
+                        <td><a href='<?= $this->url(array('controller' => 'atividade', 'action' => 'alterar', 'atividade' => $atividade->getIdAtividade(true)), null, true) ?>'>Alterar</a></td>                     
+                        <td><a href='<?= $this->url(array('controller' => 'atividade', 'action' => 'excluir', 'atividade' => $atividade->getIdAtividade(true)), null, true) ?>'>Excluir</a></td>
+                    </tr>
+                <?php endforeach; ?>
+            </table>
+        </div>
+
+        <?php echo $this->paginationControl($this->resultado_busca, 'Sliding', 'Decorators/pagination.phtml'); ?>
+
+    <?php else : ?>
+        <script>exibeMensagem('Nenhuma atividade foi encontrado.', 'Busca de Atividade');</script>
+    <?php endif; ?>
+<?php endif; ?>

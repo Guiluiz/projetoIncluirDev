@@ -1,0 +1,111 @@
+<form enctype="application/x-www-form-urlencoded" action="" method="post">
+    <h2>Informações do Voluntário</h2>
+    <div class="obs">
+        <p>Ao preencher o campo "cep" o endereço é buscado automaticamente.</p>
+        <p>Caso encontre o voluntário desejado ao digitar um nome clique nele para alterá-lo</p>
+    </div>
+
+    <table class="form-dados" style="width: 85%;">
+        <tr>
+            <td colspan="3"><?= $this->element->nome ?></td>
+        </tr>
+        <tr>
+            <td><?= $this->element->cpf ?></td>
+            <td><?= $this->element->rg ?></td>
+        </tr>
+
+        <tr>
+            <td><?= $this->element->data_nascimento ?></td>
+            <td colspan="2"><?= $this->element->email ?></td>
+        </tr>
+
+        <tr>
+            <td><?= $this->element->formacao ?></td>
+            <td colspan="2"><?= $this->element->profissao ?></td>
+        </tr>
+
+        <tr>
+            <td><?= $this->element->telefone_fixo ?></td>
+            <td><?= $this->element->telefone_celular ?></td>
+        </tr>
+
+
+        <tr>
+            <td><?= $this->element->cep ?><div id="loading" class="loading"></div></td>
+            <td><?= $this->element->estado ?></td>
+            <td><?= $this->element->cidade ?></td>
+        </tr>
+
+        <tr>
+            <td colspan="3"><?= $this->element->endereco ?></td>
+        </tr>
+
+        <tr>
+            <td><?= $this->element->bairro ?></td>
+            <td><?= $this->element->numero ?></td>
+            <td><?= $this->element->complemento ?></td>
+        </tr>
+
+        <tr>
+            <td><?= $this->element->data_inicio ?></td>
+            <td><?= $this->element->carga_horaria ?></td>
+        </tr>
+
+    </table>
+
+    <h2>Atividades</h2>
+    <div class="obs">Para cada atividade marcada deve-se especificar a função a ser exercicida pelo voluntário. Caso seja "Aulas", selecione as disciplinas que ele poderá ministrar.</div>
+
+    <?= $this->element->atividades ?>
+
+    <table class="form-dados funcao_voluntario">
+        <tr class="escondido <?= Application_Model_Voluntario::$atividade_aulas ?>">
+            <td colspan="2"><?= $this->element->curso_voluntario ?></td>
+        </tr>
+        <tr class="escondido <?= Application_Model_Voluntario::$atividade_aulas ?>">
+            <td><?= $this->element->disciplina_voluntario ?></td>
+            <td><?= $this->element->incluir_disciplina ?></td>          
+        </tr>
+    </table>
+    
+    <table class="form_incrementa" cellpadding="0" cellspacing="0" id="table_disciplinas_voluntario"></table>
+
+    <table class="form-dados funcao_voluntario">
+        <tr class="escondido <?= Application_Model_Voluntario::$atividade_informatica ?>">
+            <td colspan="2"><?= $this->element->funcao_informatica ?></td>
+        </tr>
+        <tr class="escondido <?= Application_Model_Voluntario::$atividade_marketing ?>">
+            <td colspan="2"><?= $this->element->funcao_marketing ?></td>
+        </tr>
+        <tr class="escondido <?= Application_Model_Voluntario::$atividade_rh ?>">
+            <td colspan="2"><?= $this->element->funcao_rh ?></td>
+        </tr>
+        <tr class="escondido <?= Application_Model_Voluntario::$atividade_secretaria ?>">
+            <td colspan="2"><?= $this->element->funcao_secretaria ?></td>
+        </tr>
+    </table>
+
+    <h2>Disponibilidade de Horários</h2>
+    <div id="dias_disponibilidade"><?= $this->element->disponibilidade ?> </div>     
+
+    <h2>Conhecimentos e Habilidades</h2>
+
+    <table class="form-dados">
+        <tr>
+            <td><?= $this->element->conhecimento ?></td>        
+        </tr>
+
+    </table>
+
+    <table class="submit">
+        <tr>
+            <td><?= $this->element->enviar ?></td>
+            <td><?= $this->element->cancelar ?></td>
+        </tr>
+    </table>
+    
+    <?= $this->element->cidade_escolhida ?>
+    <?= $this->element->estado_escolhido ?>
+    <?= $this->element->id_voluntario ?>
+    <?= $this->element->id_professor ?>
+</form>

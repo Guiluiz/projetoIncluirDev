@@ -1,0 +1,338 @@
+<?php
+
+/**
+ * Classe para controle das turmas no banco de dados
+ * @author Projeto Incluir
+ */
+class Application_Model_Mappers_Turma {
+
+    private $db_turma;
+
+    public function addTurma($turma) {
+        try {
+            if ($turma instanceof Application_Model_Turma) {
+                if ($this->isValid($turma)) {
+                    if (!$this->db_turma instanceof Application_Model_DbTable_Turma)
+                        $this->db_turma = new Application_Model_DbTable_Turma();
+
+                    $id_turma = $this->db_turma->insert($turma->parseArray());
+                    $db_turma_professores = new Application_Model_DbTable_VoluntarioTurmas();
+
+                    if ($turma->hasProfessores()) {
+                        foreach ($turma->getProfessores() as $professor)
+                            $db_turma_professores->insert(array('id_turma' => $id_turma, 'id_voluntario' => $professor->getIdVoluntario()));
+                    }
+                    return true;
+                }
+            }
+            return false;
+        } catch (Zend_Exception $e) {
+            echo $e->getMessage();
+            return false;
+        }
+    }
+
+    public function alterarTurma($turma) {
+        try {
+            if ($turma instanceof Application_Model_Turma) {
+                if ($this->isValid($turma)) {
+                    if (!$this->db_turma instanceof Application_Model_DbTable_Turma)
+                        $this->db_turma = new Application_Model_DbTable_Turma();
+
+                    $this->db_turma->update($turma->parseArray(), $this->db_turma->getAdapter()->quoteInto('id_turma = ?', $turma->getIdTurma()));
+
+                    $db_turma_professores = new Application_Model_DbTable_VoluntarioTurmas();
+                    $db_turma_professores->delete($db_turma_professores->getAdapter()->quoteInto('id_turma = ?', $turma->getIdTurma()));
+
+                    if ($turma->hasProfessores()) {
+                        foreach ($turma->getProfessores() as $professor)
+                            $db_turma_professores->insert(array('id_turma' => $turma->getIdTurma(), 'id_voluntario' => $professor->getIdVoluntario()));
+                    }
+                    return true;
+                }
+            }
+            return false;
+        } catch (Zend_Exception $e) {
+            echo $e->getMessage();
+            return false;
+        }
+    }
+
+    public function excluirTurma($id_turma) {
+        try {
+            $this->db_turma = new Application_Model_DbTable_Turma();
+            $this->db_turma->delete($this->db_turma->getAdapter()->quoteInto('id_turma = ?', (int) $id_turma));
+            return true;
+        } catch (Zend_Exception $e) {
+            echo $e->getMessage();
+            return false;
+        }
+    }
+
+    public function cancelarTurma($turma) {
+        try {
+            $this->db_turma = new Application_Model_DbTable_Turma();
+            $this->db_turma->update(array('status' => Application_Model_Turma::$status_cancelada), $this->db_turma->getAdapter()->quoteInto('id_turma = ?', (int) $turma));
+            return true;
+        } catch (Zend_Exception $e) {
+            return false;
+        }
+    }
+
+    public function getQuantidadeAlunos($id_turma = null, $complete = true) {
+        try {
+            $this->db_turma = new Application_Model_DbTable_Turma();
+            if ($complete) {
+                $select = $this->db_turma->select()
+                        ->setIntegrityCheck(false)
+                        ->from('turma', array('nome_turma', 'id_periodo'))
+                        ->joinInner('disciplina', 'turma.id_disciplina = disciplina.id_disciplina', array('nome_disciplina'))
+                        ->joinleft('turma_alunos', 'turma.id_turma = turma_alunos.id_turma', array('count(aluno.id_aluno)'))
+                        ->joinLeft('aluno', 'turma_alunos.id_aluno = aluno.id_aluno AND ' . $this->db_turma->getDefaultAdapter()->quoteInto('aluno.status = ?', Application_Model_Aluno::$status_ativo), array())
+                        ->group('turma.id_turma');
+
+                if (!empty($id_turma))
+                    $select->where('turma.id_turma = ?', (int) $id_turma);
+                
+                return $this->db_turma->fetchAll($select)->toArray();
+            }
+
+            else {
+                $select = $this->db_turma->select()
+                        ->setIntegrityCheck(false)
+                        ->joinleft('turma_alunos', 'turma.id_turma = turma_alunos.id_turma', array('id_aluno'))
+                        ->joinLeft('aluno', 'turma_alunos.id_aluno = aluno.id_aluno', array())
+                        ->where('aluno.status = ?', Application_Model_Aluno::$status_ativo);
+
+                if (!empty($id_turma)) {
+                    $select->where('turma_alunos.id_turma = ?', (int) $id_turma);
+                    return $this->db_turma->fetchAll($select)->count();
+                } else
+                    return $this->db_turma->fetchAll($select)->toArray();
+            }
+        } catch (Zend_Exception $e) {
+            echo $e->getMessage();
+            return null;
+        }
+    }
+
+    public function buscaTurmas($filtros_busca = null, $paginator = null) {
+        try {
+            $this->db_turma = new Application_Model_DbTable_Turma();
+            $select = $this->db_turma->select()
+                    ->setIntegrityCheck(false)
+                    ->from('turma', array('id_turma', 'nome_turma', 'id_disciplina', 'status', 'id_periodo'))
+                    ->joinInner('disciplina', 'disciplina.id_disciplina = turma.id_disciplina', array('nome_disciplina'));
+
+            if (!empty($filtros_busca['nome_turma']))
+                $select->where('turma.nome_turma LIKE ?', '%' . $filtros_busca['nome_turma'] . '%');
+
+            if (!empty($filtros_busca['disciplina']))
+                $select->where('turma.id_disciplina = ?', (int) base64_decode($filtros_busca['disciplina']));
+
+            if (!empty($filtros_busca['status']))
+                $select->where('turma.status = ?', $filtros_busca['status']);
+
+            if (!empty($filtros_busca['periodo']))
+                $select->where('turma.id_periodo = ?', (int) $filtros_busca['periodo']);
+            
+            if (empty($paginator)) {
+                $turmas = $this->db_turma->fetchAll($select);
+                if (!empty($turmas)) {
+                    $array_turmas = array();
+
+                    foreach ($turmas as $turma)
+                        $array_turmas[$turma->id_turma] = new Application_Model_Turma($turma->id_turma, $turma->nome_turma, null, null, null, null, new Application_Model_Disciplina($turma->id_disciplina, $turma->nome_disciplina), $turma->status, null, $turma->id_periodo);
+
+                    return $array_turmas;
+                }
+                return null;
+            }
+            return new Zend_Paginator(new Application_Model_Paginator_Turma($select->order('nome_turma')));
+        } catch (Zend_Exception $e) {
+            echo $e->getMessage();
+            return null;
+        }
+    }
+
+    public function buscaTurmaByID($id_turma, $periodo = null, $ativa = null) {
+        try {
+            $this->db_turma = new Application_Model_DbTable_Turma();
+            $select = $this->db_turma->select()
+                    ->setIntegrityCheck(false)
+                    ->from('turma')
+                    ->joinInner('disciplina', 'disciplina.id_disciplina = turma.id_disciplina', array('nome_disciplina', 'id_curso'))
+                    ->joinLeft('voluntario_turmas', 'turma.id_turma = voluntario_turmas.id_turma', array('id_voluntario'))
+                    ->joinLeft('voluntario', 'voluntario_turmas.id_voluntario = voluntario.id_voluntario', array('nome'))
+                    ->where('turma.id_turma = ?', (int) $id_turma);
+
+            if (!empty($ativa))
+                $select->where('turma.status = ?', Application_Model_Turma::$status_iniciada);
+
+            if (!empty($periodo))
+                $select->where('turma.id_periodo = ?', (int) $periodo);
+
+            $turma = $this->db_turma->fetchAll($select);
+
+            if (!empty($turma)) {
+                $array_turmas = array();
+                $id_turma = 0;
+
+                foreach ($turma as $inf_turma) {
+                    if (empty($array_turmas[$inf_turma->id_turma]))
+                        $array_turmas[$inf_turma->id_turma] = new Application_Model_Turma($inf_turma->id_turma, $inf_turma->nome_turma, $inf_turma->data_inicio, $inf_turma->data_fim, $inf_turma->horario_inicio, $inf_turma->horario_fim, new Application_Model_Disciplina($inf_turma->id_disciplina, $inf_turma->nome_disciplina, null, new Application_Model_Curso($inf_turma->id_curso)), $inf_turma->status, ((!empty($inf_turma->id_voluntario)) ? new Application_Model_Professor($inf_turma->id_voluntario, $inf_turma->nome) : null));
+                    else {
+                        if (!empty($inf_turma->id_voluntario))
+                            $array_turmas[$inf_turma->id_turma]->addProfessor(new Application_Model_Professor($inf_turma->id_voluntario, $inf_turma->nome));
+                    }
+                    $id_turma = $inf_turma->id_turma;
+                }
+
+                if (!empty($array_turmas))
+                    return $array_turmas[$id_turma];
+            }
+            return null;
+        } catch (Zend_Exception $e) {
+            echo $e->getMessage();
+            return null;
+        }
+    }
+
+    public function buscaTurmasByID($array_ids) {
+        try {
+            if (!empty($array_ids) && is_array($array_ids)) {
+                $this->db_turma = new Application_Model_DbTable_Turma();
+                $select = $this->db_turma->select()
+                        ->setIntegrityCheck(false)
+                        ->from('turma', array('id_turma', 'nome_turma', 'id_disciplina'))
+                        ->joinInner('disciplina', 'turma.id_disciplina = disciplina.id_disciplina', array('nome_disciplina', 'id_curso'))
+                        ->joinInner('curso', 'disciplina.id_curso = curso.id_curso', array('nome_curso'));
+
+                $where = "( ";
+
+                foreach ($array_ids as $id)
+                    $where .= $this->db_turma->getAdapter()->quoteInto('turma.id_turma = ?', (int) base64_decode($id)) . " OR ";
+
+                $where = substr($where, 0, -4) . ")";
+                $turmas = $this->db_turma->fetchAll($select->where($where));
+
+                if (!empty($turmas)) {
+                    $array_turmas = array();
+                    foreach ($turmas as $turma)
+                        $array_turmas[$turma->id_turma] = new Application_Model_Turma($turma->id_turma, $turma->nome_turma, null, null, null, null, new Application_Model_Disciplina($turma->id_disciplina, $turma->nome_disciplina, null, new Application_Model_Curso($turma->id_curso, $turma->nome_curso)));
+                    return $array_turmas;
+                }
+            }
+            return null;
+        } catch (Zend_Exception $e) {
+            echo $e->getMessage();
+            return null;
+        }
+    }
+
+    private function isValid($turma) {
+        try {
+            if ($turma instanceof Application_Model_Turma) {
+                if (!$this->db_turma instanceof Application_Model_DbTable_Turma)
+                    $this->db_turma = new Application_Model_DbTable_Turma();
+
+                $select = $this->db_turma->select()
+                        ->setIntegrityCheck(false)
+                        ->from('turma', array('id_turma', 'nome_turma', 'id_disciplina'))
+                        ->where($this->db_turma->getAdapter()->quoteInto('(turma.nome_turma = ? AND ', $turma->getNomeTurma()) .
+                        $this->db_turma->getAdapter()->quoteInto('turma.id_disciplina = ?)', $turma->getDisciplina()->getIdDisciplina()));
+
+                if (!is_null($turma->getIdTurma()))
+                    $select->where('turma.id_turma <> ?', $turma->getIdTurma());
+
+                if (count($this->db_turma->fetchAll($select)->toArray()) > 0)
+                    return false;
+                return true;
+            }
+        } catch (Zend_Exception $e) {
+            echo $e->getMessage();
+            return true;
+        }
+    }
+
+    public function buscaTurmasSimples($periodo = null) {
+        try {
+            $this->db_turma = new Application_Model_DbTable_Turma();
+            $select = $this->db_turma->select()
+                    ->setIntegrityCheck(false)
+                    ->from('turma', array('id_turma', 'nome_turma', 'id_disciplina'))
+                    ->joinInner('disciplina', 'disciplina.id_disciplina = turma.id_disciplina', array('nome_disciplina'))
+                    ->order('turma.nome_turma');
+
+            if (!empty($periodo))
+                $select->where('turma.id_periodo = ?', $periodo);
+
+            $turmas = $this->db_turma->fetchAll($select);
+
+            if (!empty($turmas)) {
+                $array_turmas = array();
+
+                foreach ($turmas as $turma)
+                    $array_turmas[$turma->id_turma] = new Application_Model_Turma($turma->id_turma, $turma->nome_turma, null, null, null, null, new Application_Model_Disciplina($turma->id_disciplina, $turma->nome_disciplina));
+
+                return $array_turmas;
+            }
+            return null;
+        } catch (Zend_Exception $e) {
+            echo $e->getMessage();
+            return null;
+        }
+    }
+
+    public function getTurmasProfessorPeriodoAtual($id_voluntario) {
+        try {
+            $id_voluntario = (int) $id_voluntario;
+
+            if ($id_voluntario > 0) {
+                $this->db_turma = new Application_Model_DbTable_Turma();
+                $select = $this->db_turma->select()
+                        ->from('turma', array('id_turma'))
+                        ->innerJoin('periodo', 'periodo.id_periodo = turma.id_periodo', array())
+                        ->innerJoin('voluntario_turmas', 'turma.id_turma = voluntario_turmas.id_turma', array())
+                        ->where('periodo.is_atual = ?', true)
+                        ->where('voluntario_turmas.id_voluntario = ?', $id_voluntario);
+
+                return $this->db_turma->fetchAll($select)->toArray();
+            }
+        } catch (Zend_Exception $e) {
+            echo $e->getMessage();
+            return null;
+        }
+    }
+
+    public function getTurmasByDisciplinaHorario($id_disciplina, $horario_inicio, $horario_termino) {
+        try {
+            $this->db_turma = new Application_Model_DbTable_Turma();
+            $select = $this->db_turma
+                    ->select()
+                    ->from('turma', array('id_turma', 'nome_turma'))
+                    ->joinInner('periodo', 'periodo.id_periodo = turma.id_periodo', array())
+                    ->where('periodo.is_atual = ?', true)
+                    ->where('turma.id_disciplina = ?', $id_disciplina)
+                    ->where('turma.horario_inicio = ?', $horario_inicio)
+                    ->where('turma.horario_fim = ?', $horario_termino)
+                    ->order('turma.nome_turma');
+
+            $turmas = $this->db_turma->fetchAll($select);
+
+            if (!empty($turmas)) {
+                $array_turmas = array();
+
+                foreach ($turmas as $turma)
+                    $array_turmas[] = new Application_Model_Turma($turma->id_turma, $turma->nome_turma);
+
+                return $array_turmas;
+            }
+            return null;
+        } catch (Zend_Exception $e) {
+            echo $e->getMessage();
+            return null;
+        }
+    }
+
+}

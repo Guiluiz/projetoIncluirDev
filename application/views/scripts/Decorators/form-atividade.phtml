@@ -1,0 +1,58 @@
+<form enctype="application/x-www-form-urlencoded" action="" method="post">
+    <h2>Informações da Turma</h2>
+
+    <div class="obs">Ao escolher uma turma, todas as atividades dela aparecerão para conferência</div>
+
+    <div class="container">
+        <div class="container-2">
+            <table class="form-dados">
+                <tr>
+                    <td><?= $this->element->curso ?></td>
+                </tr>
+
+                <tr>
+                    <td><?= $this->element->disciplina ?></td>
+                </tr>
+
+                <tr>
+                    <td><?= $this->element->turma ?></td>
+                </tr>
+
+            </table> 
+
+            <h2>Informações da Atividade</h2>
+
+            <table class="form-dados">    
+                <tr>
+                    <td><?= $this->element->data_funcionamento ?></td>
+                </tr>
+
+                <tr>
+                    <td><?= $this->element->nome ?></td>
+                </tr>
+
+                <tr>
+                    <td><?= $this->element->descricao ?></td>
+                </tr>
+
+                <tr>
+                    <td><?= $this->element->valor_total ?></td>
+                </tr>
+
+            </table>
+        </div>
+
+        <div class="container-2" id="atividades-turma">
+            
+        </div>
+    </div>
+    
+    <?= $this->element->id_atividade?>
+    
+    <table class="submit">
+        <tr>
+            <td style="width: 33%"><?= $this->element->enviar ?></td>
+            <td><?= $this->element->cancelar ?></td>
+        </tr>
+    </table>
+</form>

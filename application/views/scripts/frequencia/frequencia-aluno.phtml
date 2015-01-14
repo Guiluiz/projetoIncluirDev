@@ -1,0 +1,24 @@
+<?php if (empty($this->inativo)): ?>
+    <?php echo $this->form ?>
+
+    <div id="mensagem-ajax">Por favor, aguarde um momento.</div>
+
+    <script src="<?php echo $this->baseUrl() . '/js/ui.datepicker-pt-BR.js' ?>"></script>
+    <script src="<?php echo $this->baseUrl() . '/js/controle_inclusoes.js' ?>"></script>
+    
+    <script>
+        $(function() {
+            var datas_atividades = $.parseJSON('<?php echo $this->datas_atividade; ?>');
+            controle.frequenciaAlunos('<?php echo $this->url(array('controller' => 'aluno', 'action' => 'busca-alunos-turma-faltas'), null, true); ?>', '<?php echo $this->url(array('controller' => 'disciplina', 'action' => 'buscar-disciplinas'), null, true); ?>', '<?php echo $this->url(array('controller' => 'turma', 'action' => 'buscar-turmas'), null, true); ?>', datas_atividades, '<?php echo $this->data(2) ?>');
+        });
+    </script>
+
+<?php else: ?>
+    <div class="container-aviso aviso-periodo"><div class="ui-widget">
+            <div style="padding: 0 .7em; width:90%; margin: 0 auto; margin-bottom: 2em" class="ui-state-error ui-corner-all">
+                <p><span style="float: left; margin-right: .3em;" class="ui-icon ui-icon-alert"></span>
+                    É necessário escolher o período de funcionamento antes de o lançamento de frequência.
+            </div>
+        </div>
+    </div>
+<?php endif; ?>

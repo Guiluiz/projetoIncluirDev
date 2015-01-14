@@ -1,0 +1,26 @@
+<form enctype="application/x-www-form-urlencoded" action="" method="post">
+    <h2>Lançamento de Frequência dos Voluntários</h2>
+
+    <div class="obs">Escolha o setor dos voluntários e uma data no calendário para lançar a frequência correspondente</div>
+
+    <?= $this->element->data ?>
+    <div class="container">
+        <table class="form-dados" style="width: 40%; float: left;">
+            <tr>
+                <td><?= $this->element->setor ?></td>
+            </tr>
+        </table>
+
+        <div id="calendario" style="float: left;"></div>
+    </div>
+    <div id="voluntarios">
+
+    </div>
+
+    <table class="submit">
+        <tr>
+            <td style="width: 33%"><?= $this->element->enviar ?></td>
+            <td><?= $this->element->cancelar ?></td>
+        </tr>
+    </table>
+</form>

@@ -1,0 +1,24 @@
+<div class="container-aviso">
+    <div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
+        <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+            <strong>Atenção: </strong> Ao alterar a turma da atividade, ou o valor total, os lançamentos de nota serão removidos.<br/>
+        </p>   
+    </div>
+</div>
+
+<?php echo $this->form ?>
+
+<script src="<?php echo $this->baseUrl() . '/js/ui.datepicker-pt-BR.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/jquery.maskedinput.min.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/jquery.validate.min.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/controle_inclusoes.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/form.js' ?>"></script>
+
+<script>
+    $(function() {
+        var datas_atividades = $.parseJSON('<?php echo $this->datas_atividade; ?>');
+        form.iniForm();
+        controle.atividade('<?php echo $this->url(array('controller' => 'disciplina', 'action' => 'buscar-disciplinas'), null, true); ?>', '<?php echo $this->url(array('controller' => 'turma', 'action' => 'buscar-turmas'), null, true); ?>', '<?php echo $this->url(array('controller' => 'atividade', 'action' => 'busca-atividades-turma'), null, true); ?>', '<?= $this->baseUrl() . "/imagens/calendar.png" ?>', '<?php echo $this->data(0) ?>', '<?php echo $this->data(1) ?>', datas_atividades, '<?php echo $this->data(2) ?>', 2);
+    });
+
+</script>

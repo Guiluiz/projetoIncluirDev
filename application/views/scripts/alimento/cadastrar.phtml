@@ -1,0 +1,14 @@
+<?= $this->form ?>
+
+<script src="<?php echo $this->baseUrl() . '/js/jquery.validate.min.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/additional-methods.min.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/form.js' ?>"></script>
+<script>
+    $(function() {
+        $('#cancelar').click(function() {
+            location.href = '<?= $this->url(array('controller' => 'alimento', 'action' => 'index'), null, true) ?>';
+        });
+
+        form.iniForm();
+    });
+</script>

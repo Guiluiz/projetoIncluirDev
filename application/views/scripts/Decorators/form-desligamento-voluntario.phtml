@@ -1,0 +1,33 @@
+<form enctype="application/x-www-form-urlencoded" action="" method="post">
+    <h2>Desligamento de Voluntário</h2>
+
+    <div class="container-aviso">
+        <div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
+            <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+                <strong>Atenção: </strong> Para restaurar um voluntário busque por usuários desligados do projeto e clique na opção para restaurar o usuário.<br/>
+                As turmas desse período ficarão sem professor definido e será necessário modificá-las. As atividades e as notas dos alunos da turma não serão alteradas.
+            </p>   
+        </div>
+    </div>
+
+    <?= $this->element->id_voluntario ?>
+
+    <table class="form-dados" style="width:30%">
+        <tr>
+            <td><?= $this->element->data_desligamento ?></td>
+        </tr>
+
+        <tr>
+            <td><?= $this->element->motivo_desligamento ?></td>
+        </tr>
+    </table>
+
+
+    <table class="submit" style="float: left;">
+        <tr>
+            <td><?= $this->element->enviar ?></td>
+            <td><?= $this->element->cancelar ?></td>
+        </tr>
+    </table>
+
+</form>

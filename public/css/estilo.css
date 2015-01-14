@@ -1,0 +1,608 @@
+@charset "UTF-8";
+
+.xdebug-var-dump{
+    float: left;
+}
+/* menu bar*/
+.ui-menubar {
+    list-style: none;
+    margin: 0; padding-left: 0;
+}
+
+.ui-menubar-item {
+    float: left;
+}
+
+.ui-menubar .ui-button {
+    float: left;
+    font-weight: normal;
+    border-top-width: 0 !important;
+    border-bottom-width: 0 !important;
+    margin: 0;
+    outline: none;
+}
+.ui-menubar .ui-menubar-link {
+    border-right: 1px solid transparent;
+    border-left: 1px solid transparent;
+}
+
+.ui-menubar .ui-menu {
+    width: 200px;
+    position: absolute;
+    z-index: 9999;
+    font-weight: normal;
+}
+
+form{
+    display:block;
+}
+
+h2, h3{
+    font-weight: bolder;
+    font-family: verdana, tahoma, arial;
+    color:#f69f2b;
+    text-transform: uppercase;
+}
+
+h2{
+    padding: 0em 0em 0.5em 1em;
+    font-size: 1.2em;
+}
+
+h3{
+    font-size: 0.9em;
+}
+
+div.ui-datepicker {
+    font-size: 115%;
+}
+
+body {
+    background:#f8f8f8;
+    color: #555;
+    font-family: Verdana, Tahoma, Arial;
+    font-size: 62.5%;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+
+#conteudo {
+    background: #fff;
+    box-shadow: 1px 3px 5px 5px #f1f1f1;
+    margin: 2% auto;
+    max-width: 1280px;
+    padding-bottom: 45px;
+    text-align: left;
+    width: 90%;
+}
+
+#topo {
+    width:97%;
+    margin:0 auto;
+}
+
+#titulo {
+    margin:25px 0 0 0;
+    margin:0;
+    float:left;	
+    /*    text-shadow: 2px -2px 10px #c9c9c9; */
+}
+#titulo img{
+    margin: 1em 1em 2em 0;
+    width: 60%;
+}
+
+
+#info-login {
+    width:auto;
+    height:auto;
+    float:right;
+    margin:3em 0 0 0;
+}
+
+#info-login p {
+    margin:0;
+    font:0.9em Tahoma, Verdana, Arial;	
+}
+
+#rodape {
+    background: transparent;
+    text-align: center;
+}
+
+.clear {
+    clear:both;
+}
+
+
+/* menu horizontal */
+
+.navigation {
+    padding: 0.7em 2.5em 0.7em 2.5em;
+    margin-bottom: 2.5em; 
+    margin-top: 0.3em;
+    border: none!important;
+}
+
+.navigation li a {
+    font-size: 1.2em;
+    font-family: Tahoma, Verdana!important;
+}
+
+/* MEIO */
+
+#meio {
+    width:95.8%; 
+    height:auto; 
+    margin:0 auto;
+    overflow:hidden;
+    border: #f6f6f6 solid 1px;
+    padding: 2em 0 2em 0;
+    box-shadow: 2px 3px 5px 1px #f9f9f9;
+    border-radius: 0 0 7px 7px;
+}
+
+/* BARRA TÍTULO */
+
+#barra-titulo{
+    background-color:#f5f5f5; 
+    width:96%;
+    min-height:4em;
+    overflow: hidden;
+    margin:0 auto;
+    box-shadow: 2px 3px 5px 1px #f9f9f9;
+    border-radius: 7px 7px 0 0;    
+}
+
+#barra-titulo h1 {
+    font:1.4em verdana, arial;
+    color:#777;
+    padding-left:1em;
+    width: 60%;
+    float: left;
+    margin-top: 0.8em;
+    text-transform: uppercase;
+}
+
+#breadcrumb{
+    float: right;
+    margin-top: 1.5em;
+    padding-right: 1.8em;
+    font-size: 1em;
+}
+
+#breadcrumb a{
+    color: #f67820;
+    text-decoration: none;
+}
+
+#breadcrumb a:hover{
+    color: #f69f2b;
+}
+
+/*Form geral*/
+
+input, select{
+    padding:0.5em;
+}
+
+input[type='text'], input[type='password'], select, textarea{
+    color:#555;
+    box-shadow: 1px 1px 1px 1px #f1f1f1;
+    border: #c9c9c9 solid 1px;
+    border-radius: 5px;
+}
+
+input[type='text']:focus, textarea:focus, select:focus{ 
+    border: #a9a9a9 solid 2px !important;
+    outline: none;
+}
+
+label, .span-radio{
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+/*erros em formulário*/
+
+.errors{
+    font-size: 1.1em;    
+    margin:0em 0 1.5em 0;
+    padding: 0 0 0 2em;
+    color:red;
+    float: left;
+}
+
+/*erro servidor*/
+.errors li{
+    float: left;
+    list-style: square;  
+
+}
+
+/*mensagem de status da operação*/
+
+#mensagem{
+    text-align: left;
+}
+
+
+/*esconde botão de fechar do modal*/
+
+.no-close .ui-dialog-titlebar-close {
+    display: none;
+}
+
+/*paginação*/
+
+#pagination{
+    text-align: center;
+    float:left;
+    margin: 0 auto;
+    width: 95%;
+    margin-bottom: 2em;
+}
+
+#pagination a{
+    color: #f67820;
+}
+
+/*busca de dados*/
+
+#resultado-busca span{
+    font-size: 0.9em!important;
+    display: block;
+    font-weight: bold;
+    color: #777;
+}
+
+#count{
+    display: inline;
+}
+
+
+#resultado-busca{
+    width: 93%;
+    font-size: 1.2em;
+    padding: 0.5em 2em;
+    float:left;
+}
+
+#resultado-busca table{
+    width: 100%;
+    margin-top: 1.5em;
+    margin-bottom: 3em;
+    border-collapse: collapse;
+}
+
+#resultado-busca th{
+    text-align: center;
+    font-size: 0.9em;
+    padding: 0.8em;
+    color:#000;
+}
+
+#resultado-busca td{
+    padding: 1em;
+    text-align: center;
+    font-size: 0.9em;
+}
+
+#resultado-busca tr:hover:nth-child(n+2){
+    background-color: #e3e3e3; 
+    transition: background-color 0.3s linear 0.1s;
+}
+
+#resultado-busca tr:nth-child(2n+3), #resultado-busca tr:nth-child(1){
+    background-color: #f1f1f1;
+    border-bottom: 2px solid #fff;
+}
+
+#resultado-busca tr:nth-child(2n+2){
+    background-color: #f9f9f9; 
+    border-bottom: 2px solid #fff;
+}
+
+
+#resultado-busca a, .excluir_geral, #add-alimento{
+    color: #f69f2b;
+    font-size:1em!important;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#add-alimento{
+    margin-top: 3em;
+}
+
+#resultado-busca a:hover, .excluir_disciplina:hover {
+    color:#f67820;
+}
+/*link de cadastro*/
+#link-cadastrar{
+    float:right;
+    margin: 0em 2.5em 1em 0;
+    font-size: 1.1em;  
+    width: 20%;
+    text-align: right;
+}
+#link-cadastrar a{
+    font-weight: bold;
+    text-decoration: none;
+    color:#f67820;
+}
+#link-cadastrar a:hover {
+    color:#f69f2b;
+}
+.obs{
+    padding-left: 2em;
+    font-size: 1em;
+    font-style: italic;
+    margin-bottom: 2em;
+}
+/*tabela de forms*/
+.form-dados{
+    width: 70%;
+    margin: 1em 2em 0;
+}
+.form-dados img{
+    margin: .5em 0 0 .1em;
+    cursor: pointer;
+}
+.form-dados input, .form-dados select, .form-dados textarea{
+    width: 85%;
+    float: left;
+    margin-bottom: 2em;
+    display: block;
+}
+.form-dados td{
+    vertical-align: middle;
+    width: 33%;
+}
+.consulta input, .consulta select, .consulta textarea{
+    width: 90%;
+}
+.consulta td{
+    vertical-align: top;
+}
+.form-dados textarea{
+    height: 10em;
+}
+.form-dados button{
+    padding: 0.4em;
+    margin-top: 1.7em;
+}
+.form-dados input[type='submit']{
+    width: 60%;
+    margin-top: 1.5em;
+}
+.form-dados label{
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+.checkbox{
+    margin: 0em 2em 2em;
+}
+.checkbox label{
+    margin: 0.2em 0.3em 0 0;
+    display: inline;
+    float: left;
+}
+.checkbox input{
+    width: 5%;
+}
+
+.form-dados .checkbox{
+    margin: 2em 0;
+}
+.form-dados  .checkbox label{
+    margin: 0.2em 0.3em 0 0;
+    display: inline;
+    float: left;
+}
+.form-dados .checkbox input{
+    width: 15%;
+}
+
+.span-radio{
+    margin: 0 0 1em 0em;
+    display:block;
+}
+.radio{
+    width: 100%;
+}
+.radio input{
+    width: 20%;
+    display: inline;
+}
+.radio label{
+    width: 10%;
+    display: inline;
+    float:left;
+    font-weight: normal;
+}
+
+label.error{
+    float: left;
+    display: block;
+    color: red;
+    font-weight: normal;
+    margin: -1em 0em 0em 2.2em;
+    padding: 0;
+}
+table label.error{
+    margin-top: -2em;
+    margin-left: 0em;
+}
+/*tabela botoes de envio*/
+.submit{
+    width: 30%;
+    float: right;
+    margin: 2em 2em 0 2em;
+}
+.submit td{
+    padding-right: 2em;
+    width: 50%;
+}
+.submit input, .submit button{
+    width: 100%;
+    padding: 0.4em;
+}
+.multi-checkbox{
+    width: 90%;
+    margin: 0.5em 0 2em 0;
+    padding: 0 0 0 1em;
+    float: left;
+}
+.multi-checkbox li{
+    display:inline;
+    text-decoration: none;
+    width: 14%;
+}
+.multi-checkbox input{
+    display:inline;
+    width: 5%;
+}
+.multi-checkbox label{
+    display: inline;
+    width: 10%;
+    margin-left: 0;
+}
+#dias_disponibilidade{
+    margin-bottom: 4em;
+}
+.escondido{
+    display: none;
+}
+.form_incrementa{
+    display: none;
+    margin: 0 auto;
+    width: 80%;
+    text-align: center;
+    margin-bottom: 2em;
+}
+.form_incrementa td, .form_incrementa th{
+    border-bottom: 1px solid #ccc;
+    padding: 0.8em;
+}
+.form_incrementa th{
+    padding-bottom: .5em;
+}
+
+.ui-autocomplete-loading {
+    background: white url('../imagens/loading.gif') right center no-repeat;
+}
+
+.loading{
+    background-image: url('../imagens/loading.gif');
+    width: 16px;
+    height: 16px;
+    float: right;
+    margin-right: 1.3em;
+    display:none;
+}
+
+.loading-esquerda{
+    float:left!important;
+}
+
+.container-aviso{
+    width:80%;
+    margin:0 auto;
+    margin-bottom: 3em;
+}
+
+.aviso-periodo{
+    margin-top: 2em;
+}
+
+#quant_alunos_cadastrados{
+    vertical-align: middle;
+    color: red;
+}
+
+#datas-escolhidas{
+    margin-left: 2em;
+}
+
+.data-selecionada{
+    float: left;
+    background: #f5f5f5;
+    padding: 1em;
+    display: inline-block;
+    margin-left: .5em;
+    font-weight: bold;
+    margin-bottom: 1em;
+}
+
+.remove{
+    color: red;
+    margin-left: 1em;
+    cursor: pointer;
+}
+
+#container-datas{
+    display:none;
+}
+
+#calendario_frequencia{
+    float: left;
+    margin: 0 0 0 1em;
+    width: 40%;
+}
+
+.frequencia-container, .nota-container{
+    float: left;
+    width: 100%;
+}
+
+.container{
+    float:left;
+    width: 100%;
+    display: block;
+    margin: 0 0 1em 0;
+}
+
+#mensagem-ajax{
+    display: none;
+}
+
+.stripped{
+    display: table!important;
+}
+
+.observacao-frequencia label{
+    display: block;
+    margin-bottom: .5em;
+}
+
+.observacao-frequencia{
+    display: none;
+    margin-top: 1.8em;
+}
+
+.visualizacao{
+    margin-bottom: 3em;
+    display:table;
+}
+
+.visualizacao td{
+    padding: 1em;
+}
+
+.container-2{
+    float: left;
+    width: 45%;
+}
+
+#container_atividade{
+    display:none;
+}
+
+#calendario{
+    margin-left: 2em;
+    margin-bottom: 2em;
+}

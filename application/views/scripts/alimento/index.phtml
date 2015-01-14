@@ -1,0 +1,35 @@
+<h2>Consultar Alimentos</h2>
+
+<div id="link-cadastrar">
+    <a href = "<?php echo $this->url(array('controller' => 'alimento', 'action' => 'cadastrar'), null, true) ?>">Cadastrar Novo Alimento</a>     
+</div>
+
+<?php echo $this->form ?>
+
+<?php if ($this->resultado_busca instanceof Zend_Paginator) : ?>
+    <?php if (count($this->resultado_busca) > 0) : ?>
+        <div id='resultado-busca'>
+            <h3>Resultados da Busca</h3>
+            <span>Foram encontrados (<?=$this->resultado_busca->getTotalItemCount() ?>) registros</span>
+            <table>
+                <tr>
+                    <th>Nome</th>
+                    <th colspan=2>Opções</th>
+                </tr>
+
+                <?php foreach ($this->resultado_busca as $alimento) : ?>
+                    <tr>
+                        <td><?= $alimento->getNomeAlimento() ?></td>
+                        <td><a href='<?= $this->url(array('controller' => 'alimento', 'action' => 'alterar', 'alimento' => $alimento->getIdAlimento(true)), null, true) ?>'>Alterar</a></td>                     
+                        <!--<td><a href='<?= $this->url(array('controller' => 'alimento', 'action' => 'excluir', 'alimento' => $alimento->getIdAlimento(true)), null, true) ?>'>Excluir</a></td>-->
+                    </tr>
+                <?php endforeach; ?>
+            </table>
+        </div>
+
+        <?php echo $this->paginationControl($this->resultado_busca, 'Sliding', 'Decorators/pagination.phtml'); ?>
+
+    <?php else : ?>
+        <script>exibeMensagem('Nenhum alimento foi encontrado.', 'Busca de Alimentos');</script>
+    <?php endif; ?>
+<?php endif; ?>

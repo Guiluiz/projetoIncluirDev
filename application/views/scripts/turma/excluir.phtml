@@ -1,0 +1,23 @@
+<?= $this->form ?>
+
+<?php
+if (!empty($this->professores))
+    echo $this->table($this->professores, 3, true);
+?>
+
+<script src="<?php echo $this->baseUrl() . '/js/ui.datepicker-pt-BR.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/jquery.maskedinput.min.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/jquery.validate.min.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/form.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/controle_inclusoes.js' ?>"></script>
+
+<script>
+    $(function() {
+        $('#enviar').click(function(){
+            return confirm('Deseja realmente excluir essa turma?');
+        });
+        
+        controle.iniTurma('<?= $this->baseUrl() . "/imagens/calendar.png" ?>', '<?php echo $this->url(array('controller' => 'disciplina', 'action' => 'buscar-disciplinas'), null, true); ?>', '<?php echo $this->url(array('controller' => 'voluntario', 'action' => 'buscar-professores'), null, true); ?>', 3);
+        form.iniForm();
+    });
+</script>

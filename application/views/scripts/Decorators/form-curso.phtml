@@ -1,0 +1,23 @@
+<form enctype="application/x-www-form-urlencoded" action="" method="post">
+    <h2>Informações do Curso</h2>
+    
+    <?= $this->element->id_curso ?>
+    <table class="form-dados" style="width: 40%">
+        <tr>
+            <td colspan="3"><?= $this->element->nome_curso ?></td>
+        </tr>
+
+        <tr>
+            <td><?= $this->element->descricao_curso ?></td>
+        </tr>
+    </table>
+
+ 
+    <table class="submit" style="float: left;">
+        <tr>
+            <td><?= $this->element->enviar ?></td>
+            <td><?= $this->element->cancelar ?></td>
+        </tr>
+    </table>
+
+</form>

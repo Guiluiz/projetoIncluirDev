@@ -1,0 +1,19 @@
+<?= $this->form ?>
+
+<?php
+if (!empty($this->pre_requisitos))
+    echo $this->table($this->pre_requisitos, 1, true);
+?>
+
+<script src="<?php echo $this->baseUrl() . '/js/jquery.validate.min.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/form.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/controle_inclusoes.js' ?>"></script>
+<script>
+    $(function() {
+        $('#enviar').click(function(){
+            return confirm('Deseja realmente excluir essa disciplina?');
+        });
+        controle.iniDisciplinas('<?php echo $this->url(array('controller' => 'error', 'action' => 'error'), null, true); ?>', 3);
+        form.iniForm();
+    });
+</script>

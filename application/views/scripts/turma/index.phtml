@@ -1,0 +1,46 @@
+<h2>Consultar Turma</h2>
+
+<div id="link-cadastrar">
+    <a href = "<?php echo $this->url(array('controller' => 'turma', 'action' => 'cadastrar'), null, true) ?>">Cadastrar Turma</a><br>     
+    <a href = "<?php echo $this->url(array('controller' => 'turma', 'action' => 'quantidade-alunos-turma'), null, true) ?>">Quantidade de Alunos das Turmas</a>     
+
+</div>
+
+<?php
+echo $this->form;
+$periodo = new Application_Model_Periodo();
+?>
+
+<?php if ($this->resultado_busca instanceof Zend_Paginator) : ?>
+    <?php if (count($this->resultado_busca) > 0) : ?>
+        <div id='resultado-busca'>
+            <h3>Resultados da Busca</h3>
+            <span>Foram encontrados (<?= $this->resultado_busca->getTotalItemCount() ?>) registros</span>
+            <table>
+                <tr>
+                    <th>Nome da Turma</th>
+                    <th>Disciplina</th>
+                    <th colspan=3>Opções</th>
+                </tr>
+
+                <?php foreach ($this->resultado_busca as $turma) : ?>
+                    <tr>
+                        <td><?= $turma->getNomeTurma() ?></td>
+                        <td><?= $turma->getDisciplina()->getNomeDisciplina() ?></td>
+                        <?php if ($turma->isAtual($periodo->getIdPeriodo()) && !$turma->isCancelada()): ?>
+                            <td><a href='<?= $this->url(array('controller' => 'turma', 'action' => 'alterar', 'turma' => $turma->getIdTurma(true)), null, true) ?>'>Alterar</a></td>                     
+                            <td><a href='<?= $this->url(array('controller' => 'turma', 'action' => 'cancelar', 'turma' => $turma->getIdTurma(true)), null, true) ?>'>Cancelar Turma</a></td>
+                        <?php endif ?>
+                        <td colspan="3"><a href='<?= $this->url(array('controller' => 'turma', 'action' => 'visualizar', 'turma' => $turma->getIdTurma(true)), null, true) ?>'>Visualizar</a></td>
+                    </tr>
+                <?php endforeach; ?>
+            </table>
+        </div>
+
+        <?php echo $this->paginationControl($this->resultado_busca, 'Sliding', 'Decorators/pagination.phtml'); ?>
+
+    <?php else : ?>
+        <script>exibeMensagem('Nenhuma turma foi encontrada.', 'Busca de Turmas');</script>
+
+    <?php endif; ?>
+<?php endif; ?>

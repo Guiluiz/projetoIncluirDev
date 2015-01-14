@@ -1,0 +1,18 @@
+<?php echo $this->form?>
+
+<div id="container-porcentagem">
+    <span style="display:none;">Por favor, aguarde alguns instantes. Seu relatório está sendo gerado.<br><br><br></span>
+    <div id="porcentagem"></div>
+</div>
+
+<script src="<?php echo $this->baseUrl() . '/js/porcentagem.js'; ?>" ></script>
+<script src="<?php echo $this->baseUrl() . '/js/jquery.validate.min.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/form.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/controle_inclusoes.js' ?>"></script>
+
+<script>
+    var controle;
+    $(function() {
+        controle.relatorio_alunos_turma('<?= $this->url(array('controller' => 'turma', 'action' => 'buscar-turmas')); ?>','<?= $this->url(array('controller' => 'ajax', 'action' => 'ajax-relatorio')); ?>');
+    });
+</script>

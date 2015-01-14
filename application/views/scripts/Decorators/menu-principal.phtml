@@ -1,0 +1,88 @@
+<?php
+
+function isDropdown($page, &$html) {
+    $dropdown = !empty($page->pages);
+    $html[] = '<li' . ($dropdown ? ' class="dropdown"' : '') . ($page->isActive() ? ' class="active"' : '') . '>';
+    $html[] = '<a href="' . ($dropdown ? '#' : $page->getHref()) . '" '
+            . ($dropdown ? 'class="dropdown-toggle" data-toggle="dropdown"' : '') . '>';
+    $html[] = $page->getLabel();
+
+    if ($dropdown)
+        $html[] = '<b class="caret"></b>';
+
+    $html[] = '</a>';
+
+    if (!$dropdown)
+        $html[] = '</li>';
+
+    else {
+        $html[] = '<ul class="dropdown-menu">';
+
+        foreach ($page->pages as $subpage) {
+            if (!$subpage->isVisible())
+                continue;
+
+            if ($subpage->getLabel() == 'divider') {
+                $html[] = '<li class="divider"></li>';
+                continue;
+            }
+            $html[] = '<li' . ($subpage->isActive() ? ' class="active"' : '') . '>';
+            $html[] = '<a href="' . $subpage->getHref() . '">';
+
+            if ($subpage->get('icon')) {
+                $html[] = '<span class="glyphicon glyphicon-' . $subpage->get('icon') . '"></span>';
+            }
+
+            $html[] = $subpage->getLabel();
+            $html[] = "</a>";
+            $html[] = "</li>";
+        }
+
+        $html[] = "</ul>";
+        $html[] = "</li>";
+    }
+}
+
+$html = array();
+$html[] = '<div class="navbar navbar-default" role="navigation">';
+$html[] = '  <div class="container-fluid">
+               <div class="navbar-header">
+                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                     <span class="sr-only">Toggle navigation</span>
+                     <span class="icon-bar"></span>
+                     <span class="icon-bar"></span>
+                     <span class="icon-bar"></span>
+                 </button>
+              </div>';
+$html[] = '      <div class="navbar-collapse collapse">';
+$html[] = '         <ul class="nav navbar-nav">';
+
+$right_fields = array();
+
+foreach ($this->container as $page) {
+    if (!$page->isVisible())
+        continue;
+    
+    if ($page->class == 'navbar-right')
+        $right_fields[] = $page;
+    else
+        isDropdown($page, $html);
+}
+
+$html[] = '</ul>';
+$auth = Zend_Auth::getInstance();
+
+foreach ($right_fields as $field) {
+    $html[] = '<ul class="nav navbar-nav navbar-right">';
+    if ($field->getLabel() == 'user' && $auth->hasIdentity())
+        $field->setLabel('<span class="glyphicon glyphicon-user"></span> ' . $auth->getIdentity()->getNomeUsuario());
+
+    isDropdown($field, $html);
+    $html[] = '</ul>';
+}
+
+$html[] = '</div>';
+$html[] = '</div>';
+$html[] = '</div>';
+
+echo join(PHP_EOL, $html);

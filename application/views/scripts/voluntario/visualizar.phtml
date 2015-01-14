@@ -1,0 +1,138 @@
+<?php if ($this->voluntario instanceof Application_Model_Voluntario): ?>
+    <h2>Informações Gerais do Voluntário</h2>
+
+    <table class="form-dados visualizacao" style="width: 60%;">
+        <tr>
+            <th style="width: 5%">Nome: </th><td colspan="2"><?php echo $this->voluntario->getNomeVoluntario() ?></td>
+        </tr>
+
+        <tr>
+            <th>CPF: </th><td><?php echo $this->voluntario->getCpf() ?></td>
+        </tr>
+
+        <tr>
+            <th>Data de Nascimento: </th><td><?php echo $this->voluntario->getDataNascimento(true) ?></td>
+        </tr>
+        
+        <tr>
+            <th>Data de Início: </th><td><?php echo $this->voluntario->getDataInicio(true) ?></td>
+        </tr>
+        
+        <tr>
+            <th>Formação: </th><td><?php echo $this->voluntario->getFormacao() ?></td>
+        </tr>
+
+        <tr>
+            <th>Profissão: </th><td><?php echo $this->voluntario->getProfissao() ?></td>
+        </tr>
+
+        <tr>
+            <th>Carga Horária: </th><td><?php echo $this->voluntario->getCargaHoraria() ?></td>
+        </tr>
+
+        <tr>
+            <th>Conhecimentos e Habilidades: </th><td><?php echo $this->voluntario->getConhecimentos() ?></td>
+        </tr>
+
+        <tr>
+            <?php
+            $dias_semana = array('Domingo', 'Segunda Feira', 'Terça Feira', 'Quarta Feira', 'Quinta Feira', 'Sexta Feira', 'Sábado');
+            $disponibilidade = $this->voluntario->getDisponibilidade(true);
+            ?>
+            <th>Disponibilidade: </th><td>
+                <?php if (!empty($disponibilidade)): ?>
+                    <?php foreach ($disponibilidade as $d): ?>
+                        <?php echo $dias_semana[$d] . ' ' ?> 
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </td>
+        </tr>
+
+        <tr>
+            <?php
+            $nome_funcoes = array(Application_Model_Voluntario::$atividade_informatica => 'Informática', Application_Model_Voluntario::$atividade_marketing => 'Marketing', Application_Model_Voluntario::$atividade_rh => 'Recursos Humanos', Application_Model_Voluntario::$atividade_secretaria => 'Secretaria');
+            $funcoes = $this->voluntario->getFuncoes();
+            ?>
+            <th>Funções: </th><td>
+                <?php if (!empty($funcoes)): ?>
+                    <?php foreach ($funcoes as $key => $funcao): ?>
+                        <?php echo '<b>' . $nome_funcoes[$key] . '</b>: ' . $funcao . '<br/>' ?> 
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </td>
+        </tr>
+
+
+        <?php if ($this->voluntario instanceof Application_Model_Professor): ?>
+            <tr>
+                <?php
+                $disciplinas = $this->voluntario->getDisciplinasMinistradas();
+                ?>
+                <th>Disciplinas Ministradas: </th><td>
+                    <?php if (!empty($disciplinas)): ?>
+                        <?php foreach ($disciplinas as $disciplina): ?>
+                            <?php echo $disciplina->getNomeDisciplina() ?> 
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </td>
+            </tr>
+        <?php endif; ?>
+
+        <?php if ($this->voluntario->isAtivo()): ?>
+            <tr>
+                <th>Status: </th><td>Ativo</td>
+            </tr>    
+        <?php else: ?>
+            <tr>
+                <th>Status: </th><td>Desligado</td>
+            </tr> 
+            <tr>
+                <th>Data do Desligamento: </th><td><?php echo $this->voluntario->getDataDesligamento(true) ?></td>
+            </tr> 
+            <tr>
+                <th>Motivo do Desligamento: </th><td><?php echo $this->voluntario->getMotivoDesligamento() ?></td>
+            </tr> 
+        <?php endif; ?>
+            
+        
+    </table>
+
+    <h2>Endereço</h2>
+
+    <table class="form-dados visualizacao" style="width: 60%;">
+        <tr>
+            <th style="width: 5%">Endereço: </th><td><?php echo $this->voluntario->getCompleteEndereco() ?></td>
+            <th style="width: 10%">Bairro: </th><td><?php echo $this->voluntario->getBairro() ?></td>
+        </tr>
+
+        <tr>
+            <th>CEP: </th><td><?php echo $this->voluntario->getCep() ?></td>
+            <th>Cidade: </th><td><?php echo $this->voluntario->getCidade() ?></td>
+            <th>Estado: </th><td><?php echo $this->voluntario->getEstado() ?></td>
+        </tr>
+
+    </table>
+
+    <h2>Contato</h2>
+
+    <table class="form-dados visualizacao" style="width: 60%;">
+        <tr>
+            <th style="width: 10%">Email: </th><td><?php echo $this->voluntario->getEmail() ?></td>
+        </tr>
+
+        <tr>
+            <th>Telefone 1: </th><td><?php echo $this->voluntario->getTelefoneFixo() ?></td>
+            <th style="width: 10%">Telefone 2: </th><td><?php echo $this->voluntario->getTelefoneCelular() ?></td>
+        </tr>
+
+    </table>
+
+    <table class="form-dados visualizacao" style="width: 60%;">
+        <tr>
+            <td><a href="<?php echo $this->url(array('controller' => 'voluntario', 'action' => 'index'), null, true) ?>">Voltar</a></td>
+        </tr>           
+    </table>
+<?php else: ?>
+    <p>Voluntário não encontrado.</p>
+
+<?php endif; ?>

@@ -1,0 +1,64 @@
+<?php
+$request = Zend_Controller_Front::getInstance()->getRequest();
+
+if ($request->isPost()) {
+    $urlParams = $request->getPost();
+    $urlParams['controller'] = $request->getControllerName();
+    $urlParams['action'] = $request->getActionName();
+} else
+    $urlParams = $request->getParams();
+
+/* foreach ($urlParams as &$param)
+  $param = urldecode(urldecode($param));
+
+  foreach ($urlParams as &$param)
+  $param = urlencode(urlencode($param));
+ */
+
+$filter = new Aplicacao_Filtros_StringFilter();
+
+foreach ($urlParams as &$param)
+    $param = $filter->filter($param);
+
+unset($urlParams['pagina']);
+?>
+<?php if (count($this->pagesInRange) > 1) : ?>    
+    <div id="pagination">  
+        <!-- Link para a primeira página -->
+        <?php if (isset($this->previous)): ?>
+            <a title="Primeira Página" href="<?php echo $this->url(array_merge(array('pagina' => $this->first), $urlParams), null, true); ?>">&laquo; Primeira</a> | 
+        <?php else: ?>
+            <span>Primeira |</span> 
+        <?php endif; ?>
+
+        <!-- Link para a página anterior -->
+        <?php if (isset($this->previous)): ?>
+            <a title="Página Anterior" href="<?php echo $this->url(array_merge(array('pagina' => $this->previous), $urlParams), null, true); ?>">&laquo; Anterior</a> |
+        <?php else: ?>
+            <span>Anterior |</span>
+        <?php endif; ?>
+
+        <!-- Links numerados -->
+        <?php foreach ($this->pagesInRange as $page): ?>
+            <?php if ($page != $this->current): ?>
+                <a title="<?php echo $page; ?>" href="<?php echo $this->url(array_merge(array('pagina' => $page), $urlParams), null, true); ?>"><?php echo $page; ?></a> |
+            <?php else: ?>
+                <a class="current" title="<?php echo $page; ?>" href="<?php echo $this->url(array_merge(array('pagina' => $page), $urlParams), null, true); ?>"><?php echo $page; ?></a> |
+            <?php endif; ?>
+        <?php endforeach; ?>
+
+        <!-- Link para a Próxima página -->
+        <?php if (isset($this->next)): ?>
+            <a title="Próxima Página" href="<?php echo $this->url(array_merge(array('pagina' => $this->next), $urlParams), null, true); ?>">Próxima &raquo;</a> |
+        <?php else: ?>
+            <span>Próxima |</span>
+        <?php endif; ?>
+
+        <!-- Última página -->
+        <?php if (isset($this->next)): ?>
+            <a title="Última Página" href="<?php echo $this->url(array_merge(array('pagina' => $this->last), $urlParams), null, true); ?>">Última &raquo;</a>
+        <?php else: ?>
+            <span>Última</span>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>

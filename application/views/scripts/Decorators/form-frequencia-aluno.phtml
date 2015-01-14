@@ -1,0 +1,34 @@
+<form enctype="application/x-www-form-urlencoded" action="" method="post">
+    <h2>Lançamento de Frequência</h2>
+
+    <?= $this->element->data ?>
+
+    <div class="obs">Escolha uma turma e selecione uma data no calendário para fazer/alterar o lançamento de freqûencia </div>
+
+    <div class="container">
+        <table class="form-dados" style="width: 40%; float: left">
+            <tr>
+                <td><?= $this->element->curso ?></td>
+            </tr>
+
+            <tr>
+                <td><?= $this->element->disciplina ?></td>
+            </tr>
+
+            <tr>
+                <td><?= $this->element->turma ?></td>
+            </tr>
+
+        </table>
+        <div id="calendario_frequencia"></div>
+    </div>
+
+    <div id="frequencia" class="frequencia-container"></div>
+
+    <table class="submit">
+        <tr>
+            <td style="width: 33%"><?= $this->element->enviar ?></td>
+            <td><?= $this->element->cancelar ?></td>
+        </tr>
+    </table>
+</form>

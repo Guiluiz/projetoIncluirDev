@@ -1,0 +1,42 @@
+<form enctype="application/x-www-form-urlencoded" action="" method="post">
+    <table class="form-dados" style="width: 40%">
+        <tr>
+            <td><?= $this->element->periodo ?></td>
+        </tr>
+        <tr>
+            <td>
+                <div class="radio">
+                    <span class="span-radio">Informações em Planilha Única</span>
+                    <?= $this->element->unico_sheet ?>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="radio">
+                    <span class="span-radio">Formato do Arquivo</span>
+                    <?= $this->element->formato_saida ?>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="radio">
+                    <span class="span-radio">Todas as Turmas</span>
+                    <?= $this->element->todas_turmas ?>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="linha"><?= $this->element->turmas ?></td>
+        </tr>
+    </table>
+
+    <table class="form-dados" style="width: 30%">
+        <tr>
+            <td><?= $this->element->enviar ?></td>
+            <td><?= $this->element->cancelar ?></td>
+        </tr>
+    </table>
+
+</form>

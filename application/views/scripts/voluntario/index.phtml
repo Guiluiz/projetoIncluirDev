@@ -1,0 +1,50 @@
+<h2>Consultar Voluntario</h2>
+
+<div id="link-cadastrar">
+    <a href = "<?php echo $this->url(array('controller' => 'voluntario', 'action' => 'cadastrar'), null, true) ?>">Cadastrar Novo Voluntário</a>     
+</div>
+
+<?= $this->form ?>
+
+<?php if ($this->resultado_busca instanceof Zend_Paginator) : ?>
+    <?php if (count($this->resultado_busca) > 0) : ?>
+        <div id='resultado-busca'>
+            <h3>Resultados da Busca</h3>
+            <span>Foram encontrados (<?= $this->resultado_busca->getTotalItemCount() ?>) registros</span>
+            <table>
+                <tr>
+                    <th>Nome do Voluntário</th>
+                    <th>CPF</th>
+                    <th colspan=3>Opções</th>
+                </tr>
+                <?php foreach ($this->resultado_busca as $voluntario) : ?>
+                    <tr>
+                        <td><?= $voluntario->getNomeVoluntario() ?></td>
+                        <td><?= $voluntario->getCpf() ?></td>
+                        <td><a href='<?= $this->url(array('controller' => 'voluntario', 'action' => 'alterar', 'voluntario' => $voluntario->getIdVoluntario(true)), null, true) ?>'>Alterar</a></td>                     
+                        <td><a href='<?= $this->url(array('controller' => 'voluntario', 'action' => 'visualizar', 'voluntario' => $voluntario->getIdVoluntario(true)), null, true) ?>'>Visualizar</a></td>                     
+                        <?php if ($voluntario->isAtivo()): ?>
+                            <td><a href='<?= $this->url(array('controller' => 'voluntario', 'action' => 'desligar', 'voluntario' => $voluntario->getIdVoluntario(true)), null, true) ?>'>Desligar Voluntário</a></td>
+                        <?php else: ?>
+                            <td><a href='<?= $this->url(array('controller' => 'voluntario', 'action' => 'ativar', 'voluntario' => $voluntario->getIdVoluntario(true)), null, true) ?>'>Ativar Voluntário</a></td>
+                        <?php endif; ?>
+                    </tr>
+                <?php endforeach; ?>
+            </table>
+        </div>
+        <?php echo $this->paginationControl($this->resultado_busca, 'Sliding', 'Decorators/pagination.phtml'); ?>
+
+    <?php else : ?>
+        <script>exibeMensagem('Nenhum voluntário foi encontrado.', 'Busca de Voluntários');</script>
+
+    <?php endif; ?>
+<?php endif; ?>
+
+<script src="<?php echo $this->baseUrl() . '/js/jquery.maskedinput.min.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/jquery.validate.min.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/form.js' ?>"></script>
+<script>
+    $(function() {
+        form.iniForm();
+    });
+</script>

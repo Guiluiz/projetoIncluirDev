@@ -1,0 +1,38 @@
+<h2>Consultar Disciplina</h2>
+
+<div id="link-cadastrar">
+    <a href = "<?php echo $this->url(array('controller' => 'disciplina', 'action' => 'cadastrar'), null, true) ?>">Cadastrar Disciplina</a>     
+</div>
+
+<?= $this->form ?>
+
+<?php if ($this->resultado_busca instanceof Zend_Paginator) : ?>
+    <?php if (count($this->resultado_busca) > 0) : ?>
+        <div id='resultado-busca'>
+            <h3>Resultados da Busca</h3>
+            <span>Foram encontrados (<?= $this->resultado_busca->getTotalItemCount() ?>) registros</span>
+            <table>
+                <tr>
+                    <th>Nome da Disciplina</th>
+                    <th>Nome do Curso</th>
+                    <th colspan=2>Opções</th>
+                </tr>
+
+                <?php foreach ($this->resultado_busca as $voluntario) : ?>
+                    <tr>
+                        <td><?= $voluntario->getNomeDisciplina() ?></td>
+                        <td><?= $voluntario->getCurso()->getNomeCurso() ?></td>
+                        <td><a href='<?= $this->url(array('controller' => 'disciplina', 'action' => 'alterar', 'disciplina' => $voluntario->getIdDisciplina(true)), null, true) ?>'>Alterar</a></td>                     
+                        <td><a href='<?= $this->url(array('controller' => 'disciplina', 'action' => 'excluir', 'disciplina' => $voluntario->getIdDisciplina(true)), null, true) ?>'>Excluir</a></td>
+                    </tr>
+                <?php endforeach; ?>
+            </table>
+        </div>
+
+        <?php echo $this->paginationControl($this->resultado_busca, 'Sliding', 'Decorators/pagination.phtml'); ?>
+
+    <?php else : ?>
+        <script>exibeMensagem('Nenhuma disciplina foi encontrada.', 'Busca de Disciplinas');</script>
+
+    <?php endif; ?>
+<?php endif; ?>

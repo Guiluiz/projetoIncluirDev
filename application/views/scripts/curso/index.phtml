@@ -1,0 +1,36 @@
+<h2>Consultar Curso</h2>
+
+<div id="link-cadastrar">
+    <a href = "<?php echo $this->url(array('controller' => 'curso', 'action' => 'cadastrar'), null, true) ?>">Cadastrar Novo Curso</a>     
+</div>
+
+<?= $this->form ?>
+
+<?php if ($this->resultado_busca instanceof Zend_Paginator) : ?>
+    <?php if (count($this->resultado_busca) > 0) : ?>
+        <div id='resultado-busca'>
+            <h3>Resultados da Busca</h3>
+            <span>Foram encontrados (<?=$this->resultado_busca->getTotalItemCount() ?>) registros</span>
+            <table>
+                <tr>
+                    <th>Nome do Curso</th>
+                    <th colspan=2>Opções</th>
+                </tr>
+
+                <?php foreach ($this->resultado_busca as $alimento) : ?>
+                    <tr>
+                        <td><?= $alimento->getNomeCurso() ?></td>
+                        <td><a href='<?= $this->url(array('controller' => 'curso', 'action' => 'alterar', 'curso' => $alimento->getIdCurso(true)), null, true) ?>'>Alterar</a></td>                     
+                        <td><a href='<?= $this->url(array('controller' => 'curso', 'action' => 'excluir', 'curso' => $alimento->getIdcurso(true)), null, true) ?>'>Excluir</a></td>
+                    </tr>
+                <?php endforeach; ?>
+            </table>
+        </div>
+
+        <?php echo $this->paginationControl($this->resultado_busca, 'Sliding', 'Decorators/pagination.phtml'); ?>
+
+    <?php else : ?>
+        <script>exibeMensagem('Nenhum curso foi encontrado.', 'Busca de Cursos');</script>
+
+    <?php endif; ?>
+<?php endif; ?>

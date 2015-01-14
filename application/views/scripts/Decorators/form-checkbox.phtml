@@ -1,0 +1,22 @@
+<?php
+    $elem = $this->element;
+    $elemName = $elem->getName();
+    $values = $elem->getValue();
+?>
+
+<ul  id="<?=$elemName?>" class="multi-checkbox">
+    <?php foreach ($elem->getMultiOptions() as $option => $value) : ?>
+        <li>
+            <input type="checkbox" class="obrigatorio" name="<?php echo $elemName; ?>[]" id="<?php echo $elemName; ?>-<?php echo $option; ?>" value="<?php echo $option; ?>" 
+                <?php
+                   if(!empty($values)){
+                       if (in_array($option, $values))
+                           echo 'checked="checked"';
+                   }
+                ?> />
+            <label for="<?php echo $elemName; ?>-<?php echo $option; ?>"><?php echo $value; ?></label>
+        </li>
+    <?php endforeach; ?>    
+</ul>
+
+

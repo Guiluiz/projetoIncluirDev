@@ -1,0 +1,14 @@
+<?php if (empty($this->not_found)): ?>
+    <?= $this->form ?>
+
+    <script>
+        $(function() {
+            $('#enviar').click(function() {
+                return confirm('Deseja realmente excluir esse alimento?');
+            });
+        });
+    </script>
+    
+<?php else: ?>
+    <div class="aviso">Alimento não foi encontrado, ou ele já foi excluído ou nunca foi criado.</div>
+<?php endif; ?>

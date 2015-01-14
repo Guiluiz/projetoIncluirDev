@@ -1,0 +1,26 @@
+<?= $this->form ?>
+
+<?php
+if (!empty($this->turmas))
+    echo $this->table($this->turmas, 4, null, $this->liberacao);
+
+if (!empty($this->pagamentos))
+    echo $this->table($this->pagamentos, 6, null, $this->alimentos, $this->turmas);
+
+if (!empty($this->alimentos))
+    echo $this->table($this->alimentos, 5, null, $this->todos_alimentos, $this->turmas);
+?>
+
+<script type="text/javascript" src="http://cidades-estados-js.googlecode.com/files/cidades-estados-1.2-utf8.js"></script>
+<script src="<?php echo $this->baseUrl() . '/js/ui.datepicker-pt-BR.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/jquery.maskedinput.min.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/jquery.validate.min.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/controle_inclusoes.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/form.js' ?>"></script>
+
+<script>
+    $(function() {      
+        controle.iniAluno('<?php echo $this->url(array('controller' => 'aluno', 'action' => 'verifica-aluno'), null, true); ?>','<?= $this->baseUrl() . "/imagens/calendar.png" ?>', '<?php echo $this->url(array('controller' => 'alimento', 'action' => 'buscar-alimentos'), null, true); ?>' ,'<?php echo $this->url(array('controller' => 'disciplina', 'action' => 'buscar-disciplinas'), null, true); ?>', '<?php echo $this->url(array('controller' => 'turma', 'action' => 'buscar-turmas'), null, true); ?>','<?php echo $this->url(array('controller' => 'turma', 'action' => 'buscar-quantidade-turma'), null, true); ?>', '<?php echo $this->url(array('controller' => 'turma', 'action' => 'verificar-liberacao-turma'), null, true); ?>', 1, '<?php echo $this->data(3) ?>', '<?php echo $this->data(4) ?>');
+        form.iniForm('<?= $this->url(array('controller' => 'ajax', 'action' => 'cep'), null, true) ?>');
+    });
+</script>

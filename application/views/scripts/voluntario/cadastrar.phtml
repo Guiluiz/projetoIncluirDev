@@ -1,0 +1,19 @@
+<?= $this->form ?>
+
+<?php
+if (!empty($this->disciplinas))
+    echo $this->table($this->disciplinas, 2);
+?>
+
+<script type="text/javascript" src="http://cidades-estados-js.googlecode.com/files/cidades-estados-1.2-utf8.js"></script>
+<script src="<?php echo $this->baseUrl() . '/js/ui.datepicker-pt-BR.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/jquery.maskedinput.min.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/jquery.validate.min.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/controle_inclusoes.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/form.js' ?>"></script>
+<script>
+    $(function() {
+        form.iniForm('<?= $this->url(array('controller' => 'ajax', 'action' => 'cep'), null, true) ?>');
+        controle.iniVoluntario('<?php echo $this->url(array('controller' => 'voluntario', 'action' => 'verifica-voluntario'), null, true); ?>', '<?php echo $this->url(array('controller' => 'disciplina', 'action' => 'buscar-disciplinas'), null, true); ?>', '<?= $this->url(array('controller' => 'voluntario', 'action' => 'index'), null, true) ?>', '<?= $this->baseUrl() . "/imagens/calendar.png" ?>', '<?= base64_encode(Application_Model_Voluntario::$status_desligado) ?>', '<?= Application_Model_Voluntario::$atividade_aulas ?>', 1);
+    });
+</script>

@@ -1,0 +1,26 @@
+<?php if ($this->voluntario instanceof Application_Model_Voluntario): ?>
+    <div class="container-aviso">
+        <div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
+            <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+                <strong>Atenção: </strong> As turmas desse período do professor foram canceladas. 
+            </p>   
+        </div>
+    </div>
+
+    <h2>Informações do Voluntário</h2>
+
+    <table class="form-dados" style="width: 20%;">
+        <tr>
+            <th>Nome: </th><td><?= $this->voluntario->getNomeVoluntario() ?></td>
+        </tr>
+        <tr>
+            <th>CPF: </th><td><?= $this->voluntario->getCpf() ?></td>
+        </tr>
+    </table>
+
+    <?= $this->form ?>
+
+<?php else: ?>
+    <p>Voluntário não foi encontrado ou ele já foi ativado</p>
+
+<?php endif; ?>

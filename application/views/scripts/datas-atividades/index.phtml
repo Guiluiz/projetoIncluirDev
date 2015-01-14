@@ -1,0 +1,33 @@
+<?php if (empty($this->inativo)): ?>
+    <?php echo $this->form ?>
+
+    <div id='container-datas'>
+        <?php foreach ($this->datas as $data): ?>
+            <div class="data-selecionada" valor="<?php echo $data ?>"><?php echo $data ?> <span title="Clique para remover essa data" class="remove">X</span></div>
+        <?php endforeach; ?>
+    </div>
+
+    <script src="<?php echo $this->baseUrl() . '/js/date-pt-BR.js' ?>"></script>
+    <script src="<?php echo $this->baseUrl() . '/js/ui.datepicker-pt-BR.js' ?>"></script>
+    <script src="<?php echo $this->baseUrl() . '/js/controle_inclusoes.js' ?>"></script>
+    
+    <!--<script src="<?php echo $this->baseUrl() . '/js/jquery.validate.min.js' ?>"></script>
+    <script src="<?php echo $this->baseUrl() . '/js/form.js' ?>"></script>-->
+
+    <script>
+        $(function() {
+            controle.datas_atividades('<?= $this->baseUrl() . "/imagens/calendar.png" ?>', '<?php echo $this->data(0) ?>', '<?php echo $this->data(1) ?>');
+            form.iniForm();
+        });
+    </script>
+
+<?php else: ?>
+    <div class="container-aviso aviso-periodo"><div class="ui-widget">
+            <div style="padding: 0 .7em; width:90%; margin: 0 auto; margin-bottom: 2em" class="ui-state-error ui-corner-all">
+                <p><span style="float: left; margin-right: .3em;" class="ui-icon ui-icon-alert"></span>
+                   É necessário escolher o período de funcionamento antes de escolher as datas de atividades
+            </div>
+        </div>
+    </div>
+
+<?php endif; ?>

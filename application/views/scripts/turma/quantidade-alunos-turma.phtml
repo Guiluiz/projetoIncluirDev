@@ -1,0 +1,58 @@
+<h2>Quantidade de Alunos por Turma</h2>
+
+<div class="obs">
+    <p>Alunos desligados são desconsiderados na contagem.</p>
+</div>
+
+<?php if (!empty($this->alunos_turma)): ?>
+    <?php echo $this->form ?>
+
+    <table class="form_incrementa visualizacao" id="quantidade_alunos" style="width: 60%;">
+        <tr>
+            <th style="">Turma</th>
+            <th style="">Quantidade</th>
+        </tr>
+        <?php foreach ($this->alunos_turma as $alunos_turma): ?>
+            <tr periodo = "<?php echo base64_encode($alunos_turma['id_periodo']) ?>">
+                <td><?php echo $alunos_turma['nome_disciplina'] . ' - ' . $alunos_turma['nome_turma'] ?></td>
+                <td><?php echo $alunos_turma['count(aluno.id_aluno)'] ?></td>
+            </tr>
+        <?php endforeach; ?>
+
+    </table>
+
+
+    <script>
+        function mostraEsconde() {
+            var opcao = $('#periodo').find('option:selected').val();
+
+            if (opcao.length > 0) {
+                $('#quantidade_alunos').find('tr').each(function() {
+                    if ($(this).attr('periodo') != undefined) {
+                        if ($(this).attr('periodo') == opcao)
+                            $(this).show();
+                        else
+                            $(this).hide();
+                    }
+                });
+            }
+            else
+                $('#quantidade_alunos').find('tr').show();
+        }
+        $(function() {
+            mostraEsconde();
+            $('#periodo').change(function() {
+                mostraEsconde();
+            });
+        });
+    </script>
+<?php else: ?>
+    <p>Não há nenhum aluno cadastro na turma escolhida.</p>
+
+<?php endif; ?>
+
+<table class="form-dados visualizacao" style="width: 60%;">
+    <tr>
+        <td><a href="<?php echo $this->url(array('controller' => 'turma', 'action' => 'index'), null, true) ?>">Voltar</a></td>
+    </tr>           
+</table>

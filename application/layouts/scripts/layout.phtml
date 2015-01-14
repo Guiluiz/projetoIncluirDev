@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <!-- FOLHAS GERAL / JQUERY -->
+        <?php
+            echo $this->headLink()->prependStylesheet($this->baseUrl() . '/css/estilo.css')
+                ->appendStylesheet($this->baseUrl() . '/css/jquery-ui-1.10.4.custom.min.css');
+        ?>
+
+        <title><?php echo $this->escape($this->title); ?></title>
+        <script src="<?php echo $this->baseUrl() . '/js/jquery-1.11.0.min.js' ?>"></script>
+        <script src="<?php echo $this->baseUrl() . '/js/jquery-ui-1.10.4.custom.min.js' ?>"></script>
+        <script src="<?php echo $this->baseUrl() . '/js/jquery.menubar.js' ?>"></script>
+        <script src="<?php echo $this->baseUrl() . '/js/controle_mensagens.js' ?>"></script>
+        
+        <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW"/>
+    </head>
+
+    <body>
+        <div id="conteudo">
+            <div id="topo">
+                <div id="titulo">
+                    <img src="<?= $this->baseUrl() . '/imagens/logo-projeto-incluir.PNG' ?>"/>
+                </div><!-- Fim div titulo -->
+
+                <div id="info-login">
+                     <?php echo $this->boasVindas(); ?>
+                </div><!-- Fim div info-login -->
+
+                <div class="clear"></div>
+
+            </div><!-- Fim div topo --> 
+
+            <div id="area-menu">
+                <?php echo $this->navigation(); ?>
+                <script>
+                    $('#area-menu').children().menubar();
+                    $('.right').parent().css('float', 'right');
+                </script>
+
+            </div><!-- Fim menu -->
+
+            <div id="barra-titulo">
+                <h1><?php echo $this->escape($this->title); ?></h1>
+                <div id='breadcrumb'><?php echo $this->navigation()->breadcrumbs()->setMinDepth(0)->render(Zend_Registry::get('breadcrumb')) ?></div>
+            </div>
+
+            <div id="mensagem"></div>
+
+            <div id="meio">
+                <?php echo $this->layout()->content; ?>
+            </div><!-- Fim meio-->
+        </div><!-- Fim conteudo -->
+        <div id="rodape"></div>
+    </body>
+    <script>
+        $(function() {
+            exibeMensagem("<?php echo $this->mensagem($this->controller, $this->mensagem, $this->action) ?>", '<?php echo $this->title ?>');
+        });
+
+    </script>
+</html>

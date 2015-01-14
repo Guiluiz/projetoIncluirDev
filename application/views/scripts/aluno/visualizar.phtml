@@ -1,0 +1,126 @@
+<?php if ($this->aluno instanceof Application_Model_Aluno): ?>
+    <h2>Informações Gerais do Aluno</h2>
+
+    <table class="form-dados visualizacao" style="width: 60%;">
+        <tr>
+            <th style="width: 5%">Nome: </th><td colspan="2"><?php echo $this->aluno->getNomeAluno() ?></td>
+        </tr>
+
+        <tr>
+            <th>CPF: </th><td><?php echo $this->aluno->getCpf() ?></td>
+        </tr>
+
+        <tr>
+            <th>Nome do Responsável: </th><td><?php echo $this->aluno->getNomeResponsavel() ?></td>
+        </tr>
+
+        <tr>
+            <th>Data de Nascimento: </th><td><?php echo $this->aluno->getDataNascimento(true) ?></td>
+        </tr>
+
+        <tr>
+            <th>Data de Matrícula: </th><td><?php echo $this->aluno->getDataRegistro(true) ?></td>
+        </tr>
+
+
+        <tr>
+            <th>Escolaridade: </th><td><?php echo $this->aluno->getEscolaridade() ?></td>
+        </tr>
+
+        <?php if ($this->aluno->isAtivo()): ?>
+            <tr>
+                <th>Status: </th><td>Ativo</td>
+            </tr>
+
+        <?php else: ?>
+            <tr>
+                <th>Status: </th><td>Desligado</td>
+            </tr>
+
+            <tr>
+                <th>Data do Desligamento: </th><td><?php echo $this->aluno->getDataDesligamento(true); ?></td>
+            </tr>
+
+            <tr>
+                <th>Motivo do Desligamento: </th><td><?php echo $this->aluno->getMotivoDesligamento(); ?></td>
+            </tr>
+
+        <?php endif; ?>
+
+    </table>
+
+    <h2>Endereço</h2>
+
+    <table class="form-dados visualizacao" style="width: 60%;">
+        <tr>
+            <th style="width: 5%">Endereço: </th><td><?php echo $this->aluno->getCompleteEndereco() ?></td>
+            <th style="width: 10%">Bairro: </th><td><?php echo $this->aluno->getBairro() ?></td>
+        </tr>
+
+        <tr>
+            <th>CEP: </th><td><?php echo $this->aluno->getCep() ?></td>
+            <th>Cidade: </th><td><?php echo $this->aluno->getCidade() ?></td>
+            <th>Estado: </th><td><?php echo $this->aluno->getEstado() ?></td>
+        </tr>
+
+    </table>
+
+    <h2>Contato</h2>
+
+    <table class="form-dados visualizacao" style="width: 60%;">
+        <tr>
+            <th style="width: 10%">Email: </th><td><?php echo $this->aluno->getEmail() ?></td>
+        </tr>
+
+        <tr>
+            <th>Telefone 1: </th><td><?php echo $this->aluno->getTelefoneFixo() ?></td>
+            <th style="width: 10%">Telefone 2: </th><td><?php echo $this->aluno->getTelefoneCelular() ?></td>
+        </tr>
+
+    </table>
+
+    <h2>Turmas</h2>
+
+    <table class="form_incrementa visualizacao" style="width: 80%;">
+        <?php if ($this->aluno->hasTurmas()): ?>
+            <tr>
+                <th style="width: 16.6%">Turma</th>
+                <th style="width: 16.6%">Situação</th>
+                <th style="width: 5%">Valor Pago</th>
+                <th style="width: 27%">Notas</th>
+                <th style="width: 16.6%">Frequência</th>
+                <th style="width: 16.6%">Resultado Final</th>
+
+
+            </tr>
+            <?php foreach ($this->aluno->getCompleteTurmas() as $id_turma => $turma): ?>
+                <tr>
+                    <td><?php echo $turma[Application_Model_Aluno::$index_turma]->getCompleteNomeTurma() ?></td>
+                    <td><?php echo $turma[Application_Model_Aluno::$index_pagamento_turma]->getSituacao() ?></td>
+                    <td><?php echo $turma[Application_Model_Aluno::$index_pagamento_turma]->getValorPagamento() ?></td>
+                    <td>
+                        <?php foreach ($turma[Application_Model_Aluno::$index_notas_turma] as $nota): ?>
+                            <?php if ($nota instanceof Application_Model_Nota): ?>
+                                <?php echo $nota->toString() ?><br>
+                            <?php endif ?>
+                        <?php endforeach; ?>
+                        <?php echo $this->aluno->getNotaAcumulada($id_turma) ?>
+                    </td>
+
+                    <td><?php echo $this->aluno->getPorcentagemFaltas($turma[Application_Model_Aluno::$index_turma]->getIdTurma(), $this->total_aulas, true) ?></td>
+                    <td>Não disponível</td>
+                </tr>
+            <?php endforeach; ?>
+        <?php endif; ?>
+
+    </table>
+
+    <table class="form-dados visualizacao" style="width: 60%;">
+        <tr>
+            <td><a href="<?php echo $this->url(array('controller' => 'aluno', 'action' => 'index'), null, true) ?>">Voltar</a></td>
+        </tr>           
+    </table>
+<?php else: ?>
+    <p>Aluno não encontrado.</p>
+
+<?php endif; ?>
