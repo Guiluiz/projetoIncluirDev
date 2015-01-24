@@ -86,7 +86,7 @@ class Application_Model_Periodo {
             $this->data_final->setTime(23, 59);
 
             if ($data_atual > $this->data_final) {
-                $this->finalizaPeriodoReserva();
+             //   $this->finalizaPeriodoReserva();
                 return true;
             }
 

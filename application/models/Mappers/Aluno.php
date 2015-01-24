@@ -557,6 +557,7 @@ class Application_Model_Mappers_Aluno {
 
     /**
      * Retorna um array com os alunos da turma especificada, além das suas informações sobre as suas notas
+     * Utilizado no lançamento de notas
      * @param int $turma
      * @return null|\Application_Model_Aluno[]
      */
@@ -612,6 +613,7 @@ class Application_Model_Mappers_Aluno {
 
     /**
      * Retorna um array com os alunos da turma especificada, além das suas informações sobre as suas faltas
+     * Utilizado no lançamento de frequência
      * @param int $turma
      * @return null|\Application_Model_Aluno[]
      */

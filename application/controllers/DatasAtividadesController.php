@@ -26,9 +26,12 @@ class DatasAtividadesController extends Zend_Controller_Action {
 
                 if ($form_funcionamento->verificaDatas($dados)) {
                     $datas_atividade->gerenciaDatas($dados);
+                    $this->view->mensagem = "Datas inseridas/alteradas com sucesso";
+                } 
+                else
                     $this->view->mensagem = "Datas inseridas com sucesso";
-                }
             }
+            
             $form_funcionamento->reset();
             $this->view->datas = $datas_atividade->parseArray(true);
         } else

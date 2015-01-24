@@ -196,8 +196,10 @@ class Application_Model_Aluno {
     public function getPorcentagemFaltas($id_turma, $total_aulas, $isView = null) {
         if (isset($this->turmas[$id_turma]) && is_int($total_aulas)) {
             $total_faltas = count($this->turmas[$id_turma][Application_Model_Aluno::$index_faltas_turma]);
+
             if (!empty($isView))
                 return number_format(((($total_aulas - $total_faltas) / $total_aulas) * 100), 2, ',', '') . '%';
+
             return ($total_aulas - $total_faltas) / $total_aulas;
         }
         return null;
@@ -215,15 +217,16 @@ class Application_Model_Aluno {
                 $this->turmas[$turma->getIdTurma()][Application_Model_Aluno::$index_faltas_turma] = array();
                 $this->turmas[$turma->getIdTurma()][Application_Model_Aluno::$index_notas_turma] = array();
             }
+
+            if (!empty($faltas) && !empty($turma))
+                $this->addFalta($turma, $faltas);
+
+            if (!empty($pagamento) && !empty($turma))
+                $this->addPagamento($turma, $pagamento);
+
+            if (!empty($notas) && !empty($turma))
+                $this->addNota($turma, $notas);
         }
-        if (!empty($faltas) && !empty($turma))
-            $this->addFalta($turma, $faltas);
-
-        if (!empty($pagamento) && !empty($turma))
-            $this->addPagamento($turma, $pagamento);
-
-        if (!empty($notas) && !empty($turma))
-            $this->addNota($turma, $notas);
     }
 
     public function addFalta($turma, $falta) {
@@ -321,7 +324,8 @@ class Application_Model_Aluno {
             if (empty($is_array)) {
                 foreach ($this->turmas as $turma)
                     $aux[$turma[Application_Model_Aluno::$index_turma]->getIdTurma(true)] = $turma[Application_Model_Aluno::$index_notas_turma];
-            } else {
+            } 
+            else {
                 foreach ($this->turmas as $turma) {
                     $notas = array();
                     if (!empty($turma[Application_Model_Aluno::$index_notas_turma])) {

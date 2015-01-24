@@ -11,5 +11,9 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
         $aclSetup = new Aplicacao_Acl_Setup();
     }
 
-}
+    protected function _initPeriodo() {
+        $this->bootstrap('db');
+        $periodo = new Application_Model_Periodo();
+    }
 
+}

@@ -41,6 +41,7 @@ class Application_Model_Mappers_Atividade {
             if ($atividade instanceof Application_Model_Atividade && $this->validaAtividade($atividade, true)) {
                 $this->db_atividade = new Application_Model_DbTable_Atividade();
                 $db_turma_atividade = new Application_Model_DbTable_TurmaAtividades();
+                
                 $turma_atual = $this->getTurmaAtividade($atividade->getIdAtividade());
 
                 $this->db_atividade->update($atividade->parseArray(), $this->db_atividade->getAdapter()->quoteInto('id_atividade = ?', $atividade->getIdAtividade()));
