@@ -1,3 +1,22 @@
+<?php if (empty($this->novo_periodo)): ?>
+    <div class="container-aviso aviso-periodo"><div class="ui-widget">
+            <div style="padding: 0 .7em; width:90%; margin: 0 auto; margin-bottom: 2em" class="ui-state-error ui-corner-all">
+                <p><span style="float: left; margin-right: .3em;" class="ui-icon ui-icon-alert"></span>
+                    Um novo período ainda não foi definido. Utilize os campos abaixo para definí-lo.
+            </div>
+        </div>
+    </div>
+
+<?php else: ?>
+    <div class="container-aviso aviso-periodo"><div class="ui-widget">
+            <div style="padding: 0 .7em; width:90%; margin: 0 auto; margin-bottom: 2em" class="ui-state-error ui-corner-all">
+                <p><span style="float: left; margin-right: .3em;" class="ui-icon ui-icon-alert"></span>
+                    <b>Atenção!</b> As datas do calendário que ficarem fora do novo período serão escluídas. Isso inclui todos os lançamentos realizados para a data.
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+
 <?= $this->form ?>
 
 <script src="<?php echo $this->baseUrl() . '/js/ui.datepicker-pt-BR.js' ?>"></script>
@@ -10,11 +29,5 @@
     $(function() {
         form.iniForm();
         controle.iniPeriodoCalendario('<?= $this->baseUrl() . "/imagens/calendar.png" ?>');
-        /*$('#data_inicio, #data_termino').datepicker({
-            buttonText: "Clique para selecionar uma data",
-            showOn: "button",
-            buttonImageOnly: true,
-            buttonImage: '<?= $this->baseUrl() . "/imagens/calendar.png" ?>'
-        });*/
     });
 </script>

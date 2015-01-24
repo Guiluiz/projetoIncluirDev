@@ -54,14 +54,20 @@ class Application_Model_Periodo {
                 $dados['data_inicio'] = $this->parseDate($dados['data_inicio']);
                 $dados['data_fim'] = $this->parseDate($dados['data_fim']);
                 $dados['valor_liberacao'] = (float) str_replace(',', '.', $dados['valor_liberacao']);
-                
+
                 if ($dados['data_inicio'] instanceof DateTime && $dados['data_fim'] instanceof DateTime && $dados['data_inicio'] < $dados['data_fim'] && $dados['valor_liberacao'] > 0.0) {
+
                     if ($this->verificaFimPeriodo())
                         $dados['id_periodo'] = $this->db_periodo->insert(array('is_atual' => true, 'nome_periodo' => $dados['nome_periodo'], 'data_inicio' => $dados['data_inicio']->format('Y-m-d'), 'data_termino' => $dados['data_fim']->format('Y-m-d'), 'valor_liberacao_periodo' => $dados['valor_liberacao'], 'freq_min_aprov' => $dados['freq_min_aprov'], 'total_pts_periodo' => $dados['total_pts_periodo'], 'min_pts_aprov' => $dados['min_pts_aprov'], 'quantidade_alimentos' => $dados['quantidade_alimentos']));
-                    else
+
+                    else {
                         $this->db_periodo->update(array('nome_periodo' => $dados['nome_periodo'], 'data_inicio' => $dados['data_inicio']->format('Y-m-d'), 'data_termino' => $dados['data_fim']->format('Y-m-d'), 'valor_liberacao_periodo' => $dados['valor_liberacao'], 'freq_min_aprov' => $dados['freq_min_aprov'], 'total_pts_periodo' => $dados['total_pts_periodo'], 'min_pts_aprov' => $dados['min_pts_aprov'], 'quantidade_alimentos' => $dados['quantidade_alimentos']), $this->db_periodo->getAdapter()->quoteInto('is_atual = ?', true));
 
-                    $this->setPeriodo($dados['id_periodo'], $dados['nome_periodo'], $dados['data_inicio'], $dados['data_fim'], $dados['valor_liberacao'], $dados['freq_min_aprov'], $dados['total_pts_periodo'], $dados['min_pts_aprov'], $dados['quantidade_alimentos']);
+                        $calendario = new Application_Model_DatasAtividade();
+                        $calendario->removeDatasForaPeriodo($dados['data_inicio'], $dados['data_fim']);
+                        $this->setPeriodo($dados['id_periodo'], $dados['nome_periodo'], $dados['data_inicio'], $dados['data_fim'], $dados['valor_liberacao'], $dados['freq_min_aprov'], $dados['total_pts_periodo'], $dados['min_pts_aprov'], $dados['quantidade_alimentos']);
+                    }
+
                     return true;
                 }
             }
@@ -86,13 +92,12 @@ class Application_Model_Periodo {
             $this->data_final->setTime(23, 59);
 
             if ($data_atual > $this->data_final) {
-             //   $this->finalizaPeriodoReserva();
+                   $this->finalizaPeriodoReserva();
                 return true;
             }
-
             return false;
         }
-        return true;
+        return false;
     }
 
     private function isValid() {
@@ -151,8 +156,8 @@ class Application_Model_Periodo {
             return $this->quantidade_alimentos;
         return null;
     }
-    
-    public function getTotalPontosPeriodo(){
+
+    public function getTotalPontosPeriodo() {
         return $this->total_pts_periodo;
     }
 

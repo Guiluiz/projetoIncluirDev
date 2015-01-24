@@ -9,9 +9,9 @@ class DatasAtividadesController extends Zend_Controller_Action {
     public function indexAction() {
         $periodo = new Application_Model_Periodo();
         $usuario = Zend_Auth::getInstance()->getIdentity();
+        $this->view->title = "Projeto Incluir - Calendário Letivo";
 
         if (!$periodo->verificaFimPeriodo()) {
-            $this->view->title = "Projeto Incluir - Calendário Letivo";
 
             $form_funcionamento = new Application_Form_FormDatasAtividades();
             $datas_atividade = new Application_Model_DatasAtividade();
@@ -27,11 +27,10 @@ class DatasAtividadesController extends Zend_Controller_Action {
                 if ($form_funcionamento->verificaDatas($dados)) {
                     $datas_atividade->gerenciaDatas($dados);
                     $this->view->mensagem = "Datas inseridas/alteradas com sucesso";
-                } 
-                else
+                } else
                     $this->view->mensagem = "Datas inseridas com sucesso";
             }
-            
+
             $form_funcionamento->reset();
             $this->view->datas = $datas_atividade->parseArray(true);
         } else

@@ -803,13 +803,22 @@ var controle = {
             buttonImage: url_img
         });
     },
+
+    /**
+     * Função responsável pelo gerenciamento dos campos de período
+     * Inicialização dos calendários
+     * @param {type} url_img
+     * @param {type} min_date
+     * @param {type} max_date
+     * @returns {undefined}
+     */
     iniPeriodoCalendario: function(url_img, min_date, max_date) {
         $('#data_inicio').datepicker({
             buttonText: "Clique para selecionar a data inicial",
             showOn: "button",
             buttonImageOnly: true,
             buttonImage: url_img,
-            onSelect: function(data) {
+            onSelect: function(data) { // A data de término do período só pode ser incluída após a escolha da data inicial
                 $("#data_fim").datepicker("setDate", null).val('');
                 $("#data_fim").datepicker({
                     buttonText: "Clique para selecionar a data inicial",
@@ -827,7 +836,18 @@ var controle = {
             $('#data_inicio').datepicker('option', 'minDate', min_date);
             $('#data_inicio').datepicker('option', 'maxDate', max_date);
         }
+
+        if ($('#data_inicio').val().length > 0) { // se já tiver uma data inicial setada, a data final pode ser incluída
+            $("#data_fim").datepicker({
+                buttonText: "Clique para selecionar a data inicial",
+                showOn: "button",
+                buttonImageOnly: true,
+                buttonImage: url_img,
+                minDate: min_date
+            });
+        }
     },
+    
     /*Calendário Acadêmico*/
 
     datas_atividades: function(url_img, min_date, max_date) {

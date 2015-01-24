@@ -8,7 +8,7 @@ class PeriodoController extends Zend_Controller_Action {
 
     public function indexAction() {
         $usuario = Zend_Auth::getInstance()->getIdentity();
-        
+
         $this->view->title = "Projeto Incluir - Período de Atividades";
         $form_periodo = new Application_Form_FormPeriodo();
 
@@ -25,12 +25,15 @@ class PeriodoController extends Zend_Controller_Action {
 
             if ($form_periodo->isValid($dados)) {
                 if ($periodo_atual->gerenciaPeriodo($form_periodo->getValues()))
-                    $this->view->mensagem = "O período foi alterado com sucesso!";
+                    $this->view->mensagem = "O período foi incluído/alterado com sucesso!";
                 else
                     $this->view->mensagem = "Houve algum problema, o período não foi alterado. Por favor, procure o administrador do sistema.";
             } else
                 $form_periodo->populate($periodo_atual->parseArray());
         }
+
+        if ($periodo_atual->verificaFimPeriodo())
+            $this->view->novo_periodo = true;
     }
 
 }
