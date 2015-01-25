@@ -12,9 +12,9 @@ class AtividadeController extends Zend_Controller_Action {
 
         $form_consulta = new Application_Form_FormConsultaAtividade();
         $mapper_turma = new Application_Model_Mappers_Turma();
-        $periodo = new Application_Model_Periodo();
-
-        $form_consulta->initializeTurmas($mapper_turma->buscaTurmasSimples($periodo->getIdPeriodo()));
+        //$periodo = new Application_Model_Periodo();
+        
+        $form_consulta->initializeTurmas($mapper_turma->buscaTurmasSimples());
 
         $this->view->form = $form_consulta;
 

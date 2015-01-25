@@ -8,7 +8,7 @@ class NotaController extends Zend_Controller_Action {
 
     public function lancamentoNotasAlunosAction() {
         try {
-            $periodo = new Application_Model_Periodo();
+            $periodo = new Application_Model_Mappers_Periodo();
             $this->view->title = "Projeto Incluir - Lançamento de Notas";
                 
             if (!$periodo->verificaFimPeriodo()) {

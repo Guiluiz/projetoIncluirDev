@@ -21,9 +21,11 @@ class Zend_View_Helper_Data extends Zend_View_Helper_Abstract {
     public static $valor_min = 4;
 
     public function data($tipo_data) {
-        $periodo = new Application_Model_Periodo();
+        $mapper_periodo = new Application_Model_Mappers_Periodo();
 
-        if (!$periodo->verificaFimPeriodo()) {
+        if (!$mapper_periodo->verificaFimPeriodo()) {
+            $periodo = $mapper_periodo->getPeriodoAtual();
+
             switch ($tipo_data) {
                 case Zend_View_Helper_Data::$data_inicial:
                     return $periodo->getDataInicio()->format('d/m/Y');
@@ -34,13 +36,13 @@ class Zend_View_Helper_Data extends Zend_View_Helper_Abstract {
                 case Zend_View_Helper_Data::$data_atual:
                     $date = new DateTime();
                     return $date->format('d/m/Y');
-                    
+
                 case Zend_View_Helper_Data::$quantidade_min_alimento:
                     return $periodo->getQuantidadeAlimentos();
-                    
+
                 case Zend_View_Helper_Data::$valor_min:
                     return $periodo->getValorLiberacao();
-                    
+
                 case Zend_View_Helper_Data::$data_atual_ingles:
                     $date = new DateTime();
                     return $date->format('Y-m-d');

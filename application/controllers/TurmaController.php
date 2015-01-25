@@ -11,7 +11,7 @@ class TurmaController extends Zend_Controller_Action {
 
         $form_consulta = new Application_Form_FormConsultaTurma();
         $mapper_disciplina = new Application_Model_Mappers_Disciplina();
-        $periodo = new Application_Model_Periodo();
+        $periodo = new Application_Model_Mappers_Periodo();
 
         $form_consulta->initializeDisciplinas($mapper_disciplina->buscaDisciplinas());
         $this->view->form = $form_consulta;
@@ -40,7 +40,7 @@ class TurmaController extends Zend_Controller_Action {
     }
 
     public function cadastrarAction() {
-        $periodo = new Application_Model_Periodo();
+        $periodo = new Application_Model_Mappers_Periodo();
         $this->view->title = "Projeto Incluir - Cadastrar Turma";
 
         if (!$periodo->verificaFimPeriodo()) {
@@ -58,9 +58,9 @@ class TurmaController extends Zend_Controller_Action {
 
                 if ($form_cadastro->isValid($dados)) {
                     $mapper_turma = new Application_Model_Mappers_Turma();
-                    $periodo = new Application_Model_Periodo();
+                    $periodo_atual = $periodo->getPeriodoAtual();
 
-                    $turma = new Application_Model_Turma(null, $form_cadastro->getValue('nome_turma'), $form_cadastro->getValue('data_inicio'), $form_cadastro->getValue('data_fim'), $form_cadastro->getValue('horario_inicio'), $form_cadastro->getValue('horario_fim'), new Application_Model_Disciplina(base64_decode($form_cadastro->getValue('disciplina'))), Application_Model_Turma::$status_iniciada, null, $periodo->getIdPeriodo());
+                    $turma = new Application_Model_Turma(null, $form_cadastro->getValue('nome_turma'), $form_cadastro->getValue('data_inicio'), $form_cadastro->getValue('data_fim'), $form_cadastro->getValue('horario_inicio'), $form_cadastro->getValue('horario_fim'), new Application_Model_Disciplina(base64_decode($form_cadastro->getValue('disciplina'))), Application_Model_Turma::$status_iniciada, null, $periodo_atual->getIdPeriodo());
 
                     if (!empty($dados['professores'])) {
                         foreach ($dados['professores']as $professor)
@@ -94,7 +94,7 @@ class TurmaController extends Zend_Controller_Action {
     }
 
     public function alterarAction() {
-        $periodo = new Application_Model_Periodo();
+        $periodo = new Application_Model_Mappers_Periodo();
         $this->view->title = "Projeto Incluir - Alterar Turma";
 
         if (!$periodo->verificaFimPeriodo()) {
@@ -103,7 +103,7 @@ class TurmaController extends Zend_Controller_Action {
             if ($id_turma > 0) {
                 $form_alteracao = new Application_Form_FormTurma();
                 $mapper_turma = new Application_Model_Mappers_Turma();
-                $periodo = new Application_Model_Periodo();
+                $periodo_atual = new Application_Model_Mappers_Periodo();
 
                 if ($this->getRequest()->isPost()) {
                     $dados = $this->getRequest()->getPost();
@@ -126,7 +126,7 @@ class TurmaController extends Zend_Controller_Action {
                     }
                 }
 
-                $turma = $mapper_turma->buscaTurmaByID($id_turma, $periodo->getIdPeriodo(), true);
+                $turma = $mapper_turma->buscaTurmaByID($id_turma, $periodo_atual->getIdPeriodo(), true);
 
                 if ($turma instanceof Application_Model_Turma) {
                     $mapper_cursos = new Application_Model_Mappers_Curso();
@@ -152,14 +152,14 @@ class TurmaController extends Zend_Controller_Action {
     }
 
     public function excluirAction() {
-        $periodo = new Application_Model_Periodo();
+        $periodo = new Application_Model_Mappers_Periodo();
         $this->view->title = "Projeto Incluir - Excluir Turma";
 
         if (!$periodo->verificaFimPeriodo()) {
             $id_turma = (int) base64_decode($this->getParam('turma'));
 
             if ($id_turma > 0) {
-                $periodo = new Application_Model_Periodo();
+                $periodo = new Application_Model_Mappers_Periodo();
 
                 $form_exclusao = new Application_Form_FormTurma();
                 $mapper_turma = new Application_Model_Mappers_Turma();
@@ -215,7 +215,7 @@ class TurmaController extends Zend_Controller_Action {
             $this->_helper->viewRenderer->setNoRender(true);
 
             if ($this->_request->isPost()) {
-                $periodo = new Application_Model_Periodo();
+                $periodo = new Application_Model_Mappers_Periodo();
 
                 $id_disciplina = $this->getRequest()->getParam('id_disciplina');
                 $id_periodo = (strlen($this->getRequest()->getParam('id_periodo')) > 0) ? (int) base64_decode($this->getRequest()->getParam('id_periodo')) : $periodo->getIdPeriodo();
@@ -295,7 +295,7 @@ class TurmaController extends Zend_Controller_Action {
     }
 
     public function cancelarAction() {
-        $periodo = new Application_Model_Periodo();
+        $periodo = new Application_Model_Mappers_Periodo();
 
         if (!$periodo->verificaFimPeriodo()) {
 
@@ -306,7 +306,7 @@ class TurmaController extends Zend_Controller_Action {
 
                 $form_cancelamento = new Application_Form_FormConfirmacao();
                 $mapper_turma = new Application_Model_Mappers_Turma();
-                $periodo = new Application_Model_Periodo();
+                $periodo = new Application_Model_Mappers_Periodo();
 
                 $this->view->form = $form_cancelamento;
 
@@ -399,7 +399,7 @@ class TurmaController extends Zend_Controller_Action {
         $this->view->title = "Projeto Incluir - Quantidade de Alunos de Turmas Ativas";
 
         $form_quantidade_periodo = new Application_Form_FormQuantidadeAlunosTurma();
-        $periodo = new Application_Model_Periodo();
+        $periodo = new Application_Model_Mappers_Periodo();
         $mapper_turma = new Application_Model_Mappers_Turma();
 
         $form_quantidade_periodo->initializePeriodo($periodo->getPeriodos(), $periodo->getIdPeriodo(true));

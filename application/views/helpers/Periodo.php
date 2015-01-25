@@ -17,7 +17,7 @@ class Zend_View_Helper_Periodo extends Zend_View_Helper_Abstract {
         $controller = Zend_Controller_Front::getInstance()->getRequest()->getControllerName();
 
         if ($auth->hasIdentity() && $controller != "periodo" && $controller != "error") {
-            $periodo = new Application_Model_Periodo();
+            $periodo = new Application_Model_Mappers_Periodo();
             
             if ($periodo->verificaFimPeriodo()) {
                 $usuario = $auth->getIdentity();

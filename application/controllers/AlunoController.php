@@ -7,7 +7,7 @@ class AlunoController extends Zend_Controller_Action {
     }
 
     public function indexAction() {
-        $periodo = new Application_Model_Periodo();
+        $periodo = new Application_Model_Mappers_Periodo();
 
         $this->view->title = "Projeto Incluir - Gerenciar Alunos";
 
@@ -38,7 +38,7 @@ class AlunoController extends Zend_Controller_Action {
 
     public function cadastrarAction() {
         $this->view->title = "Projeto Incluir - Cadastrar Aluno";
-        $periodo = new Application_Model_Periodo();
+        $periodo = new Application_Model_Mappers_Periodo();
 
         if (!$periodo->verificaFimPeriodo()) {
             $form_cadastro = new Application_Form_FormAluno();
@@ -113,7 +113,7 @@ class AlunoController extends Zend_Controller_Action {
 
     public function alterarAction() {
         $this->view->title = "Projeto Incluir - Alterar Aluno";
-        $periodo = new Application_Model_Periodo();
+        $periodo = new Application_Model_Mappers_Periodo();
 
         if (!$periodo->verificaFimPeriodo()) {
             $id_aluno = (int) base64_decode($this->getParam('aluno'));
@@ -163,7 +163,7 @@ class AlunoController extends Zend_Controller_Action {
                             $this->view->mensagem = "O aluno não foi alterado.<br/>Por favor, verifique se as turmas foram inseridas";
                     }
                 }
-                $periodo = new Application_Model_Periodo();
+                $periodo = new Application_Model_Mappers_Periodo();
                 $aluno = $mapper_aluno->buscaAlunosByID($id_aluno, $periodo->getIdPeriodo());
 
                 if ($aluno instanceof Application_Model_Aluno) {
@@ -186,7 +186,7 @@ class AlunoController extends Zend_Controller_Action {
 
     public function excluirAction() {
         $this->view->title = "Projeto Incluir - Excluir Aluno";
-        $periodo = new Application_Model_Periodo();
+        $periodo = new Application_Model_Mappers_Periodo();
 
         if (!$periodo->verificaFimPeriodo()) {
             $id_aluno = (int) base64_decode($this->getParam('aluno'));
@@ -428,7 +428,7 @@ class AlunoController extends Zend_Controller_Action {
 
     public function desligarAlunoAction() {
         $this->view->title = "Projeto Incluir - Desligamento de Aluno";
-        $periodo = new Application_Model_Periodo();
+        $periodo = new Application_Model_Mappers_Periodo();
 
         if (!$periodo->verificaFimPeriodo()) {
             $id_aluno = (int) base64_decode($this->getParam('aluno'));
@@ -469,7 +469,7 @@ class AlunoController extends Zend_Controller_Action {
     }
 
     public function ativarAlunoAction() {
-        $periodo = new Application_Model_Periodo();
+        $periodo = new Application_Model_Mappers_Periodo();
         $this->view->title = "Projeto Incluir - Ativação de Aluno";
         
         if (!$periodo->verificaFimPeriodo()) {

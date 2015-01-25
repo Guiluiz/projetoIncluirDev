@@ -12,7 +12,7 @@ class FrequenciaController extends Zend_Controller_Action {
 
     public function frequenciaAlunoAction() {
         try {
-            $periodo = new Application_Model_Periodo();
+            $periodo = new Application_Model_Mappers_Periodo();
 
             $this->view->title = "Projeto Incluir - Frequência de Alunos";
 
@@ -62,7 +62,7 @@ class FrequenciaController extends Zend_Controller_Action {
     }
 
     public function frequenciaVoluntarioAction() {
-        $periodo = new Application_Model_Periodo();
+        $periodo = new Application_Model_Mappers_Periodo();
         $this->view->title = "Projeto Incluir - Frequência de Voluntários";
 
         if (!$periodo->verificaFimPeriodo()) {

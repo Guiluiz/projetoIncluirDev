@@ -194,7 +194,7 @@ class Application_Model_Aluno {
     }
 
     public function getPorcentagemFaltas($id_turma, $total_aulas, $isView = null) {
-        if (isset($this->turmas[$id_turma]) && is_int($total_aulas)) {
+        if (isset($this->turmas[$id_turma]) && (int)$total_aulas > 0) {
             $total_faltas = count($this->turmas[$id_turma][Application_Model_Aluno::$index_faltas_turma]);
 
             if (!empty($isView))
