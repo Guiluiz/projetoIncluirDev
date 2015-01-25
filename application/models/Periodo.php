@@ -18,6 +18,9 @@ class Application_Model_Periodo {
         $this->iniPeriodo();
     }
 
+    /**
+     * Inicializa os atributos da classe com informações do banco de dados, relativas ao período atual
+     */
     private function iniPeriodo() {
         try {
             $select = $this->db_periodo->select();
@@ -41,12 +44,11 @@ class Application_Model_Periodo {
         }
     }
 
-    private function parseDate($date) {
-        if (strpos($date, '-'))
-            return new DateTime($date);
-        return DateTime::createFromFormat('d/m/Y', $date);
-    }
-
+    /**
+     * Faz as alterações do período de acordo com as solicitações do usuário
+     * @param array $dados
+     * @return boolean
+     */
     public function gerenciaPeriodo($dados) {
         try {
             if (!empty($dados['data_inicio']) && !empty($dados['data_fim'])) {
@@ -56,19 +58,37 @@ class Application_Model_Periodo {
                 $dados['valor_liberacao'] = (float) str_replace(',', '.', $dados['valor_liberacao']);
 
                 if ($dados['data_inicio'] instanceof DateTime && $dados['data_fim'] instanceof DateTime && $dados['data_inicio'] < $dados['data_fim'] && $dados['valor_liberacao'] > 0.0) {
-
-                    if ($this->verificaFimPeriodo())
-                        $dados['id_periodo'] = $this->db_periodo->insert(array('is_atual' => true, 'nome_periodo' => $dados['nome_periodo'], 'data_inicio' => $dados['data_inicio']->format('Y-m-d'), 'data_termino' => $dados['data_fim']->format('Y-m-d'), 'valor_liberacao_periodo' => $dados['valor_liberacao'], 'freq_min_aprov' => $dados['freq_min_aprov'], 'total_pts_periodo' => $dados['total_pts_periodo'], 'min_pts_aprov' => $dados['min_pts_aprov'], 'quantidade_alimentos' => $dados['quantidade_alimentos']));
-
-                    else {
-                        $this->db_periodo->update(array('nome_periodo' => $dados['nome_periodo'], 'data_inicio' => $dados['data_inicio']->format('Y-m-d'), 'data_termino' => $dados['data_fim']->format('Y-m-d'), 'valor_liberacao_periodo' => $dados['valor_liberacao'], 'freq_min_aprov' => $dados['freq_min_aprov'], 'total_pts_periodo' => $dados['total_pts_periodo'], 'min_pts_aprov' => $dados['min_pts_aprov'], 'quantidade_alimentos' => $dados['quantidade_alimentos']), $this->db_periodo->getAdapter()->quoteInto('is_atual = ?', true));
+                    if ($this->verificaFimPeriodo() && $this->periodoIsValid($dados['data_inicio']->format('Y-m-d'), $dados['data_fim']->format('Y-m-d'))) {
+                        $dados['id_periodo'] = $this->db_periodo->insert(array(
+                            'is_atual' => true,
+                            'nome_periodo' => $dados['nome_periodo'],
+                            'data_inicio' => $dados['data_inicio']->format('Y-m-d'),
+                            'data_termino' => $dados['data_fim']->format('Y-m-d'),
+                            'valor_liberacao_periodo' => $dados['valor_liberacao'],
+                            'freq_min_aprov' => $dados['freq_min_aprov'],
+                            'total_pts_periodo' => $dados['total_pts_periodo'],
+                            'min_pts_aprov' => $dados['min_pts_aprov'],
+                            'quantidade_alimentos' => $dados['quantidade_alimentos'])
+                        );
+                        return true;
+                    } 
+                    
+                    elseif ($this->periodoIsValid($dados['data_inicio']->format('Y-m-d'), $dados['data_fim']->format('Y-m-d'), $dados['id_periodo'])) {
+                        $this->db_periodo->update(array(
+                            'nome_periodo' => $dados['nome_periodo'],
+                            'data_inicio' => $dados['data_inicio']->format('Y-m-d'),
+                            'data_termino' => $dados['data_fim']->format('Y-m-d'),
+                            'valor_liberacao_periodo' => $dados['valor_liberacao'],
+                            'freq_min_aprov' => $dados['freq_min_aprov'],
+                            'total_pts_periodo' => $dados['total_pts_periodo'],
+                            'min_pts_aprov' => $dados['min_pts_aprov'],
+                            'quantidade_alimentos' => $dados['quantidade_alimentos']), $this->db_periodo->getAdapter()->quoteInto('is_atual = ?', true));
 
                         $calendario = new Application_Model_DatasAtividade();
-                        $calendario->removeDatasForaPeriodo($dados['data_inicio'], $dados['data_fim']);
+                        $calendario->removeDatasForaPeriodoAtual($dados['data_inicio'], $dados['data_fim'], $dados['id_periodo']);
                         $this->setPeriodo($dados['id_periodo'], $dados['nome_periodo'], $dados['data_inicio'], $dados['data_fim'], $dados['valor_liberacao'], $dados['freq_min_aprov'], $dados['total_pts_periodo'], $dados['min_pts_aprov'], $dados['quantidade_alimentos']);
+                        return true;
                     }
-
-                    return true;
                 }
             }
             return false;
@@ -78,34 +98,70 @@ class Application_Model_Periodo {
         }
     }
 
-    public function getDataInicio() {
-        return $this->data_inicial;
+    /**
+     * As datas indicadas para o novo período, ou para alteração do período atual
+     * não podem interferir nas datas dos outros períodos
+     */
+    public function periodoIsValid($ini, $termino, $exclude = null) {
+        try {
+            $select = $this->db_periodo->select();
+            $select->where($this->db_periodo->getAdapter()->quoteInto('(data_inicio <= ? ', $ini) .
+                    $this->db_periodo->getAdapter()->quoteInto('AND data_termino >= ?) OR ', $termino) .
+                    $this->db_periodo->getAdapter()->quoteInto('(data_inicio <= ? ', $ini) .
+                    $this->db_periodo->getAdapter()->quoteInto('AND data_termino > ?) OR ', $ini) .
+                    $this->db_periodo->getAdapter()->quoteInto('(data_inicio < ? ', $termino) .
+                    $this->db_periodo->getAdapter()->quoteInto('AND data_termino >= ?) OR ', $termino) .
+                    $this->db_periodo->getAdapter()->quoteInto('(data_inicio >= ? ', $ini) .
+                    $this->db_periodo->getAdapter()->quoteInto('AND data_termino <= ?)', $termino)
+            );
+
+            if (!empty($exclude))
+                $select->where('id_periodo <> ?', (int) $exclude);
+
+            $periodos = $this->db_periodo->fetchAll($select)->count();
+            
+            if ($periodos > 0)
+                return false;
+
+            return true;
+        } catch (Exception $ex) {
+            echo $ex->getMessage();
+            return false;
+        }
     }
 
-    public function getDataTermino() {
-        return $this->data_final;
-    }
-
+    /**
+     * Verifica se o período já foi finalizado
+     * @return boolean
+     */
     public function verificaFimPeriodo() {
-        if ($this->isValid()) {
+        if ($this->hasPeriodoAtual()) {
             $data_atual = new DateTime();
             $this->data_final->setTime(23, 59);
 
             if ($data_atual > $this->data_final) {
-                   $this->finalizaPeriodoReserva();
+                $this->finalizaPeriodoReserva();
                 return true;
             }
             return false;
         }
-        return false;
+        return true;
     }
 
-    private function isValid() {
+    /**
+     * Verifica se há um periodo setado atualmente
+     * @return boolean
+     */
+    private function hasPeriodoAtual() {
         if (!empty($this->id_periodo) && $this->data_inicial instanceof DateTime && $this->data_final instanceof DateTime)
             return true;
         return false;
     }
 
+    /**
+     * Altera o status do período atual no banco de dados para finalizado
+     * @return boolean
+     */
     private function finalizaPeriodoReserva() {
         try {
             $db_periodo = new Application_Model_DbTable_Periodo();
@@ -161,8 +217,16 @@ class Application_Model_Periodo {
         return $this->total_pts_periodo;
     }
 
+    public function getDataInicio() {
+        return $this->data_inicial;
+    }
+
+    public function getDataTermino() {
+        return $this->data_final;
+    }
+
     public function parseArray() {
-        if ($this->isValid())
+        if ($this->hasPeriodoAtual())
             return array(
                 'id_periodo' => $this->id_periodo,
                 'nome_periodo' => $this->identificacao_periodo,
@@ -187,6 +251,10 @@ class Application_Model_Periodo {
         );
     }
 
+    /**
+     * Retorna um array com os períodos já cadastrados
+     * @return array[id_periodo] => nome_periodo
+     */
     public function getPeriodos() {
         try {
             $this->db_periodo = new Application_Model_DbTable_Periodo();
@@ -205,6 +273,17 @@ class Application_Model_Periodo {
             echo $ex->getMessage();
             return null;
         }
+    }
+
+    /**
+     * Auxiliar para converter string em data
+     * @param string $date
+     * @return DateTime
+     */
+    private function parseDate($date) {
+        if (strpos($date, '-'))
+            return new DateTime($date);
+        return DateTime::createFromFormat('d/m/Y', $date);
     }
 
 }

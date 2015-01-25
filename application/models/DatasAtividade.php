@@ -155,13 +155,16 @@ class Application_Model_DatasAtividade {
      * Automaticamente, as atividades, notas e frequências lançadas são retiradas
      * @param DateTime $data_ini
      * @param DateTime $data_fim
+     * @param int $periodo
+     * 
      */
-    public function removeDatasForaPeriodo($data_ini, $data_fim) {
+    public function removeDatasForaPeriodoAtual($data_ini, $data_fim, $periodo) {
         try {
             if ($data_ini instanceof DateTime && $data_fim instanceof DateTime) {
                 $this->db_datas_atividades->delete(
-                        $this->db_datas_atividades->getAdapter()->quoteInto('data_funcionamento < ? OR ', $data_ini->format('Y-m-d')) .
-                        $this->db_datas_atividades->getAdapter()->quoteInto('data_funcionamento > ?', $data_fim->format('Y-m-d'))
+                        $this->db_datas_atividades->getAdapter()->quoteInto('(data_funcionamento < ? OR ', $data_ini->format('Y-m-d')) .
+                        $this->db_datas_atividades->getAdapter()->quoteInto('data_funcionamento > ?) AND (', $data_fim->format('Y-m-d')) .
+                        $this->db_datas_atividades->getAdapter()->quoteInto('id_periodo = ?)', (int)$periodo)
                 );
                 return true;
             }

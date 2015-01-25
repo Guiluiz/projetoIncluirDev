@@ -34,16 +34,16 @@ class TurmaController extends Zend_Controller_Action {
                 $paginator->setCurrentPageNumber($pagina);
 
                 $this->view->resultado_busca = $paginator;
+                $this->view->periodo_atual = $periodo->getIdPeriodo();
             }
         }
     }
 
     public function cadastrarAction() {
         $periodo = new Application_Model_Periodo();
+        $this->view->title = "Projeto Incluir - Cadastrar Turma";
 
         if (!$periodo->verificaFimPeriodo()) {
-            $this->view->title = "Projeto Incluir - Cadastrar Turma";
-
             $form_cadastro = new Application_Form_FormTurma();
             $mapper_cursos = new Application_Model_Mappers_Curso();
 
@@ -95,13 +95,12 @@ class TurmaController extends Zend_Controller_Action {
 
     public function alterarAction() {
         $periodo = new Application_Model_Periodo();
+        $this->view->title = "Projeto Incluir - Alterar Turma";
 
         if (!$periodo->verificaFimPeriodo()) {
             $id_turma = (int) base64_decode($this->getParam('turma'));
 
             if ($id_turma > 0) {
-                $this->view->title = "Projeto Incluir - Alterar Turma";
-
                 $form_alteracao = new Application_Form_FormTurma();
                 $mapper_turma = new Application_Model_Mappers_Turma();
                 $periodo = new Application_Model_Periodo();
@@ -154,12 +153,12 @@ class TurmaController extends Zend_Controller_Action {
 
     public function excluirAction() {
         $periodo = new Application_Model_Periodo();
+        $this->view->title = "Projeto Incluir - Excluir Turma";
 
         if (!$periodo->verificaFimPeriodo()) {
             $id_turma = (int) base64_decode($this->getParam('turma'));
 
             if ($id_turma > 0) {
-                $this->view->title = "Projeto Incluir - Excluir Turma";
                 $periodo = new Application_Model_Periodo();
 
                 $form_exclusao = new Application_Form_FormTurma();
@@ -207,6 +206,9 @@ class TurmaController extends Zend_Controller_Action {
             $this->view->inativo = true;
     }
 
+    /**
+     * Action que retorna as turmas da disciplina indicada
+     */
     public function buscarTurmasAction() {
         try {
             $this->_helper->layout->disableLayout();
@@ -245,6 +247,10 @@ class TurmaController extends Zend_Controller_Action {
         }
     }
 
+    /**
+     * Action que verifica se o aluno indicado foi aprovado na turma da disciplina pré requisito
+     * indicada em períodos anteriores.
+     */
     public function verificarLiberacaoTurmaAction() {
         try {
             $this->_helper->layout->disableLayout();
@@ -289,40 +295,45 @@ class TurmaController extends Zend_Controller_Action {
     }
 
     public function cancelarAction() {
-        $id_turma = (int) base64_decode($this->getParam('turma'));
+        $periodo = new Application_Model_Periodo();
 
-        if ($id_turma > 0) {
-            $this->view->title = "Projeto Incluir - Cancelar Turma";
+        if (!$periodo->verificaFimPeriodo()) {
 
-            $form_cancelamento = new Application_Form_FormConfirmacao();
-            $mapper_turma = new Application_Model_Mappers_Turma();
-            $periodo = new Application_Model_Periodo();
+            $id_turma = (int) base64_decode($this->getParam('turma'));
 
-            $this->view->form = $form_cancelamento;
+            if ($id_turma > 0) {
+                $this->view->title = "Projeto Incluir - Cancelar Turma";
 
-            if ($this->getRequest()->isPost()) {
-                $dados = $this->getRequest()->getPost();
+                $form_cancelamento = new Application_Form_FormConfirmacao();
+                $mapper_turma = new Application_Model_Mappers_Turma();
+                $periodo = new Application_Model_Periodo();
 
-                if (isset($dados['cancelar']))
-                    $this->_helper->redirector->goToRoute(array('controller' => 'turma', 'action' => 'index'), null, true);
+                $this->view->form = $form_cancelamento;
 
-                if ($form_cancelamento->isValid($dados)) {
-                    if ($mapper_turma->cancelarTurma((int) base64_decode($form_cancelamento->getValue('id'))))
-                        $this->view->mensagem = "Turma cancelada com sucesso!";
-                    else
-                        $this->view->mensagem = "A turma não foi cancelada.<br/>Por favor, tente novamente ou procure o administrador do sistema";
+                if ($this->getRequest()->isPost()) {
+                    $dados = $this->getRequest()->getPost();
+
+                    if (isset($dados['cancelar']))
+                        $this->_helper->redirector->goToRoute(array('controller' => 'turma', 'action' => 'index'), null, true);
+
+                    if ($form_cancelamento->isValid($dados)) {
+                        if ($mapper_turma->cancelarTurma((int) base64_decode($form_cancelamento->getValue('id'))))
+                            $this->view->mensagem = "Turma cancelada com sucesso!";
+                        else
+                            $this->view->mensagem = "A turma não foi cancelada.<br/>Por favor, tente novamente ou procure o administrador do sistema";
+                    }
                 }
-            }
 
-            $turma = $mapper_turma->buscaTurmaByID($id_turma, $periodo->getIdPeriodo(), true);
+                $turma = $mapper_turma->buscaTurmaByID($id_turma, $periodo->getIdPeriodo(), true);
 
-            if ($turma instanceof Application_Model_Turma) {
-                $form_cancelamento->populate(array('id' => $turma->getIdTurma(true)));
-                $this->view->turma = $turma;
+                if ($turma instanceof Application_Model_Turma) {
+                    $form_cancelamento->populate(array('id' => $turma->getIdTurma(true)));
+                    $this->view->turma = $turma;
+                }
+                return;
             }
-            return;
+            $this->_helper->redirector->goToRoute(array('controller' => 'error', 'action' => 'error'), null, true);
         }
-        $this->_helper->redirector->goToRoute(array('controller' => 'error', 'action' => 'error'), null, true);
     }
 
     public function visualizarAction() {
@@ -348,6 +359,10 @@ class TurmaController extends Zend_Controller_Action {
         $this->_helper->redirector->goToRoute(array('controller' => 'error', 'action' => 'error'), null, true);
     }
 
+    /**
+     * Action que retorna a quantidade de alunos da turma especificada. Utilizado no cadastro de alunos
+     * para informar quantos alunos existem na turma indicada.
+     */
     public function buscarQuantidadeTurmaAction() {
         try {
             $this->_helper->layout->disableLayout();

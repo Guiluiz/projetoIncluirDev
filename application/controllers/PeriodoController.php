@@ -27,9 +27,9 @@ class PeriodoController extends Zend_Controller_Action {
                 if ($periodo_atual->gerenciaPeriodo($form_periodo->getValues()))
                     $this->view->mensagem = "O período foi incluído/alterado com sucesso!";
                 else
-                    $this->view->mensagem = "Houve algum problema, o período não foi alterado. Por favor, procure o administrador do sistema.";
-            } else
-                $form_periodo->populate($periodo_atual->parseArray());
+                    $this->view->mensagem = "Houve algum problema, o período não foi alterado. Por favor, verifique se o período incluído não interfere em outros, ou procure o administrador do sistema.";
+            }
+            $form_periodo->populate($periodo_atual->parseArray());
         }
 
         if ($periodo_atual->verificaFimPeriodo())

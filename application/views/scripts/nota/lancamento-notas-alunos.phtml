@@ -5,24 +5,10 @@
 
     <script src="<?php echo $this->baseUrl() . '/js/ui.datepicker-pt-BR.js' ?>"></script>
     <script src="<?php echo $this->baseUrl() . '/js/controle_inclusoes.js' ?>"></script>
-    
-    <!--<script src="<?php echo $this->baseUrl() . '/js/jquery.validate.min.js' ?>"></script>
-    <script src="<?php echo $this->baseUrl() . '/js/form.js' ?>"></script>-->
-    
+
     <script>
         $(function() {
             controle.notasAlunos('<?php echo $this->url(array('controller' => 'aluno', 'action' => 'busca-alunos-turma-nota'), null, true); ?>', '<?php echo $this->url(array('controller' => 'disciplina', 'action' => 'buscar-disciplinas'), null, true); ?>', '<?php echo $this->url(array('controller' => 'turma', 'action' => 'buscar-turmas'), null, true); ?>', '<?php echo $this->data(5) ?>', '<?php echo $this->url(array('controller' => 'atividade', 'action' => 'busca-atividades-turma'), null, true); ?>');
         });
-
     </script>
-
-<?php else: ?>
-    <div class="container-aviso aviso-periodo"><div class="ui-widget">
-            <div style="padding: 0 .7em; width:90%; margin: 0 auto; margin-bottom: 2em" class="ui-state-error ui-corner-all">
-                <p><span style="float: left; margin-right: .3em;" class="ui-icon ui-icon-alert"></span>
-                    É necessário escolher o período de funcionamento antes de escolher as datas de atividades
-            </div>
-        </div>
-    </div>
-
 <?php endif; ?>

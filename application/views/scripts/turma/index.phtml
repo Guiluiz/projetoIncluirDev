@@ -6,10 +6,7 @@
 
 </div>
 
-<?php
-echo $this->form;
-$periodo = new Application_Model_Periodo();
-?>
+<?php echo $this->form;?>
 
 <?php if ($this->resultado_busca instanceof Zend_Paginator) : ?>
     <?php if (count($this->resultado_busca) > 0) : ?>
@@ -27,7 +24,7 @@ $periodo = new Application_Model_Periodo();
                     <tr>
                         <td><?= $turma->getNomeTurma() ?></td>
                         <td><?= $turma->getDisciplina()->getNomeDisciplina() ?></td>
-                        <?php if ($turma->isAtual($periodo->getIdPeriodo()) && !$turma->isCancelada()): ?>
+                        <?php if ($turma->isAtual($this->periodo_atual) && !$turma->isCancelada()): ?>
                             <td><a href='<?= $this->url(array('controller' => 'turma', 'action' => 'alterar', 'turma' => $turma->getIdTurma(true)), null, true) ?>'>Alterar</a></td>                     
                             <td><a href='<?= $this->url(array('controller' => 'turma', 'action' => 'cancelar', 'turma' => $turma->getIdTurma(true)), null, true) ?>'>Cancelar Turma</a></td>
                         <?php endif ?>

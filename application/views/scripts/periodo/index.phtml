@@ -1,8 +1,8 @@
-<?php if (empty($this->novo_periodo)): ?>
+<?php if (!empty($this->novo_periodo)): ?>
     <div class="container-aviso aviso-periodo"><div class="ui-widget">
             <div style="padding: 0 .7em; width:90%; margin: 0 auto; margin-bottom: 2em" class="ui-state-error ui-corner-all">
                 <p><span style="float: left; margin-right: .3em;" class="ui-icon ui-icon-alert"></span>
-                    Um novo período ainda não foi definido. Utilize os campos abaixo para definí-lo.
+                    Um novo período ainda não foi definido. Utilize os campos abaixo para fazer isso.
             </div>
         </div>
     </div>
@@ -11,7 +11,7 @@
     <div class="container-aviso aviso-periodo"><div class="ui-widget">
             <div style="padding: 0 .7em; width:90%; margin: 0 auto; margin-bottom: 2em" class="ui-state-error ui-corner-all">
                 <p><span style="float: left; margin-right: .3em;" class="ui-icon ui-icon-alert"></span>
-                    <b>Atenção!</b> As datas do calendário que ficarem fora do novo período serão escluídas. Isso inclui todos os lançamentos realizados para a data.
+                    <b>Atenção!</b> As datas do calendário que ficarem fora do novo período serão excluídas. Isso inclui todos os lançamentos realizados para a data.
             </div>
         </div>
     </div>

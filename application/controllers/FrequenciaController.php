@@ -14,9 +14,9 @@ class FrequenciaController extends Zend_Controller_Action {
         try {
             $periodo = new Application_Model_Periodo();
 
-            if (!$periodo->verificaFimPeriodo()) {
-                $this->view->title = "Projeto Incluir - Frequência de Alunos";
+            $this->view->title = "Projeto Incluir - Frequência de Alunos";
 
+            if (!$periodo->verificaFimPeriodo()) {
                 $form_frequencia = new Application_Form_FormFrequenciaAluno();
                 $datas_atividade = new Application_Model_DatasAtividade();
                 $usuario = Zend_Auth::getInstance()->getIdentity();
@@ -63,10 +63,10 @@ class FrequenciaController extends Zend_Controller_Action {
 
     public function frequenciaVoluntarioAction() {
         $periodo = new Application_Model_Periodo();
-        $usuario = Zend_Auth::getInstance()->getIdentity();
+        $this->view->title = "Projeto Incluir - Frequência de Voluntários";
 
         if (!$periodo->verificaFimPeriodo()) {
-            $this->view->title = "Projeto Incluir - Frequência de Voluntários";
+            $usuario = Zend_Auth::getInstance()->getIdentity();
 
             $datas_atividade = new Application_Model_DatasAtividade();
             $form_frequencia = new Application_Form_FormFrequenciaVoluntario();
@@ -84,7 +84,7 @@ class FrequenciaController extends Zend_Controller_Action {
 
                 $mapper_voluntario = new Application_Model_Mappers_Voluntario();
                 $frequencias = $form_frequencia->getFrequencia($dados, $mapper_voluntario->getCountVoluntarios());
-                
+
                 if (is_array($frequencias) && $form_frequencia->isValid($dados) && Application_Model_EscalaFrequencia::verificaFrequencias($frequencias)) {
                     $mappper_frequencia = new Application_Model_Mappers_Frequencia();
 
@@ -94,8 +94,7 @@ class FrequenciaController extends Zend_Controller_Action {
                         $this->view->mensagem = "Houve problemas para efetuar o lançamento";
 
                     $form_frequencia->reset();
-                } 
-                else
+                } else
                     $this->view->mensagem = "Houve problemas para efetuar o lançamento";
             }
         } else

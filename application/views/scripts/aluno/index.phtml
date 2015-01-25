@@ -22,13 +22,15 @@
                     <tr>
                         <td><?= $aluno->getNomeAluno() ?></td>
                         <td><?= $aluno->getCpf() ?></td>
-                        <td><a href='<?= $this->url(array('controller' => 'aluno', 'action' => 'alterar', 'aluno' => $aluno->getIdAluno(true)), null, true) ?>'>Alterar</a></td>
-                        <td><a href='<?= $this->url(array('controller' => 'aluno', 'action' => 'visualizar', 'aluno' => $aluno->getIdAluno(true)), null, true) ?>'>Visualizar</a></td>
-                        <?php if ($aluno->isAtivo()): ?>
-                            <td><a href='<?= $this->url(array('controller' => 'aluno', 'action' => 'desligar-aluno', 'aluno' => $aluno->getIdAluno(true)), null, true) ?>'>Desligar Aluno</a></td>
-                        <?php else: ?>
-                            <td><a href='<?= $this->url(array('controller' => 'aluno', 'action' => 'ativar-aluno', 'aluno' => $aluno->getIdAluno(true)), null, true) ?>'>Ativar Aluno</a></td>
+                        <?php if (!$this->is_fim_periodo_atual): ?>
+                            <td><a href='<?= $this->url(array('controller' => 'aluno', 'action' => 'alterar', 'aluno' => $aluno->getIdAluno(true)), null, true) ?>'>Alterar</a></td>
+                            <?php if ($aluno->isAtivo()): ?>
+                                <td><a href='<?= $this->url(array('controller' => 'aluno', 'action' => 'desligar-aluno', 'aluno' => $aluno->getIdAluno(true)), null, true) ?>'>Desligar Aluno</a></td>
+                            <?php else: ?>
+                                <td><a href='<?= $this->url(array('controller' => 'aluno', 'action' => 'ativar-aluno', 'aluno' => $aluno->getIdAluno(true)), null, true) ?>'>Ativar Aluno</a></td>
+                            <?php endif; ?>
                         <?php endif; ?>
+                        <td><a href='<?= $this->url(array('controller' => 'aluno', 'action' => 'visualizar', 'aluno' => $aluno->getIdAluno(true)), null, true) ?>'>Visualizar</a></td>
                     </tr>
                 <?php endforeach; ?>
             </table>
@@ -47,7 +49,7 @@
 <script src="<?php echo $this->baseUrl() . '/js/additional-methods.min.js' ?>"></script>
 <script src="<?php echo $this->baseUrl() . '/js/form.js' ?>"></script>
 <script>
-            $(function() {
-                form.iniForm();
-            });
+    $(function() {
+        form.iniForm();
+    });
 </script>
