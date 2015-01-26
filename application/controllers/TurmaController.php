@@ -11,6 +11,7 @@ class TurmaController extends Zend_Controller_Action {
 
         $form_consulta = new Application_Form_FormConsultaTurma();
         $mapper_disciplina = new Application_Model_Mappers_Disciplina();
+
         $periodo = new Application_Model_Mappers_Periodo();
 
         $form_consulta->initializeDisciplinas($mapper_disciplina->buscaDisciplinas());
@@ -34,7 +35,11 @@ class TurmaController extends Zend_Controller_Action {
                 $paginator->setCurrentPageNumber($pagina);
 
                 $this->view->resultado_busca = $paginator;
-                $this->view->periodo_atual = $periodo->getIdPeriodo();
+
+                if (!$periodo->verificaFimPeriodo()) {
+                    $periodo_atual = $periodo->getPeriodoAtual();
+                    $this->view->periodo_atual = $periodo_atual->getIdPeriodo();
+                }
             }
         }
     }
