@@ -7,12 +7,8 @@ class RelatorioController extends Zend_Controller_Action {
         ob_clean();
     }
 
-    public function indexAction() {
-        
-    }
-
     public function relatorioAlunosTurmaAction() {
-        //@ini_set('memory_limit', '512M');
+        @ini_set('memory_limit', '512M');
 
         $this->_helper->layout->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);
@@ -34,14 +30,12 @@ class RelatorioController extends Zend_Controller_Action {
 
     public function opcoesRelatorioAlunosTurmaAction() {
         $usuario = Zend_Auth::getInstance()->getIdentity();
-        $periodo = new Application_Model_Periodo();
+        $periodo = new Application_Model_Mappers_Periodo();
 
         $this->view->title = "Projeto Incluir - Relatório Alunos por Turma";
-        $form_opcoes_relatorio = new Application_Form_RelatorioAlunosTurma();
 
-        //$mapper_turma = new Application_Model_Mappers_Turma();
+        $form_opcoes_relatorio = new Application_Form_RelatorioAlunosTurma();
         $form_opcoes_relatorio->initializePeriodo($periodo->getPeriodos());
-        //$form_opcoes_relatorio->initializeTurmas($mapper_turma->buscaTurmasSimples());
 
         if ($this->_request->isPost()) {
             $dados = $this->_request->getPost();
@@ -59,14 +53,12 @@ class RelatorioController extends Zend_Controller_Action {
 
     public function opcoesListaPresencaAction() {
         $usuario = Zend_Auth::getInstance()->getIdentity();
-
-        $this->view->title = "Projeto Incluir - Emissão de Lista de Presença";
+        $periodo = new Application_Model_Mappers_Periodo();
         $form_opcoes_relatorio = new Application_Form_RelatorioListaPresenca();
 
-        $mapper_turma = new Application_Model_Mappers_Turma();
-        $periodo = new Application_Model_Periodo();
+        $this->view->title = "Projeto Incluir - Emissão de Lista de Presença";
 
-        $form_opcoes_relatorio->initializeTurmas($mapper_turma->buscaTurmasSimples($periodo->getIdPeriodo()));
+        $form_opcoes_relatorio->initializePeriodo($periodo->getPeriodos());
 
         if ($this->_request->isPost()) {
             $dados = $this->_request->getPost();
@@ -83,7 +75,7 @@ class RelatorioController extends Zend_Controller_Action {
     }
 
     public function listaPresencaAction() {
-        //@ini_set('memory_limit', '512M');
+        @ini_set('memory_limit', '512M');
 
         $this->_helper->layout->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);
@@ -120,12 +112,10 @@ class RelatorioController extends Zend_Controller_Action {
         $usuario = Zend_Auth::getInstance()->getIdentity();
 
         $this->view->title = "Projeto Incluir - Relatório de Frequência de Alunos";
-        $form_opcoes_relatorio = new Application_Form_RelatorioListaPresenca();
+        $form_opcoes_relatorio = new Application_Form_RelatorioFrequenciaAlunos();
 
-        $mapper_turma = new Application_Model_Mappers_Turma();
-        $periodo = new Application_Model_Periodo();
-
-        $form_opcoes_relatorio->initializeTurmas($mapper_turma->buscaTurmasSimples($periodo->getIdPeriodo()));
+        $periodo = new Application_Model_Mappers_Periodo();
+        $form_opcoes_relatorio->initializePeriodo($periodo->getPeriodos());
 
         if ($this->_request->isPost()) {
             $dados = $this->_request->getPost();
@@ -147,10 +137,8 @@ class RelatorioController extends Zend_Controller_Action {
         $this->view->title = "Projeto Incluir - Relatório de Notas/Frequências de Alunos";
         $form_opcoes_relatorio = new Application_Form_RelatorioNotaAlunos();
 
-        $mapper_turma = new Application_Model_Mappers_Turma();
-        $periodo = new Application_Model_Periodo();
-
-        $form_opcoes_relatorio->initializeTurmas($mapper_turma->buscaTurmasSimples($periodo->getIdPeriodo()));
+        $periodo = new Application_Model_Mappers_Periodo();
+        $form_opcoes_relatorio->initializePeriodo($periodo->getPeriodos());
 
         if ($this->_request->isPost()) {
             $dados = $this->_request->getPost();

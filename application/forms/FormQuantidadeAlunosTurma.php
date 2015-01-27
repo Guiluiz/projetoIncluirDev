@@ -26,7 +26,7 @@ class Application_Form_FormQuantidadeAlunosTurma extends Zend_Form {
         ));
     }
 
-    public function initializePeriodo($periodos, $periodo_atual) {
+    public function initializePeriodo($periodos, $periodo_atual = null) {
         $array_periodos = array();
 
         if (!empty($periodos)) {

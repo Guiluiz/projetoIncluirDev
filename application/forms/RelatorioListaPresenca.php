@@ -6,6 +6,20 @@ class Application_Form_RelatorioListaPresenca extends Zend_Form {
         $this->setDecorators(array(
             array('ViewScript', array('viewScript' => 'Decorators/form-relatorio-lista-presenca.phtml')))
         );
+        
+        $periodo = new Zend_Form_Element_Select('periodo');
+        $periodo->setLabel('Período:')
+                ->setAttrib('class', 'obrigatorio')
+                ->addFilter('StripTags')
+                ->setRegisterInArrayValidator(false)
+                ->addFilter('StringTrim')
+                ->setRequired(true)
+                ->addValidator('NotEmpty')
+                ->setDecorators(array(
+                    'ViewHelper',
+                    'Label',
+                    'Errors'
+        ));
 
         $todas_turmas = new Zend_Form_Element_Radio('todas_turmas');
         $todas_turmas->setLabel('Todas as Turmas: ')
@@ -64,6 +78,7 @@ class Application_Form_RelatorioListaPresenca extends Zend_Form {
         ));
 
         $this->addElements(array(
+            $periodo,
             $todas_turmas,
             $turmas,
             $submit,
@@ -87,6 +102,23 @@ class Application_Form_RelatorioListaPresenca extends Zend_Form {
     public function controleTurmas($dados) {
         if (isset($dados['todas_turmas']) && $dados['todas_turmas'] == 'sim')
             $this->getElement('turmas')->clearValidators()->setRequired(false);
+    }
+    
+    public function initializePeriodo($periodos, $periodo_atual = null) {
+        $array_periodos = array();
+
+        if (!empty($periodos)) {
+            $array_periodos[''] = 'Selecione';
+
+            foreach ($periodos as $periodo) {
+                if ($periodo instanceof Application_Model_Periodo)
+                    $array_periodos[$periodo->getIdPeriodo(true)] = $periodo->getNomePeriodo();
+            }
+
+            $this->getElement('periodo')
+                    ->setMultiOptions($array_periodos)
+                    ->setValue(($periodo_atual instanceof Application_Model_Periodo) ? $periodo_atual->getIdPeriodo(true) : '');
+        }
     }
 
 }

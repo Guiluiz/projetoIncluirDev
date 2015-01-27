@@ -119,12 +119,20 @@ class Application_Form_RelatorioAlunosTurma extends Zend_Form {
             $this->getElement('turmas')->clearValidators()->setRequired(false);
     }
 
-    public function initializePeriodo($periodos) {
+    public function initializePeriodo($periodos, $periodo_atual = null) {
+        $array_periodos = array();
+
         if (!empty($periodos)) {
-            $periodos[''] = "Selecione";
+            $array_periodos[''] = 'Selecione';
+
+            foreach ($periodos as $periodo) {
+                if ($periodo instanceof Application_Model_Periodo)
+                    $array_periodos[$periodo->getIdPeriodo(true)] = $periodo->getNomePeriodo();
+            }
 
             $this->getElement('periodo')
-                    ->setMultiOptions($periodos);
+                    ->setMultiOptions($array_periodos)
+                    ->setValue(($periodo_atual instanceof Application_Model_Periodo) ? $periodo_atual->getIdPeriodo(true) : '');
         }
     }
 

@@ -212,7 +212,7 @@ class TurmaController extends Zend_Controller_Action {
     }
 
     /**
-     * Action que retorna as turmas da disciplina indicada
+     * Action que retorna as turmas da disciplina e/ou periodo indicados
      */
     public function buscarTurmasAction() {
         try {
