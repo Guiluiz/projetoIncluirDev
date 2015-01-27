@@ -14,6 +14,10 @@ class Application_Model_Mappers_Periodo {
         $this->db_periodo = new Application_Model_DbTable_Periodo();
     }
 
+    /**
+     * Retorna o período atual, se ele estiver setado
+     * @return null|\Application_Model_Periodo
+     */
     public function getPeriodoAtual() {
         try {
             $select = $this->db_periodo->select();
