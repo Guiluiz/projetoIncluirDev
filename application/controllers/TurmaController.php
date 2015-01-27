@@ -404,10 +404,12 @@ class TurmaController extends Zend_Controller_Action {
         $this->view->title = "Projeto Incluir - Quantidade de Alunos de Turmas Ativas";
 
         $form_quantidade_periodo = new Application_Form_FormQuantidadeAlunosTurma();
-        $periodo = new Application_Model_Mappers_Periodo();
-        $mapper_turma = new Application_Model_Mappers_Turma();
 
-        $form_quantidade_periodo->initializePeriodo($periodo->getPeriodos(), $periodo->getIdPeriodo(true));
+        $periodo = new Application_Model_Mappers_Periodo();
+        $periodo_atual = $periodo->getPeriodoAtual();
+
+        $mapper_turma = new Application_Model_Mappers_Turma();
+        $form_quantidade_periodo->initializePeriodo($periodo->getPeriodos(), $periodo_atual);
 
         $this->view->form = $form_quantidade_periodo;
         $this->view->alunos_turma = $mapper_turma->getQuantidadeAlunos();

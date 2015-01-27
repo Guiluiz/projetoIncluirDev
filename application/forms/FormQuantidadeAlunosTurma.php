@@ -26,12 +26,20 @@ class Application_Form_FormQuantidadeAlunosTurma extends Zend_Form {
         ));
     }
 
-    public function initializePeriodo($periodos, $value) {
+    public function initializePeriodo($periodos, $periodo_atual) {
+        $array_periodos = array();
+
         if (!empty($periodos)) {
-            $periodos[''] = "Todos os Períodos";
+            $array_periodos[''] = 'Todos os Períodos';
+
+            foreach ($periodos as $periodo) {
+                if ($periodo instanceof Application_Model_Periodo)
+                    $array_periodos[$periodo->getIdPeriodo(true)] = $periodo->getNomePeriodo();
+            }
+
             $this->getElement('periodo')
-                    ->setMultiOptions($periodos)
-                    ->setValue($value);
+                    ->setMultiOptions($array_periodos)
+                    ->setValue(($periodo_atual instanceof Application_Model_Periodo) ? $periodo_atual->getIdPeriodo(true) : '');
         }
     }
 

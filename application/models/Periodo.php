@@ -15,7 +15,7 @@ class Application_Model_Periodo {
 
     public function __construct($id_periodo, $is_atual, $nome_periodo = null, $data_inicio = null, $data_termino = null, $valor = null, $min_freq_aprov = null, $total_pts = null, $min_pts_aprov = null, $quantidade_alimentos = null) {
         $this->data_inicio = $this->parseDate($data_inicio);
-        $this->data_termino = $this->parseDate(data_termino);
+        $this->data_termino = $this->parseDate($data_termino);
         $this->id_periodo = (int) $id_periodo;
         $this->identificacao_periodo = $nome_periodo;
         $this->valor_liberacao = (float) str_replace(',', '.', $valor);
@@ -35,21 +35,15 @@ class Application_Model_Periodo {
     }
 
     public function getIdPeriodo($isView = null) {
-        if (!$this->verificaFimPeriodo()) {
-            if ($isView)
-                return base64_encode($this->id_periodo);
-            return $this->id_periodo;
-        }
-        return null;
+        if ($isView)
+            return base64_encode($this->id_periodo);
+        return $this->id_periodo;
     }
 
     public function getValorLiberacao($isView = null) {
-        if (!$this->verificaFimPeriodo()) {
-            if (!empty($isView))
-                return number_format($this->valor_liberacao, 2, ',');
-            return $this->valor_liberacao;
-        }
-        return null;
+        if (!empty($isView))
+            return number_format($this->valor_liberacao, 2, ',');
+        return $this->valor_liberacao;
     }
 
     public function getQuantidadeAlimentos() {
@@ -86,6 +80,10 @@ class Application_Model_Periodo {
                 return $this->data_final->format('Y-m-d');
         }
         return null;
+    }
+
+    public function getNomePeriodo() {
+        return $this->identificacao_periodo;
     }
 
     public function parseArray($isView) {

@@ -9,7 +9,7 @@
 class Application_Model_Mappers_Periodo {
 
     private $db_periodo;
-    
+
     public function __construct() {
         $this->db_periodo = new Application_Model_DbTable_Periodo();
     }
@@ -49,11 +49,9 @@ class Application_Model_Mappers_Periodo {
                 if ($this->verificaFimPeriodo() && $this->periodoIsValid($data_inicio->format('Y-m-d'), $data_termino->format('Y-m-d'))) {
                     $this->db_periodo->insert($periodo->parseArray());
                     return true;
-                } 
-                
-                elseif ($this->periodoIsValid($data_inicio->format('Y-m-d'), $data_termino->format('Y-m-d'), $periodo->getIdPeriodo())) {
+                } elseif ($this->periodoIsValid($data_inicio->format('Y-m-d'), $data_termino->format('Y-m-d'), $periodo->getIdPeriodo())) {
                     $this->db_periodo->update($periodo->parseArray(), $this->db_periodo->getAdapter()->quoteInto('is_atual = ?', true));
-                    
+
                     $calendario = new Application_Model_DatasAtividade();
                     $calendario->removeDatasForaPeriodoAtual($data_inicio, $data_termino, $periodo->getIdPeriodo());
                     return true;
@@ -127,12 +125,12 @@ class Application_Model_Mappers_Periodo {
             $periodos = $this->db_periodo->fetchAll();
 
             if (!empty($periodos)) {
-                $array_aux = array();
+                $array_periodos = array();
 
                 foreach ($periodos as $periodo)
-                    $array_aux[base64_encode($periodo->id_periodo)] = $periodo->nome_periodo;
+                    $array_periodos[] = new Application_Model_Periodo($periodo->id_periodo, $periodo->is_atual, $periodo->nome_periodo, $periodo->data_inicio, $periodo->data_termino, $periodo->valor_liberacao_periodo, $periodo->freq_min_aprov, $periodo->total_pts_periodo, $periodo->min_pts_aprov, $periodo->quantidade_alimentos);
 
-                return $array_aux;
+                return $array_periodos;
             }
             return null;
         } catch (Zend_Exception $ex) {
