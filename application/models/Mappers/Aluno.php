@@ -344,7 +344,7 @@ class Application_Model_Mappers_Aluno {
                                 $array_alunos[$inf_aluno->id_aluno]->addFalta(new Application_Model_Turma($id_turma), $falta);
                         }
                     }
-                    
+
                     if (!empty($array_notas)) {
                         foreach ($array_notas as $id_turma => $notas) {
                             foreach ($notas as $nota)
@@ -949,7 +949,25 @@ class Application_Model_Mappers_Aluno {
             return null;
         }
     }
-    
- 
-    
+
+    /**
+     * Aprova/desaprova alunos baseado em suas notas/frequências.
+     * Só é realizado se todas as notas/frequências estiverem lançadas
+     */
+    public function finalizaAlunos() {
+        try {
+            
+        } catch (Exception $ex) {
+            
+        }
+    }
+
+    public function verificaLancamentos() {
+        try {
+            
+        } catch (Exception $ex) {
+            
+        }
+    }
+
 }
