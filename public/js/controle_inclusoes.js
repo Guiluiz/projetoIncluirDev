@@ -255,7 +255,7 @@ var controle = {
         }
         else {
             if (!is_container)
-                $(elemento), fadeOut('fast').attr('disabled', 'disabled').val('');
+                $(elemento).fadeOut('fast').attr('disabled', 'disabled').val('');
             else
                 $(elemento).fadeOut('fast').find('input, select').attr('disabled', 'disabled').val('');
         }
