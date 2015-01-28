@@ -30,7 +30,7 @@ class Application_Form_FormPeriodo extends Zend_Form {
                     'Errors'
         ));
 
-        $data_termino = new Zend_Form_Element_Text('data_fim');
+        $data_termino = new Zend_Form_Element_Text('data_termino');
         $data_termino->setLabel('Data Término:')
                 ->addFilter('StripTags')
                 ->addFilter('StringTrim')
@@ -59,7 +59,7 @@ class Application_Form_FormPeriodo extends Zend_Form {
                     'Errors'
         ));
 
-        $valor_liberacao = new Zend_Form_Element_Text('valor_liberacao');
+        $valor_liberacao = new Zend_Form_Element_Text('valor_liberacao_periodo');
         $valor_liberacao->setLabel('Valor de Liberação(R$):')
                 ->addFilter('StripTags')
                 ->addFilter('StringTrim')

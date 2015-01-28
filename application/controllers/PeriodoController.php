@@ -22,18 +22,20 @@ class PeriodoController extends Zend_Controller_Action {
                 $this->_helper->redirector->goToRoute($usuario->getUserIndex(), null, true);
 
             if ($form_periodo->isValid($dados)) {
-                $obj_periodo = new Application_Model_Periodo($form_periodo->getValue('id_periodo'), true, $form_periodo->getValue('nome_periodo'), $form_periodo->getValue('data_inicio'), $form_periodo->getValue('data_termino'), $form_periodo->getValue('valor_liberacao'), $form_periodo->getValue('freq_min_aprov'), $form_periodo->getValue('total_pts_periodo'), $form_periodo->getValue('min_pts_aprov'), $form_periodo->getValue('quantidade_alimentos'));
-                
-                if ($periodo->gerenciaPeriodo($obj_periodo))
+                $obj_periodo = new Application_Model_Periodo((int) base64_decode($form_periodo->getValue('id_periodo')), true, $form_periodo->getValue('nome_periodo'), $form_periodo->getValue('data_inicio'), $form_periodo->getValue('data_termino'), $form_periodo->getValue('valor_liberacao_periodo'), $form_periodo->getValue('freq_min_aprov'), $form_periodo->getValue('total_pts_periodo'), $form_periodo->getValue('min_pts_aprov'), $form_periodo->getValue('quantidade_alimentos'));
+
+                if ($periodo->gerenciaPeriodo($obj_periodo, new Application_Model_Mappers_DatasAtividade()))
                     $this->view->mensagem = "O período foi incluído/alterado com sucesso!";
                 else
                     $this->view->mensagem = "Houve algum problema, o período não foi alterado. Por favor, verifique se o período incluído não interfere em outros, ou procure o administrador do sistema.";
             }
-            if (!$periodo->verificaFimPeriodo()) {
-                $this->view->novo_periodo = true;
-                $periodo_atual = $periodo->getPeriodoAtual();
-                $form_periodo->populate($periodo_atual->parseArray(true));
-            }
         }
+
+        if (!$periodo->verificaFimPeriodo()) {
+            $periodo_atual = $periodo->getPeriodoAtual();
+            $form_periodo->populate($periodo_atual->parseArray(true));
+        } else
+            $this->view->novo_periodo = true;
     }
+
 }

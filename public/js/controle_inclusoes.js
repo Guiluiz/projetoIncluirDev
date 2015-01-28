@@ -813,32 +813,35 @@ var controle = {
      * @returns {undefined}
      */
     iniPeriodoCalendario: function(url_img, min_date, max_date) {
-        $('#data_inicio').datepicker({
+        var data_inicio = $('#data_inicio');
+        var data_termino = $('#data_termino');
+        
+        $(data_inicio).datepicker({
             buttonText: "Clique para selecionar a data inicial",
             showOn: "button",
             buttonImageOnly: true,
             buttonImage: url_img,
             onSelect: function(data) { // A data de término do período só pode ser incluída após a escolha da data inicial
-                $("#data_fim").datepicker("setDate", null).val('');
-                $("#data_fim").datepicker({
+                $(data_termino).datepicker("setDate", null).val('');
+                $(data_termino).datepicker({
                     buttonText: "Clique para selecionar a data inicial",
                     showOn: "button",
                     buttonImageOnly: true,
                     buttonImage: url_img,
                     minDate: data
                 });
-                $('#data_fim').datepicker('option', 'minDate', data);
-                $('#data_fim').datepicker('option', 'maxDate', $('#data_inicio').datepicker('option', 'maxDate'));
+                $(data_termino).datepicker('option', 'minDate', data);
+                $(data_termino).datepicker('option', 'maxDate', $('#data_inicio').datepicker('option', 'maxDate'));
             }
         });
 
         if (min_date != undefined && max_date != undefined) {
-            $('#data_inicio').datepicker('option', 'minDate', min_date);
-            $('#data_inicio').datepicker('option', 'maxDate', max_date);
+            $(data_inicio).datepicker('option', 'minDate', min_date);
+            $(data_inicio).datepicker('option', 'maxDate', max_date);
         }
 
-        if ($('#data_inicio').val().length > 0) { // se já tiver uma data inicial setada, a data final pode ser incluída
-            $("#data_fim").datepicker({
+        if ($(data_inicio).val().length > 0) { // se já tiver uma data inicial setada, a data final pode ser incluída
+            $(data_termino).datepicker({
                 buttonText: "Clique para selecionar a data inicial",
                 showOn: "button",
                 buttonImageOnly: true,

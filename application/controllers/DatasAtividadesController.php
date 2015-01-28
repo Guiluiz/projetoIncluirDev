@@ -32,11 +32,10 @@ class DatasAtividadesController extends Zend_Controller_Action {
             }
 
             $form_funcionamento->reset();
-            $calendario = new Application_Model_DatasAtividade($periodo_atual);
-            $this->view->datas = $calendario->parseArray(true);
-        } 
-        
-        else
+            $calendario = $datas_atividade->getDatasByPeriodo($periodo_atual);
+            var_dump($calendario);
+            //$this->view->datas = $calendario->parseArray(true);
+        } else
             $this->view->inativo = true;
     }
 

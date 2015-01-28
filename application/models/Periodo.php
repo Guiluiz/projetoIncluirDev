@@ -14,8 +14,8 @@ class Application_Model_Periodo {
     private $is_semestre_atual;
 
     public function __construct($id_periodo, $is_atual, $nome_periodo = null, $data_inicio = null, $data_termino = null, $valor = null, $min_freq_aprov = null, $total_pts = null, $min_pts_aprov = null, $quantidade_alimentos = null) {
-        $this->data_inicio = $this->parseDate($data_inicio);
-        $this->data_termino = $this->parseDate($data_termino);
+        $this->data_inicial = $this->parseDate($data_inicio);
+        $this->data_final = $this->parseDate($data_termino);
         $this->id_periodo = (int) $id_periodo;
         $this->identificacao_periodo = $nome_periodo;
         $this->valor_liberacao = (float) str_replace(',', '.', $valor);
@@ -86,13 +86,13 @@ class Application_Model_Periodo {
         return $this->identificacao_periodo;
     }
 
-    public function parseArray($isView) {
+    public function parseArray($isView = false) {
         return array(
             'id_periodo' => $this->getIdPeriodo($isView),
             'nome_periodo' => $this->identificacao_periodo,
             'data_inicio' => $this->getDataInicio(false, $isView),
-            'data_fim' => $this->getDataTermino(false, $isView),
-            'valor_liberacao' => number_format($this->valor_liberacao, 2, ',', ''),
+            'data_termino' => $this->getDataTermino(false, $isView),
+            'valor_liberacao_periodo' => number_format($this->valor_liberacao, 2, ',', ''),
             'freq_min_aprov' => $this->frequencia_min_aprovacao,
             'total_pts_periodo' => $this->total_pts_periodo,
             'min_pts_aprov' => $this->min_pts_aprovacao,

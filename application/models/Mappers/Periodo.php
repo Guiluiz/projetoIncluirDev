@@ -40,7 +40,7 @@ class Application_Model_Mappers_Periodo {
      * @param APplication_Model_Periodo $periodo
      * @return boolean
      */
-    public function gerenciaPeriodo($periodo) {
+    public function gerenciaPeriodo($periodo, $calendario) {
         try {
             if ($periodo instanceof Application_Model_Periodo && $periodo->isValid()) {
                 $data_inicio = $periodo->getDataInicio();
@@ -49,14 +49,15 @@ class Application_Model_Mappers_Periodo {
                 if ($this->verificaFimPeriodo() && $this->periodoIsValid($data_inicio->format('Y-m-d'), $data_termino->format('Y-m-d'))) {
                     $this->db_periodo->insert($periodo->parseArray());
                     return true;
-                } elseif ($this->periodoIsValid($data_inicio->format('Y-m-d'), $data_termino->format('Y-m-d'), $periodo->getIdPeriodo())) {
+                } 
+                
+                elseif ($this->periodoIsValid($data_inicio->format('Y-m-d'), $data_termino->format('Y-m-d'), $periodo->getIdPeriodo()) && $calendario instanceof Application_Model_Mappers_DatasAtividade) {
                     $this->db_periodo->update($periodo->parseArray(), $this->db_periodo->getAdapter()->quoteInto('is_atual = ?', true));
-
-                    $calendario = new Application_Model_DatasAtividade();
                     $calendario->removeDatasForaPeriodoAtual($data_inicio, $data_termino, $periodo->getIdPeriodo());
                     return true;
                 }
             }
+
 
             return false;
         } catch (Zend_Exception $e) {

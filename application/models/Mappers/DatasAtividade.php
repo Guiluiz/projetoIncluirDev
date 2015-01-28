@@ -3,7 +3,11 @@
 class Application_Model_Mappers_DatasAtividade {
 
     private $db_datas_atividades;
-
+    
+    public function __construct() {
+        $this->db_datas_atividades = new Application_Model_DbTable_DatasAtividade();
+    }
+    
     public function getDatasByPeriodo($periodo) {
         try {
             if ($periodo instanceof Application_Model_Periodo) {
