@@ -77,4 +77,32 @@ class Application_Model_Mappers_Frequencia {
         }
     }
 
+    /**
+     * Méetodo para incluir datas de lançamentos
+     * @param type $turmas
+     * @param Application_Model_DatasAtividade $calendario
+     * @return null
+     */
+    public function setDatasLancamentos($turmas, $calendario) {
+        try {
+            if ($calendario instanceof Application_Model_DatasAtividade && !empty($turmas)) {
+                $datas = $calendario->getDatas();
+                $db_datas_lancamentos = new Application_Model_DbTable_DatasLancamentosFrequenciaTurmas();
+
+                foreach ($turmas as $turma) {
+                    if ($turma instanceof Application_Model_Turma) {
+                        $id_turma = $turma->getIdTurma();
+                        
+                        foreach($datas as $data){
+                            $db_datas_lancamentos->insert(array('data_funcionamento' => $data->format('Y-m-d'), 'id_turma' => $id_turma));
+                        }
+                    }
+                }
+            }
+        } catch (Zend_Exception $ex) {
+            echo $ex->getMessage();
+            return null;
+        }
+    }
+
 }

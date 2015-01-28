@@ -131,5 +131,4 @@ class Application_Model_Mappers_DatasAtividade {
             return null;
         }
     }
-
 }
