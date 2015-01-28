@@ -8,6 +8,8 @@ var controle_frequencia_aluno = (function() {
         container: $('#calendario_frequencia'),
         container_frequencias: $('#frequencia'),
         url_ajax_aluno: '',
+        url_ajax_disxiplina: '',
+        url_ajax_turma: '',
         datas_calendario_academico: '',
         data_atual: '',
         alunos: null,
@@ -30,7 +32,7 @@ var controle_frequencia_aluno = (function() {
         frequencia.curso.val('');
 
         frequencia.curso.change(function() {
-//            controle.buscaDisciplinas(url_ajax_disciplina, $(this), $(disciplina), 1);
+            helpers.buscaDisciplinasByCurso(frequencia.url_ajax_disciplina, $(this), frequencia.disciplina);
 
             frequencia.turma.html('');
             frequencia.container_frequencias.html('');
@@ -39,7 +41,7 @@ var controle_frequencia_aluno = (function() {
 
         frequencia.disciplina.change(function() {
             frequencia.turma.html('');
-//            controle.buscaTurmas(url_ajax_turma, $(this), $(turma));
+            helpers.buscaTurmasByDisciplina(frequencia.url_ajax_turma, $(this), frequencia.turma, null, true);
 
             frequencia.container_frequencias.html('');
             frequencia.container.datepicker('destroy');
@@ -61,7 +63,7 @@ var controle_frequencia_aluno = (function() {
 
     frequencia.getAlunosNotas = function() {
         if (!(frequencia.data_atual instanceof Date))
-            frequencia.data_atual = controle.parseDate(frequencia.data_atual);
+            frequencia.data_atual = helpers.parseDate(frequencia.data_atual);
 
         $.ajax({
             type: "POST",
@@ -85,8 +87,8 @@ var controle_frequencia_aluno = (function() {
                 frequencia.container.datepicker('destroy');
 
                 if (alunos instanceof Object) {
-                    frequencia.min_date = controle.parseDate(alunos['turma']['data_inicio']);
-                    frequencia.max_date = controle.parseDate(alunos['turma']['data_termino']);
+                    frequencia.min_date = helpers.parseDate(alunos['turma']['data_inicio']);
+                    frequencia.max_date = helpers.parseDate(alunos['turma']['data_termino']);
 
                     delete alunos['turma'];
 
@@ -127,19 +129,15 @@ var controle_frequencia_aluno = (function() {
     frequencia.printAlunos = function() {
         var html = "<div id='title-frequencia' class='obs'>Escolha um dia para fazer / alterar o lançamento de frequencia</div>";
 
-        html += '<table id="alunos_turma_frequencia" class="form_incrementa stripped">\n\
-                    <tr><th>Aluno</th><th>Média de Frequência(%)</th><th>Ausente?</th>';
+        html += '<table id="alunos_turma_frequencia" class="form_incrementa stripped"><tr><th>Aluno</th><th>Média de Frequência(%)</th><th>Ausente?</th>';
 
         for (var key in frequencia.alunos)
-            html += '<tr><td>' + frequencia.alunos[key].nome_aluno + '</td>\n\\n\
-                <td>' + frequencia.alunos[key].media_frequencia + '</td>\n\
-                <td id="' + frequencia.nome_campo + '_' + frequencia.alunos[key].id_aluno + '"> - </td></tr>';
+            html += '<tr><td>' + frequencia.alunos[key].nome_aluno + '</td><td>' + frequencia.alunos[key].media_frequencia + '</td><td id="' + frequencia.nome_campo + '_' + frequencia.alunos[key].id_aluno + '"> - </td></tr>';
 
         html += '</table>';
 
         frequencia.container_frequencias.html(html);
     };
-
 
     frequencia.printCampos = function(data_escolhida) {
         var id_turma = frequencia.getIdTurma();
@@ -158,12 +156,9 @@ var controle_frequencia_aluno = (function() {
                         //se forem as faltas do dia indicado
                         if (frequencia.alunos[key].faltas[turma_faltas][falta].data_funcionamento == data_escolhida) {
                             // inclui os campos já preenchidos, já que a falta foi encontrada
-                            $(container).find('#' + frequencia.nome_campo + '_' + frequencia.alunos[key].id_aluno).
-                                    html('<label><input type="checkbox" class="check_frequencia" checked="checked" name="aluno_' + frequencia.alunos[key].id_aluno + '" /></label>\n\
-                                            <div class="observacao-frequencia">\n\
-                                                <label for="observacao_' + frequencia.alunos[key].id_aluno + '">Observação\n\
-                                                </label><input type="text" name="observacao_' + frequencia.alunos[key].id_aluno + '" value="' + frequencia.alunos[key].faltas[turma_faltas][falta].observacao + '"/></div>'
-                                            ).find('.observacao-frequencia').show() // css default o mantém escondido;
+                            frequencia.container_frequencias.find('#' + frequencia.nome_campo + '_' + frequencia.alunos[key].id_aluno)
+                                .html('<label><input type="checkbox" class="check_frequencia" checked="checked" name="aluno_' + frequencia.alunos[key].id_aluno + '" /></label><div class="observacao-frequencia"><label for="observacao_' + frequencia.alunos[key].id_aluno + '">Observação</label><input type="text" name="observacao_' + frequencia.alunos[key].id_aluno + '" value="' + frequencia.alunos[key].faltas[turma_faltas][falta].observacao + '"/></div>')
+                                .find('.observacao-frequencia').show() // css default o mantém escondido;
                             achou = true;
                             break;
                         }
@@ -174,14 +169,8 @@ var controle_frequencia_aluno = (function() {
             }
             // se não achou nenhuma falta, exibe o campo normal
             if (!achou)
-                $(container).find('#' + frequencia.nome_campo + '_' + frequencia.alunos[key].id_aluno)
-                        .html('<label>\n\
-                                <input type="checkbox" name="aluno_' + frequencia.alunos[key].id_aluno + '" class="check_frequencia" />\n\
-                            </label>\n\
-                            <div class="observacao-frequencia"><label for="observacao_' + frequencia.alunos[key].id_aluno + '">Observação</label>\n\
-                                <input type="text" name="observacao_' + frequencia.alunos[key].id_aluno + '" value=""/>\n\
-                            </div>'
-                                );
+                frequencia.container_frequencias.find('#' + frequencia.nome_campo + '_' + frequencia.alunos[key].id_aluno)
+                    .html('<label><input type="checkbox" name="aluno_' + frequencia.alunos[key].id_aluno + '" class="check_frequencia" /></label><div class="observacao-frequencia"><label for="observacao_' + frequencia.alunos[key].id_aluno + '">Observação</label><input type="text" name="observacao_' + frequencia.alunos[key].id_aluno + '" value=""/></div>');
         }
 
         // evento de clique para mostrar/esconder as observações de faltas
@@ -201,5 +190,5 @@ var controle_frequencia_aluno = (function() {
         return frequencia.turma.find('option:selected').val();
     };
 
-    return {ini: frequencia.setValues()};
+    return {ini: frequencia.setValues};
 })();

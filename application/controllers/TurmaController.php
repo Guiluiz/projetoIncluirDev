@@ -221,9 +221,12 @@ class TurmaController extends Zend_Controller_Action {
 
             if ($this->_request->isPost()) {
                 $periodo = new Application_Model_Mappers_Periodo();
-
+                $periodo_atual = $periodo->getPeriodoAtual();
+                
+                $id_periodo_atual = ($periodo_atual instanceof Application_Model_Periodo) ? $periodo_atual->getIdPeriodo() : 0;
+                
                 $id_disciplina = $this->getRequest()->getParam('id_disciplina');
-                $id_periodo = (strlen($this->getRequest()->getParam('id_periodo')) > 0) ? (int) base64_decode($this->getRequest()->getParam('id_periodo')) : $periodo->getIdPeriodo();
+                $id_periodo = (strlen($this->getRequest()->getParam('id_periodo')) > 0) ? (int) base64_decode($this->getRequest()->getParam('id_periodo')) : $id_periodo_atual;
 
                 $mapper_turma = new Application_Model_Mappers_Turma();
 

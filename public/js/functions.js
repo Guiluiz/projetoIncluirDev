@@ -3,7 +3,7 @@
  * @returns {undefined}
  */
 
-(function() {
+var helpers = (function() {
 
     var auxiliares = {};
 
@@ -197,4 +197,6 @@
         }
         return null;
     };
+    
+    return auxiliares;
 })();

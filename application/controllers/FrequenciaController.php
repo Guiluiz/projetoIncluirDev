@@ -18,14 +18,16 @@ class FrequenciaController extends Zend_Controller_Action {
 
             if (!$periodo->verificaFimPeriodo()) {
                 $form_frequencia = new Application_Form_FormFrequenciaAluno();
-                $datas_atividade = new Application_Model_DatasAtividade();
                 $usuario = Zend_Auth::getInstance()->getIdentity();
 
+                $calendario_academico = new Application_Model_Mappers_DatasAtividade();
+                $calendario_atual = $calendario_academico->getDatasByPeriodo($periodo->getPeriodoAtual());
+                
                 $mapper_curso = new Application_Model_Mappers_Curso();
                 $form_frequencia->initializeCursos($mapper_curso->buscaCursos());
 
                 $this->view->form = $form_frequencia;
-                $this->view->datas_atividade = json_encode($datas_atividade->parseArray(true));
+                $this->view->datas_atividade = json_encode($calendario_atual->parseArray(true));
 
                 if ($this->getRequest()->isPost()) {
                     $dados = $this->getRequest()->getPost();

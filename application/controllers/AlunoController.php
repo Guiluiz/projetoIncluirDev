@@ -269,7 +269,7 @@ class AlunoController extends Zend_Controller_Action {
                     if (!empty($alunos)) {
                         $mapper_turma = new Application_Model_Mappers_Turma();
                         $turma = $mapper_turma->buscaTurmaByID($id_turma);
-
+                        
                         $i = 0;
                         $array_alunos = array('turma' => array(
                                 'nome_turma' => $turma->getCompleteNomeTurma(),
@@ -277,8 +277,10 @@ class AlunoController extends Zend_Controller_Action {
                                 'data_termino' => $turma->getDataFim(true)
                         ));
 
-                        $datas_atividades = new Application_Model_DatasAtividade();
-                        $total_aulas = $datas_atividades->getQuantidadeAulas();
+                        $mapper_calendario = new Application_Model_Mappers_DatasAtividade();
+                        $datas_atividades = $mapper_calendario->getDatasByPeriodo($turma->getPeriodo());
+                        
+                        $total_aulas = ($datas_atividades instanceof Application_Model_DatasAtividade) ? $datas_atividades->getQuantidadeAulas() : 0;
 
                         foreach ($alunos as $aluno) {
                             if ($aluno instanceof Application_Model_Aluno) {
