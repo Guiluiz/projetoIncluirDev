@@ -34,7 +34,7 @@
     </table>
 
     <h2>Alunos da Turma</h2>
-    <?php //var_dump($this->alunos[685]->getCompleteTurmas())?>
+
     <?php if (!empty($this->alunos)): ?>
         <table class="form_incrementa visualizacao" style="width: 80%;">
             <tr>
@@ -57,7 +57,7 @@
                         <td>
                             <?php foreach ($turmas[$this->id_turma][Application_Model_Aluno::$index_notas_turma] as $nota): ?>
                                 <?php if ($nota instanceof Application_Model_Nota): ?>
-                                    <?php echo $nota->toString()?><br>
+                                    <?php echo $nota->toString() ?><br>
                                 <?php endif ?>
                             <?php endforeach; ?>
                             <?php echo $aluno->getNotaAcumulada($this->id_turma) ?>

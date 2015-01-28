@@ -202,7 +202,7 @@ class Application_Model_Aluno {
 
             return ($total_aulas - $total_faltas) / $total_aulas;
         }
-        return null;
+        return '-';
     }
 
     public function addTurma($turma, $liberacao = null, $aprovado = null, $pagamento = null, $faltas = null, $notas = null) {

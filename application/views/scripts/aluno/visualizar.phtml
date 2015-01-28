@@ -91,9 +91,11 @@
                 <th style="width: 16.6%">Frequência</th>
                 <th style="width: 16.6%">Resultado Final</th>
 
-
             </tr>
-            <?php foreach ($this->aluno->getCompleteTurmas() as $id_turma => $turma): ?>
+            <?php foreach ($this->aluno->getCompleteTurmas() as $id_turma => $turma):
+                $calendario = isset($this->calendarios[$turma[Application_Model_Aluno::$index_turma]->getPeriodo()->getIdPeriodo()]) ? $this->calendarios[$turma[Application_Model_Aluno::$index_turma]->getPeriodo()->getIdPeriodo()] : 0;
+                $total_aulas = ($calendario instanceof Application_Model_DatasAtividade) ? $calendario->getQuantidadeAulas() : 0;
+                ?>
                 <tr>
                     <td><?php echo $turma[Application_Model_Aluno::$index_turma]->getCompleteNomeTurma() ?></td>
                     <td><?php echo $turma[Application_Model_Aluno::$index_pagamento_turma]->getSituacao() ?></td>
@@ -107,7 +109,7 @@
                         <?php echo $this->aluno->getNotaAcumulada($id_turma) ?>
                     </td>
 
-                    <td><?php echo $this->aluno->getPorcentagemFaltas($turma[Application_Model_Aluno::$index_turma]->getIdTurma(), $this->total_aulas, true) ?></td>
+                    <td><?php echo $this->aluno->getPorcentagemFaltas($turma[Application_Model_Aluno::$index_turma]->getIdTurma(), $total_aulas, true) ?></td>
                     <td>Não disponível</td>
                 </tr>
             <?php endforeach; ?>

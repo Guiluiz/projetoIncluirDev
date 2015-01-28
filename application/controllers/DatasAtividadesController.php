@@ -25,16 +25,16 @@ class DatasAtividadesController extends Zend_Controller_Action {
                     $this->_helper->redirector->goToRoute($usuario->getUserIndex(), null, true);
 
                 if ($form_funcionamento->verificaDatas($dados)) {
-                    $datas_atividade->gerenciaDatas($dados, $periodo_atual);
+                    $datas_atividade->gerenciaDatasPeriodoAtual($dados, $periodo_atual);
                     $this->view->mensagem = "Datas inseridas/alteradas com sucesso";
                 } else
                     $this->view->mensagem = "Datas inseridas com sucesso";
             }
 
             $form_funcionamento->reset();
+            
             $calendario = $datas_atividade->getDatasByPeriodo($periodo_atual);
-            var_dump($calendario);
-            //$this->view->datas = $calendario->parseArray(true);
+            $this->view->datas = $calendario->parseArray(true);
         } else
             $this->view->inativo = true;
     }

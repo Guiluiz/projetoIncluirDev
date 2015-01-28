@@ -18,6 +18,7 @@ class Application_Model_DatasAtividade {
      * @param DateTime $data
      */
     public function addData($data) {
+        $data = $this->parseDate($data);
         if ($data instanceof DateTime && !isset($this->datas[$data->format('d/m/Y')]))
             $this->datas[$data->format('d/m/Y')] = $data;
     }

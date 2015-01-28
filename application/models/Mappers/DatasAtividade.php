@@ -3,11 +3,11 @@
 class Application_Model_Mappers_DatasAtividade {
 
     private $db_datas_atividades;
-    
+
     public function __construct() {
-        $this->db_datas_atividades = new Application_Model_DbTable_DatasAtividade();
+        
     }
-    
+
     public function getDatasByPeriodo($periodo) {
         try {
             if ($periodo instanceof Application_Model_Periodo) {
@@ -21,10 +21,14 @@ class Application_Model_Mappers_DatasAtividade {
 
                     foreach ($datas as $data)
                         $obj_data->addData($data->data_funcionamento);
+
+                    return $obj_data;
                 }
             }
+            return null;
         } catch (Zend_Exception $e) {
             echo $e->getMessage();
+            return null;
         }
     }
 
@@ -49,9 +53,9 @@ class Application_Model_Mappers_DatasAtividade {
                             $aux_data = $data->format('d/m/Y');
                             $aux_array[$aux_data] = $data;
 
-                            if (!isset($datas_cadastradas[$aux_data]) && ($data >= $periodo->getDataInicio() && $data <= $periodo->getDataTermino())) {
+                            if (!isset($datas_cadastradas[$aux_data]) && ($data >= $periodo_atual->getDataInicio() && $data <= $periodo_atual->getDataTermino())) {
                                 $this->db_datas_atividades->insert(array('data_funcionamento' => $data->format('Y-m-d'), 'id_periodo' => $periodo_atual->getIdPeriodo()));
-                                $this->addData($data);
+                                $calendario->addData($data);
                             }
                         }
                     }
@@ -90,6 +94,8 @@ class Application_Model_Mappers_DatasAtividade {
     public function removeDatasForaPeriodoAtual($data_ini, $data_fim, $id_periodo) {
         try {
             if ($data_ini instanceof DateTime && $data_fim instanceof DateTime) {
+                $this->db_datas_atividades = new Application_Model_DbTable_DatasAtividade();
+
                 $this->db_datas_atividades->delete(
                         $this->db_datas_atividades->getAdapter()->quoteInto('(data_funcionamento < ? OR ', $data_ini->format('Y-m-d')) .
                         $this->db_datas_atividades->getAdapter()->quoteInto('data_funcionamento > ?) AND (', $data_fim->format('Y-m-d')) .
@@ -101,6 +107,28 @@ class Application_Model_Mappers_DatasAtividade {
         } catch (Zend_Exception $ex) {
             echo $ex->getMessage();
             return false;
+        }
+    }
+
+    public function getCalendarios() {
+        try {
+            $this->db_datas_atividades = new Application_Model_DbTable_DatasAtividade();
+            $datas = $this->db_datas_atividades->fetchAll($this->db_datas_atividades->select());
+
+            $array_calendarios = array();
+
+            if (!empty($datas)) {
+                foreach ($datas as $data) {
+                    if (empty($array_calendarios[$data->id_periodo]))
+                        $array_calendarios[$data->id_periodo] = new Application_Model_DatasAtividade(new Application_Model_Periodo($data->id_periodo));
+
+                    $array_calendarios[$data->id_periodo]->addData($data->data_funcionamento);
+                };
+            }
+            return $array_calendarios;
+        } catch (Zend_Exception $ex) {
+            echo $ex->getMessage();
+            return null;
         }
     }
 

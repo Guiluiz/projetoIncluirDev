@@ -288,11 +288,10 @@ class Application_Model_Mappers_Aluno {
             if (!empty($periodo))
                 $query = $this->db_aluno->getAdapter()->quoteInto(' AND id_periodo = ?', (int) $periodo);
 
-            $select->joinLeft('turma', 'turma.id_turma = turma_alunos.id_turma' . $query, array('id_turma', 'nome_turma', 'id_disciplina'))
+            $select->joinLeft('turma', 'turma.id_turma = turma_alunos.id_turma' . $query, array('id_turma', 'nome_turma', 'id_disciplina', 'id_periodo'))
                     ->joinLeft('disciplina', 'turma.id_disciplina = disciplina.id_disciplina', array('nome_disciplina', 'id_curso'))
                     ->joinLeft('curso', 'disciplina.id_curso = curso.id_curso', array('nome_curso'))
                     ->where('aluno.id_aluno = ?', (int) $id_aluno);
-
 
             $alunos = $this->db_aluno->fetchAll($select);
 
@@ -306,9 +305,9 @@ class Application_Model_Mappers_Aluno {
 
                 foreach ($alunos as $inf_aluno) {
                     if (!isset($array_alunos[$inf_aluno->id_aluno]))
-                        $array_alunos[$inf_aluno->id_aluno] = new Application_Model_Aluno($inf_aluno->id_aluno, $inf_aluno->nome_aluno, $inf_aluno->cpf, $inf_aluno->status, $inf_aluno->data_desligamento, $inf_aluno->motivo_desligamento, $inf_aluno->rg, $inf_aluno->data_nascimento, $inf_aluno->email, $inf_aluno->escolaridade, $inf_aluno->telefone, $inf_aluno->celular, $inf_aluno->endereco, $inf_aluno->bairro, $inf_aluno->numero, $inf_aluno->complemento, $inf_aluno->cep, $inf_aluno->cidade, $inf_aluno->estado, $inf_aluno->data_registro, $inf_aluno->is_cpf_responsavel, $inf_aluno->nome_responsavel, null, new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma, null, null, null, null, new Application_Model_Disciplina($inf_aluno->id_disciplina, $inf_aluno->nome_disciplina, null, new Application_Model_Curso($inf_aluno->id_curso, $inf_aluno->nome_curso))), $inf_aluno->aprovado, $inf_aluno->liberacao, null);
+                        $array_alunos[$inf_aluno->id_aluno] = new Application_Model_Aluno($inf_aluno->id_aluno, $inf_aluno->nome_aluno, $inf_aluno->cpf, $inf_aluno->status, $inf_aluno->data_desligamento, $inf_aluno->motivo_desligamento, $inf_aluno->rg, $inf_aluno->data_nascimento, $inf_aluno->email, $inf_aluno->escolaridade, $inf_aluno->telefone, $inf_aluno->celular, $inf_aluno->endereco, $inf_aluno->bairro, $inf_aluno->numero, $inf_aluno->complemento, $inf_aluno->cep, $inf_aluno->cidade, $inf_aluno->estado, $inf_aluno->data_registro, $inf_aluno->is_cpf_responsavel, $inf_aluno->nome_responsavel, null, new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma, null, null, null, null, new Application_Model_Disciplina($inf_aluno->id_disciplina, $inf_aluno->nome_disciplina, null, new Application_Model_Curso($inf_aluno->id_curso, $inf_aluno->nome_curso)), null, null, new Application_Model_Periodo($inf_aluno->id_periodo)), $inf_aluno->aprovado, $inf_aluno->liberacao, null);
                     else
-                        $array_alunos[$inf_aluno->id_aluno]->addTurma(new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma, null, null, null, null, new Application_Model_Disciplina($inf_aluno->id_disciplina, $inf_aluno->nome_disciplina, null, new Application_Model_Curso($inf_aluno->id_curso, $inf_aluno->nome_curso))), $inf_aluno->liberacao, $inf_aluno->aprovado);
+                        $array_alunos[$inf_aluno->id_aluno]->addTurma(new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma, null, null, null, null, new Application_Model_Disciplina($inf_aluno->id_disciplina, $inf_aluno->nome_disciplina, null, new Application_Model_Curso($inf_aluno->id_curso, $inf_aluno->nome_curso)),null, null, new Application_Model_Periodo($inf_aluno->id_periodo)), $inf_aluno->liberacao, $inf_aluno->aprovado);
 
                     if (!empty($inf_aluno->id_pagamento)) {
                         if (!isset($array_pagamentos[$inf_aluno->id_turma][$inf_aluno->id_pagamento])) {

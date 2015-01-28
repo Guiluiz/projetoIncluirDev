@@ -126,6 +126,10 @@ class Application_Model_Turma {
     public function getDisciplina() {
         return $this->disciplina;
     }
+    
+    public function getPeriodo(){
+        return $this->periodo;
+    }
 
     public function toString() {
         if ($this->disciplina instanceof Application_Model_Disciplina)

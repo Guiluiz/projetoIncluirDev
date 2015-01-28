@@ -180,7 +180,7 @@ class Application_Model_Mappers_Turma {
 
                 foreach ($turma as $inf_turma) {
                     if (empty($array_turmas[$inf_turma->id_turma]))
-                        $array_turmas[$inf_turma->id_turma] = new Application_Model_Turma($inf_turma->id_turma, $inf_turma->nome_turma, $inf_turma->data_inicio, $inf_turma->data_fim, $inf_turma->horario_inicio, $inf_turma->horario_fim, new Application_Model_Disciplina($inf_turma->id_disciplina, $inf_turma->nome_disciplina, null, new Application_Model_Curso($inf_turma->id_curso)), $inf_turma->status, ((!empty($inf_turma->id_voluntario)) ? new Application_Model_Professor($inf_turma->id_voluntario, $inf_turma->nome) : null));
+                        $array_turmas[$inf_turma->id_turma] = new Application_Model_Turma($inf_turma->id_turma, $inf_turma->nome_turma, $inf_turma->data_inicio, $inf_turma->data_fim, $inf_turma->horario_inicio, $inf_turma->horario_fim, new Application_Model_Disciplina($inf_turma->id_disciplina, $inf_turma->nome_disciplina, null, new Application_Model_Curso($inf_turma->id_curso)), $inf_turma->status, ((!empty($inf_turma->id_voluntario)) ? new Application_Model_Professor($inf_turma->id_voluntario, $inf_turma->nome) : null), new Application_Model_Periodo($inf_turma->id_periodo));
                     else {
                         if (!empty($inf_turma->id_voluntario))
                             $array_turmas[$inf_turma->id_turma]->addProfessor(new Application_Model_Professor($inf_turma->id_voluntario, $inf_turma->nome));

@@ -13,7 +13,7 @@ class Application_Model_Periodo {
     private $quantidade_alimentos;
     private $is_semestre_atual;
 
-    public function __construct($id_periodo, $is_atual, $nome_periodo = null, $data_inicio = null, $data_termino = null, $valor = null, $min_freq_aprov = null, $total_pts = null, $min_pts_aprov = null, $quantidade_alimentos = null) {
+    public function __construct($id_periodo, $is_atual = false, $nome_periodo = null, $data_inicio = null, $data_termino = null, $valor = null, $min_freq_aprov = null, $total_pts = null, $min_pts_aprov = null, $quantidade_alimentos = null) {
         $this->data_inicial = $this->parseDate($data_inicio);
         $this->data_final = $this->parseDate($data_termino);
         $this->id_periodo = (int) $id_periodo;
