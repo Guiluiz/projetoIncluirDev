@@ -44,9 +44,9 @@ class FrequenciaController extends Zend_Controller_Action {
 
                     if (is_array($faltas) && $form_frequencia->isValid($dados)) {
                         $mapper_aluno = new Application_Model_Mappers_Aluno();
-                        $mappper_frequencia = new Application_Model_Mappers_Frequencia();
+                        $mapper_frequencia = new Application_Model_Mappers_Frequencia();
 
-                        if ($mappper_frequencia->lancamentoFrequenciaAlunos($faltas, $mapper_aluno->getTurmaAlunosID((int) base64_decode($form_frequencia->getValue('turma'))), DateTime::createFromFormat('d/m/Y', $form_frequencia->getValue('data'))))
+                        if ($mapper_frequencia->lancamentoFrequenciaAlunos($faltas, $mapper_aluno->getTurmaAlunosID((int) base64_decode($form_frequencia->getValue('turma'))), DateTime::createFromFormat('d/m/Y', $form_frequencia->getValue('data'))))
                             $this->view->mensagem = "Frequência lançada/alterada com sucesso!";
                         else
                             $this->view->mensagem = "Houve problemas para efetuar o lançamento";

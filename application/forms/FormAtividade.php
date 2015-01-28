@@ -8,7 +8,9 @@ class Application_Form_FormAtividade extends Zend_Form {
         );
         
         $string_filter = new Aplicacao_Filtros_StringSimpleFilter();
-        $periodo = new Application_Model_Periodo();
+        $periodo = new Application_Model_Mappers_Periodo();
+        
+        $periodo_atual = $periodo->getPeriodoAtual();
         
         $id_atividade = new Zend_Form_Element_Hidden('id_atividade');
         $id_atividade->setDecorators(array(
@@ -75,7 +77,7 @@ class Application_Form_FormAtividade extends Zend_Form {
         $valor->setLabel('Valor da Atividade:')
                 ->addFilter('StripTags')
                 ->addFilter('StringTrim')
-                ->addValidator('Between', false, array('min' => '0', 'max' => $periodo->getTotalPontosPeriodo()))
+                ->addValidator('Between', false, array('min' => '0', 'max' => $periodo_atual->getTotalPontosPeriodo()))
                 ->setAttrib('class', 'numero obrigatorio')
                 ->setRequired(true)
                 ->addValidator('NotEmpty')

@@ -7,17 +7,17 @@
 <?php echo $this->form ?>
 
 <?php if ($this->resultado_busca instanceof Zend_Paginator) : ?>
-    <?php if (count($this->resultado_busca) > 0) : ?>
+    <?php if (count($this->resultado_busca) > 0) :?>
         <div id='resultado-busca'>
             <h3>Resultados da Busca</h3>
-            <span>Foram encontrados (<?=$this->resultado_busca->getTotalItemCount() ?>) registros</span>
+            <span>Foram encontrados (<?= $this->resultado_busca->getTotalItemCount() ?>) registros</span>
             <table>
                 <tr>
                     <th>Nome</th>
                     <th>Data</th>
                     <th>Valor</th>
                     <th>Turma</th>
-                    <th colspan=2>Opções</th>
+                    <th <?php echo (!$this->inativo) ? 'colspan=2' : '' ?>>Opções</th>
                 </tr>
 
                 <?php foreach ($this->resultado_busca as $atividade) : ?>
@@ -26,8 +26,10 @@
                         <td><?= $atividade->getDataAtividade(true) ?></td>
                         <td><?= $atividade->getValor() ?></td>
                         <td><?= $atividade->getTurma()->toString() ?></td>
-                        <td><a href='<?= $this->url(array('controller' => 'atividade', 'action' => 'alterar', 'atividade' => $atividade->getIdAtividade(true)), null, true) ?>'>Alterar</a></td>                     
-                        <td><a href='<?= $this->url(array('controller' => 'atividade', 'action' => 'excluir', 'atividade' => $atividade->getIdAtividade(true)), null, true) ?>'>Excluir</a></td>
+                        <?php if (!$this->inativo): ?>
+                            <td><a href='<?= $this->url(array('controller' => 'atividade', 'action' => 'alterar', 'atividade' => $atividade->getIdAtividade(true)), null, true) ?>'>Alterar</a></td>                     
+                            <td><a href='<?= $this->url(array('controller' => 'atividade', 'action' => 'excluir', 'atividade' => $atividade->getIdAtividade(true)), null, true) ?>'>Excluir</a></td>
+                        <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>
             </table>
