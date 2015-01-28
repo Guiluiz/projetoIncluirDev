@@ -116,9 +116,11 @@ class Application_Form_FormFrequenciaAluno extends Zend_Form {
                         if ($pos !== false) {
                             $id_aluno = substr($key, $pos + 6);
 
-                            $faltas[$id_aluno] = new Application_Model_Falta(null, $data, $dados['observacao_' . $id_aluno]);
+                            if ($inf == 'on')
+                                $faltas[$id_aluno] = new Application_Model_Falta(null, $data, $dados['observacao_' . $id_aluno]);
 
-                            $count++;
+                            if (!empty($inf))
+                                $count++;
                         }
                     }
                     if ($count == $quantidade)

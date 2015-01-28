@@ -11,8 +11,6 @@
         $(function() {
             var datas_atividades = $.parseJSON('<?php echo $this->datas_atividade; ?>');
             
-            console.log(controle_frequencia_aluno);
-            
             controle_frequencia_aluno.ini(
                     '<?php echo $this->url(array('controller' => 'aluno', 'action' => 'busca-alunos-turma-faltas'), null, true); ?>',
                     '<?php echo $this->url(array('controller' => 'disciplina', 'action' => 'buscar-disciplinas'), null, true); ?>',

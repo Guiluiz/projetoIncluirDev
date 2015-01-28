@@ -22,7 +22,7 @@ class FrequenciaController extends Zend_Controller_Action {
 
                 $calendario_academico = new Application_Model_Mappers_DatasAtividade();
                 $calendario_atual = $calendario_academico->getDatasByPeriodo($periodo->getPeriodoAtual());
-                
+
                 $mapper_curso = new Application_Model_Mappers_Curso();
                 $form_frequencia->initializeCursos($mapper_curso->buscaCursos());
 
@@ -36,9 +36,9 @@ class FrequenciaController extends Zend_Controller_Action {
                         $this->_helper->redirector->goToRoute($usuario->getUserIndex(), null, true);
 
                     $faltas = null;
+                    $mapper_turma = new Application_Model_Mappers_Turma();
 
                     if (isset($dados['turma'])) {
-                        $mapper_turma = new Application_Model_Mappers_Turma();
                         $faltas = $form_frequencia->getFaltas($dados, $mapper_turma->getQuantidadeAlunos((int) base64_decode($dados['turma']), false));
                     }
 
@@ -46,7 +46,7 @@ class FrequenciaController extends Zend_Controller_Action {
                         $mapper_aluno = new Application_Model_Mappers_Aluno();
                         $mapper_frequencia = new Application_Model_Mappers_Frequencia();
 
-                        if ($mapper_frequencia->lancamentoFrequenciaAlunos($faltas, $mapper_aluno->getTurmaAlunosID((int) base64_decode($form_frequencia->getValue('turma'))), DateTime::createFromFormat('d/m/Y', $form_frequencia->getValue('data'))))
+                        if ($mapper_frequencia->lancamentoFrequenciaAlunos($faltas, $mapper_turma->buscaTurmaByID((int) base64_decode($dados['turma'])), $mapper_aluno->getTurmaAlunosID((int) base64_decode($form_frequencia->getValue('turma'))), DateTime::createFromFormat('d/m/Y', $form_frequencia->getValue('data'))))
                             $this->view->mensagem = "Frequência lançada/alterada com sucesso!";
                         else
                             $this->view->mensagem = "Houve problemas para efetuar o lançamento";

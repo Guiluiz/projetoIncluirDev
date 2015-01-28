@@ -4,9 +4,9 @@ class Application_Model_Mappers_Frequencia {
 
     private $db_frequencia;
 
-    public function lancamentoFrequenciaAlunos($faltas, $id_turma_alunos, $data) {
+    public function lancamentoFrequenciaAlunos($faltas, $turma, $id_turma_alunos, $data) {
         try {
-            if ($data instanceof DateTime) {
+            if ($data instanceof DateTime && $turma instanceof Application_Model_Turma) {
                 if (!empty($id_turma_alunos)) {
                     $this->db_frequencia = new Application_Model_DbTable_Falta();
                     $where = $this->db_frequencia->getAdapter()->quoteInto('(falta.data_funcionamento = ?) AND (', $data->format('Y-m-d'));
@@ -16,6 +16,7 @@ class Application_Model_Mappers_Frequencia {
 
                     $where = substr($where, 0, -4) . ")";
 
+                    // exclui o lançamento antigo
                     $this->db_frequencia->delete($where);
 
                     if (!empty($faltas)) {
@@ -28,6 +29,15 @@ class Application_Model_Mappers_Frequencia {
                             }
                         }
                     }
+
+                    $db_datas_lancamentos = new Application_Model_DbTable_DatasLancamentosFrequenciaTurmas();
+                    $db_datas_lancamentos->delete(
+                            $db_datas_lancamentos->getAdapter()->quoteInto('data_funcionamento = ? AND ', $data->format('Y-m-d')) .
+                            $db_datas_lancamentos->getAdapter()->quoteInto('id_turma = ?', $turma->getIdTurma())
+                    );
+
+                    $db_datas_lancamentos->insert(array('data_funcionamento' => $data->format('Y-m-d'), 'id_turma' => $turma->getIdTurma()));
+
                     return true;
                 }
             }
@@ -42,19 +52,19 @@ class Application_Model_Mappers_Frequencia {
         try {
             if ($data instanceof DateTime) {
                 $this->db_frequencia = new Application_Model_DbTable_EscalaFrequenciaVoluntario();
-                
+
                 $where = $this->db_frequencia->getAdapter()->quoteInto('data_funcionamento = ?', $data->format('Y-m-d'));
-                
+
                 // Futuramente será alterado
                 $this->db_frequencia->delete($where);
 
                 if (!empty($frequencias)) {
                     foreach ($frequencias as $id_voluntario => $frequencia) {
                         if ($frequencia instanceof Application_Model_EscalaFrequencia) {
-                              $aux = $frequencia->parseArray();
-                              $aux['id_voluntario'] = $id_voluntario;
-                              
-                              $this->db_frequencia->insert($aux);
+                            $aux = $frequencia->parseArray();
+                            $aux['id_voluntario'] = $id_voluntario;
+
+                            $this->db_frequencia->insert($aux);
                         }
                     }
                 }

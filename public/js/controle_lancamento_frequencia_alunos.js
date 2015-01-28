@@ -157,8 +157,8 @@ var controle_frequencia_aluno = (function() {
                         if (frequencia.alunos[key].faltas[turma_faltas][falta].data_funcionamento == data_escolhida) {
                             // inclui os campos já preenchidos, já que a falta foi encontrada
                             frequencia.container_frequencias.find('#' + frequencia.nome_campo + '_' + frequencia.alunos[key].id_aluno)
-                                .html('<label><input type="checkbox" class="check_frequencia" checked="checked" name="aluno_' + frequencia.alunos[key].id_aluno + '" /></label><div class="observacao-frequencia"><label for="observacao_' + frequencia.alunos[key].id_aluno + '">Observação</label><input type="text" name="observacao_' + frequencia.alunos[key].id_aluno + '" value="' + frequencia.alunos[key].faltas[turma_faltas][falta].observacao + '"/></div>')
-                                .find('.observacao-frequencia').show() // css default o mantém escondido;
+                                    .html('<label><input type="hidden" value="nao" disabled="disabled" name="aluno_' + frequencia.alunos[key].id_aluno + '"/><input type="checkbox" class="check_frequencia" checked="checked" name="aluno_' + frequencia.alunos[key].id_aluno + '" /></label><div class="observacao-frequencia"><label for="observacao_' + frequencia.alunos[key].id_aluno + '">Observação</label><input type="text" name="observacao_' + frequencia.alunos[key].id_aluno + '" value="' + frequencia.alunos[key].faltas[turma_faltas][falta].observacao + '"/></div>')
+                                    .find('.observacao-frequencia').show() // css default o mantém escondido;
                             achou = true;
                             break;
                         }
@@ -170,17 +170,30 @@ var controle_frequencia_aluno = (function() {
             // se não achou nenhuma falta, exibe o campo normal
             if (!achou)
                 frequencia.container_frequencias.find('#' + frequencia.nome_campo + '_' + frequencia.alunos[key].id_aluno)
-                    .html('<label><input type="checkbox" name="aluno_' + frequencia.alunos[key].id_aluno + '" class="check_frequencia" /></label><div class="observacao-frequencia"><label for="observacao_' + frequencia.alunos[key].id_aluno + '">Observação</label><input type="text" name="observacao_' + frequencia.alunos[key].id_aluno + '" value=""/></div>');
+                        .html('<label><input type="hidden" value="nao" name="aluno_' + frequencia.alunos[key].id_aluno + '"/><input type="checkbox" name="aluno_' + frequencia.alunos[key].id_aluno + '" class="check_frequencia" /></label><div class="observacao-frequencia"><label for="observacao_' + frequencia.alunos[key].id_aluno + '">Observação</label><input type="text" name="observacao_' + frequencia.alunos[key].id_aluno + '" value=""/></div>');
         }
 
         // evento de clique para mostrar/esconder as observações de faltas
         $('.check_frequencia').click(function() {
-            if ($(this).prop('checked'))
+            if ($(this).prop('checked')) {
                 $(this).parents('td').find('.observacao-frequencia').fadeIn('fast').find('input').removeAttr('disabled');
-            else
+                $(this).prev().attr('disabled', 'disabled');
+            }
+            else {
                 $(this).parents('td').find('.observacao-frequencia').fadeOut('fast').find('input').attr('disabled', 'disabled');
+                $(this).prev().removeAttr('disabled');
+            }
+
+            frequencia.printContador();
         });
+
+        frequencia.printContador();
     }
+
+    frequencia.printContador = function() {
+        $('div').remove('#inf_presentes');
+        $('#title-frequencia').append('<div id="inf_presentes" class="obs">Presentes: <b>' + $('.check_frequencia:checked').length + '</b> / Ausentes: <b>' + $('.check_frequencia:not(:checked)').length + '</b></div>');
+    };
 
     frequencia.printMensagem = function(msg) {
         frequencia.container_frequencias.html(msg);
