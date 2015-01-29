@@ -57,11 +57,11 @@ var controle_frequencia_aluno = (function() {
                 frequencia.container.datepicker('destroy');
             }
             else
-                frequencia.getAlunosNotas();
+                frequencia.getAlunosFrequencias();
         });
     };
 
-    frequencia.getAlunosNotas = function() {
+    frequencia.getAlunosFrequencias = function() {
         if (!(frequencia.data_atual instanceof Date))
             frequencia.data_atual = helpers.parseDate(frequencia.data_atual);
 
