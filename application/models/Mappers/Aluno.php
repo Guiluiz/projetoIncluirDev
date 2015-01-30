@@ -960,9 +960,16 @@ class Application_Model_Mappers_Aluno {
             
         }
     }
-
-    public function verificaLancamentos() {
+    
+    /**
+     * 
+     * @param type $quantidade_alunos_turma
+     * @param type $calendario_atual
+     * @param type $ids_atividades_turma
+     */
+    public function verificaLancamentos($quantidade_alunos_turma, $turmas_datas_lancamentos, $ids_atividades_turma, $notas_lancadas) {
         try {
+            
             
         } catch (Exception $ex) {
             

@@ -41,7 +41,7 @@ class Application_Model_Mappers_Atividade {
             if ($atividade instanceof Application_Model_Atividade && $this->validaAtividade($atividade, true)) {
                 $this->db_atividade = new Application_Model_DbTable_Atividade();
                 $db_turma_atividade = new Application_Model_DbTable_TurmaAtividades();
-                
+
                 $turma_atual = $this->getTurmaAtividade($atividade->getIdAtividade());
 
                 $this->db_atividade->update($atividade->parseArray(), $this->db_atividade->getAdapter()->quoteInto('id_atividade = ?', $atividade->getIdAtividade()));
@@ -228,22 +228,33 @@ class Application_Model_Mappers_Atividade {
      * @param int $turma
      * @return null|array
      */
-    public function getTurmaAtividadesID($turma) {
+    public function getTurmaAtividadesID($turma = null) {
         try {
             $this->db_atividade = new Application_Model_DbTable_Falta();
             $select = $this->db_atividade->select()
                     ->setIntegrityCheck(false)
-                    ->from('atividade', array('id_atividade'))
-                    ->joinInner('turma_atividades', 'atividade.id_atividade = turma_atividades.id_atividade', array('id_atividades_turma'))
-                    ->where('turma_atividades.id_turma = ?', (int) $turma);
+                    ->from('turma_atividades', array('id_atividades_turma', 'id_atividade', 'id_turma'));
+
+            if (!empty($turma))
+                $select->where('id_turma = ?', (int) $turma);
 
             $turma_atividades = $this->db_atividade->fetchAll($select);
 
             if (!empty($turma_atividades)) {
                 $array = array();
 
-                foreach ($turma_atividades as $turma_atividade)
-                    $array[$turma_atividade->id_atividade] = $turma_atividade->id_atividades_turma;
+                if (!empty($turma)) {
+                    foreach ($turma_atividades as $turma_atividade)
+                        $array[$turma_atividade->id_atividade] = $turma_atividade->id_atividades_turma;
+                    return $array;
+                }
+
+                // utilizado para finalizar o período
+                foreach ($turma_atividades as $turma_atividade) {
+                    $array[$turma_atividade->id_turma]['id_atividade_turma'] = $turma_atividade->id_atividades_turma;
+                    $array[$turma_atividade->id_turma]['id_atividade'] = $turma_atividade->id_atividade;
+                }
+                
                 return $array;
             }
             return null;
