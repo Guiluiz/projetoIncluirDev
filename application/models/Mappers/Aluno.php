@@ -307,7 +307,7 @@ class Application_Model_Mappers_Aluno {
                     if (!isset($array_alunos[$inf_aluno->id_aluno]))
                         $array_alunos[$inf_aluno->id_aluno] = new Application_Model_Aluno($inf_aluno->id_aluno, $inf_aluno->nome_aluno, $inf_aluno->cpf, $inf_aluno->status, $inf_aluno->data_desligamento, $inf_aluno->motivo_desligamento, $inf_aluno->rg, $inf_aluno->data_nascimento, $inf_aluno->email, $inf_aluno->escolaridade, $inf_aluno->telefone, $inf_aluno->celular, $inf_aluno->endereco, $inf_aluno->bairro, $inf_aluno->numero, $inf_aluno->complemento, $inf_aluno->cep, $inf_aluno->cidade, $inf_aluno->estado, $inf_aluno->data_registro, $inf_aluno->is_cpf_responsavel, $inf_aluno->nome_responsavel, null, new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma, null, null, null, null, new Application_Model_Disciplina($inf_aluno->id_disciplina, $inf_aluno->nome_disciplina, null, new Application_Model_Curso($inf_aluno->id_curso, $inf_aluno->nome_curso)), null, null, new Application_Model_Periodo($inf_aluno->id_periodo)), $inf_aluno->aprovado, $inf_aluno->liberacao, null);
                     else
-                        $array_alunos[$inf_aluno->id_aluno]->addTurma(new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma, null, null, null, null, new Application_Model_Disciplina($inf_aluno->id_disciplina, $inf_aluno->nome_disciplina, null, new Application_Model_Curso($inf_aluno->id_curso, $inf_aluno->nome_curso)),null, null, new Application_Model_Periodo($inf_aluno->id_periodo)), $inf_aluno->liberacao, $inf_aluno->aprovado);
+                        $array_alunos[$inf_aluno->id_aluno]->addTurma(new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma, null, null, null, null, new Application_Model_Disciplina($inf_aluno->id_disciplina, $inf_aluno->nome_disciplina, null, new Application_Model_Curso($inf_aluno->id_curso, $inf_aluno->nome_curso)), null, null, new Application_Model_Periodo($inf_aluno->id_periodo)), $inf_aluno->liberacao, $inf_aluno->aprovado);
 
                     if (!empty($inf_aluno->id_pagamento)) {
                         if (!isset($array_pagamentos[$inf_aluno->id_turma][$inf_aluno->id_pagamento])) {
@@ -471,8 +471,8 @@ class Application_Model_Mappers_Aluno {
      * @param boolean $get_faltas Indica se as faltas serão buscadas
      * @return array
      */
-    public function getAlunosTurma($turmas, $atual = false, $periodo = null, $get_faltas = false) {
-        $alunos = $this->getAlunosByDisciplina($turmas, true, false, $atual, $periodo);
+    public function getAlunosOrganizadosByTurma($turmas, $atual = false, $periodo = null, $get_faltas = false) {
+        $alunos = $this->getAlunos($turmas, true, false, $atual, $periodo);
         $array_alunos = array();
 
         foreach ($alunos as $aluno) {
@@ -499,8 +499,8 @@ class Application_Model_Mappers_Aluno {
      * @param boolean $get_faltas Indica se as faltas serão buscadas
      * @return array
      */
-    public function getAlunosTurmaSeparados($turmas, $atual = false, $periodo = null) {
-        $alunos = $this->getAlunosByDisciplina($turmas, true, false, $atual, $periodo);
+    public function getAlunosTurmaUnicoArray($turmas, $atual = false, $periodo = null) {
+        $alunos = $this->getAlunos($turmas, true, false, $atual, $periodo);
         $array_alunos = array();
 
         foreach ($alunos as $aluno) {
@@ -674,7 +674,7 @@ class Application_Model_Mappers_Aluno {
      * @param int $periodo Indica de qual período as turmas/alunos serão buscados
      * @return null|\Application_Model_Aluno
      */
-    public function getAlunosByDisciplina($turmas, $active = true, $order = false, $atual = null, $periodo = null) {
+    public function getAlunos($turmas = null, $active = true, $order = false, $atual = null, $periodo = null) {
         try {
             $this->db_aluno = new Application_Model_DbTable_Aluno();
             $select = $this->db_aluno->select()
@@ -953,26 +953,59 @@ class Application_Model_Mappers_Aluno {
      * Aprova/desaprova alunos baseado em suas notas/frequências.
      * Só é realizado se todas as notas/frequências estiverem lançadas
      */
-    public function finalizaAlunos() {
+    public function finalizaAlunos($quantidade_alunos_turma, $calendario_atual, $turmas_datas_lancamentos, $ids_atividades_turma, $notas_lancadas) {
         try {
-            
+            if ($calendario_atual instanceof Application_Model_DatasAtividade) {
+                $alunos = $this->getAlunos();
+                $periodo_atual = $calendario_atual->getPeriodoCalendario();
+
+                if ($periodo_atual instanceof Application_Model_Periodo && $this->verificaLancamentos($quantidade_alunos_turma, $calendario_atual, $turmas_datas_lancamentos, $ids_atividades_turma, $notas_lancadas)) {
+                    $db_turmas_alunos = new Application_Model_DbTable_TurmaAlunos();
+
+                    foreach ($alunos as $aluno) {
+                        $turmas_aluno = $aluno->getCompleteTurmas();
+
+                        foreach ($turmas_aluno as $id_turma => $turma) {
+                            if ($aluno->getNotaAcumulada($id_turma) >= $periodo_atual->getValorLiberacao() && $aluno->getPorcentagemFaltas($id_turma, $calendario_atual->getQuantidadeAulas()) >= $periodo_atual->getFrequenciaLiberacao())
+                                $db_turmas_alunos->update(array('aprovado' => true), $db_turmas_alunos->getAdapter()->quoteInto('id_turma = ? AND ', $id_turma) .
+                                        $db_turmas_alunos->getAdapter()->quoteInto('id_aluno = ?', $aluno->getIdAluno())
+                                );
+                            else
+                                $db_turmas_alunos->update(array('aprovado' => false), $db_turmas_alunos->getAdapter()->quoteInto('id_turma = ? AND ', $id_turma) .
+                                        $db_turmas_alunos->getAdapter()->quoteInto('id_aluno = ?', $aluno->getIdAluno())
+                                );
+                        }
+                    }
+                }
+            }
+            return false;
         } catch (Exception $ex) {
-            
+            return true;
         }
     }
-    
-    /**
-     * 
-     * @param type $quantidade_alunos_turma
-     * @param type $calendario_atual
-     * @param type $ids_atividades_turma
-     */
-    public function verificaLancamentos($quantidade_alunos_turma, $turmas_datas_lancamentos, $ids_atividades_turma, $notas_lancadas) {
+
+    private function verificaLancamentos(&$quantidade_alunos_turma, &$calendario_atual, &$turmas_datas_lancamentos, &$ids_atividades_turma, &$notas_lancadas) {
         try {
-            
-            
+            //verifica lançamento de frequencia            
+            if (!empty($turmas_datas_lancamentos)) {
+                $count_datas_calendario = count($calendario_atual->getDatas());
+
+                foreach ($turmas_datas_lancamentos as $datas) {
+                    if ($count_datas_calendario != count($datas))
+                        return false;
+                }
+            }
+
+            // verifica o lançamento de notas
+            if (!empty($ids_atividades_turma) && !empty($notas_lancadas)) {
+                foreach ($ids_atividades_turma as $id_turma => $id_turma_atividade) {
+                    if (count($notas_lancadas[$id_turma_atividade]) != $quantidade_alunos_turma[$id_turma])
+                        return false;
+                }
+            }
+            return true;
         } catch (Exception $ex) {
-            
+            return false;
         }
     }
 

@@ -83,5 +83,9 @@ class Application_Model_DatasAtividade {
         }
         return $data;
     }
+    
+    public function getPeriodoCalendario(){
+        return $this->periodo;
+    }
 
 }

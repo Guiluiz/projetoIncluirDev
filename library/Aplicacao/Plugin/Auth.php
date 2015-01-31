@@ -2,7 +2,7 @@
 
 /**
  * Classe que controla o acesso dos usuários de acordo com seus privilégios
- * @author Pablo Augusto
+ * @author Projeto Incluir
  */
 class Aplicacao_Plugin_Auth extends Zend_Controller_Plugin_Abstract {
 

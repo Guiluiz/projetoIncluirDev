@@ -30,6 +30,7 @@ class Application_Model_Mappers_Frequencia {
                         }
                     }
 
+                    // inclui na tabela que o lançamento da data x para turma Y já foi feito (para previnir multiplos lançamentos, o antigo é excluído)
                     $db_datas_lancamentos = new Application_Model_DbTable_DatasLancamentosFrequenciaTurmas();
                     $db_datas_lancamentos->delete(
                             $db_datas_lancamentos->getAdapter()->quoteInto('data_funcionamento = ? AND ', $data->format('Y-m-d')) .
@@ -92,8 +93,8 @@ class Application_Model_Mappers_Frequencia {
                 foreach ($turmas as $turma) {
                     if ($turma instanceof Application_Model_Turma) {
                         $id_turma = $turma->getIdTurma();
-                        
-                        foreach($datas as $data){
+
+                        foreach ($datas as $data) {
                             $db_datas_lancamentos->insert(array('data_funcionamento' => $data->format('Y-m-d'), 'id_turma' => $id_turma));
                         }
                     }
@@ -102,6 +103,43 @@ class Application_Model_Mappers_Frequencia {
         } catch (Zend_Exception $ex) {
             echo $ex->getMessage();
             return null;
+        }
+    }
+
+    /**
+     * Método para retornar as datas de lançamentos de acordo com os filtros passados
+     * @param Application_Model_Periodo $periodo
+     * @param Application_Model_Turma $turma
+     * 
+     */
+    public function getDatasLancamentosByPeriodo($periodo, $turma = null) {
+        try {
+            if ($periodo instanceof Application_Model_Periodo) {
+                $db_datas_lancamentos = new Application_Model_DbTable_DatasLancamentosFrequenciaTurmas();
+
+                $select = $db_datas_lancamentos->select()
+                        ->from('datas_lancamentos_frequencias_turmas')
+                        ->joinInner('datas_funcionamento', 'datas_lancamentos_frequencias_turmas.data_funcionamento = datas_funcionamento.data_funcionamento')
+                        ->where('data_funcionamento.id_periodo = ?', $periodo->getIdPeriodo());
+
+                if (!empty($turma))
+                    $select->where('datas_lancamentos_frequencias_turmas.id_turma = ?', (int) $turma);
+
+                $datas_lancamentos = $db_datas_lancamentos->fetchAll($select);
+
+                if (!empty($datas_lancamentos)) {
+                    $array_datas = array();
+
+                    foreach ($datas_lancamentos as $data)
+                        $array_datas[$data->id_turma][$data->data_funcionamento] = $data->data_funcionamento;
+
+                    return $array_datas;
+                }
+
+                return null;
+            }
+        } catch (Exception $ex) {
+            throw $ex;
         }
     }
 

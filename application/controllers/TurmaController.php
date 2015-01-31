@@ -361,7 +361,7 @@ class TurmaController extends Zend_Controller_Action {
 
                 $this->view->total_aulas = $calendario->getQuantidadeAulas();
                 $this->view->turma = $turma;
-                $this->view->alunos = $mapper_aluno->getAlunosByDisciplina(array('id_turma' => $this->getParam('turma')), true, true);
+                $this->view->alunos = $mapper_aluno->getAlunos(array('id_turma' => $this->getParam('turma')), true, true);
                 $this->view->id_turma = $id_turma;
                 return;
             }

@@ -232,7 +232,6 @@ class Application_Model_Mappers_Atividade {
         try {
             $this->db_atividade = new Application_Model_DbTable_Falta();
             $select = $this->db_atividade->select()
-                    ->setIntegrityCheck(false)
                     ->from('turma_atividades', array('id_atividades_turma', 'id_atividade', 'id_turma'));
 
             if (!empty($turma))
