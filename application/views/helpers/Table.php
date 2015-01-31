@@ -66,7 +66,9 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Abstract {
 
                 case Zend_View_Helper_Table::$pagamento:
                     $table .= '<table id="opcoes_escolhidas_pagamentos" class="escondido"><tr><th>Disciplina - Turma</th><th>Total Pago(R$)</th><th>Total de Alimentos(kg)</th><th>Situação</th><th>Opções</th></tr>';
-                    $periodo = new Application_Model_Periodo();
+                    
+                    $mapper_periodo = new Application_Model_Mappers_Periodo();
+                    $periodo = $mapper_periodo->getPeriodoAtual();
                     
                     foreach ($opcoes_aluno_turma as $turma) {
                         if ($turma instanceof Application_Model_Turma) {

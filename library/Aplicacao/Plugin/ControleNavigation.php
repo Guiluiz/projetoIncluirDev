@@ -3,7 +3,7 @@
 /**
  * Classe para controle dos breadcrumb e menus dos usuários
  *
- * @author Pablo Augusto
+ * @author Projeto Incluir
  */
 class Aplicacao_Plugin_ControleNavigation extends Zend_Controller_Plugin_Abstract {
 

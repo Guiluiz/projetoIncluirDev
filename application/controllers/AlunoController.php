@@ -163,8 +163,9 @@ class AlunoController extends Zend_Controller_Action {
                             $this->view->mensagem = "O aluno não foi alterado.<br/>Por favor, verifique se as turmas foram inseridas";
                     }
                 }
-                $periodo = new Application_Model_Mappers_Periodo();
-                $aluno = $mapper_aluno->buscaAlunosByID($id_aluno, $periodo->getIdPeriodo());
+                
+                $periodo_atual = $periodo->getPeriodoAtual();
+                $aluno = $mapper_aluno->buscaAlunosByID($id_aluno, $periodo_atual->getIdPeriodo());
 
                 if ($aluno instanceof Application_Model_Aluno) {
                     $form_alteracao->populate($aluno->parseArray(true));

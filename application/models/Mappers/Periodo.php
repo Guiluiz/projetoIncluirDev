@@ -49,9 +49,7 @@ class Application_Model_Mappers_Periodo {
                 if ($this->verificaFimPeriodo() && $this->periodoIsValid($data_inicio->format('Y-m-d'), $data_termino->format('Y-m-d'))) {
                     $this->db_periodo->insert($periodo->parseArray());
                     return true;
-                } 
-                
-                elseif ($this->periodoIsValid($data_inicio->format('Y-m-d'), $data_termino->format('Y-m-d'), $periodo->getIdPeriodo()) && $calendario instanceof Application_Model_Mappers_DatasAtividade) {
+                } elseif ($this->periodoIsValid($data_inicio->format('Y-m-d'), $data_termino->format('Y-m-d'), $periodo->getIdPeriodo()) && $calendario instanceof Application_Model_Mappers_DatasAtividade) {
                     $this->db_periodo->update($periodo->parseArray(), $this->db_periodo->getAdapter()->quoteInto('is_atual = ?', true));
                     $calendario->removeDatasForaPeriodoAtual($data_inicio, $data_termino, $periodo->getIdPeriodo());
                     return true;
@@ -102,7 +100,7 @@ class Application_Model_Mappers_Periodo {
      * Altera o status do período atual no banco de dados para finalizado
      * @return boolean
      */
-    private function finalizaPeriodoReserva() {
+    public function finalizaPeriodoReserva() {
         try {
             $this->db_periodo = new Application_Model_DbTable_Periodo();
             $where = $this->db_periodo->getAdapter()->quoteInto('id_periodo = ?', $this->id_periodo);
@@ -141,25 +139,27 @@ class Application_Model_Mappers_Periodo {
     }
 
     /**
-     * Verifica se o período já pode ser finalizado e o faz, ou indica se já foi ou não finalizado
+     * Verifica se o período já pode ser finalizado
      * @return boolean
      */
     public function verificaFimPeriodo() {
-        $periodo_atual = $this->getPeriodoAtual();
+        try {
+            $periodo_atual = $this->getPeriodoAtual();
 
-        if ($periodo_atual instanceof Application_Model_Periodo) {
-            $data_atual = new DateTime();
-            $data_final = $periodo_atual->getDataTermino();
+            if ($periodo_atual instanceof Application_Model_Periodo) {
+                $data_atual = new DateTime();
+                $data_final = $periodo_atual->getDataTermino();
 
-            $data_final->setTime(23, 59);
+                $data_final->setTime(23, 59);
 
-            if ($data_atual > $data_final) {
-                $this->finalizaPeriodoReserva();
-                return true;
+                if ($data_atual > $data_final)
+                    return true;
+
+                return false;
             }
-            return false;
+            return true;
+        } catch (Exception $ex) {
+            throw $ex;
         }
-        return true;
     }
-
 }

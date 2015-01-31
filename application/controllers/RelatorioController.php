@@ -17,9 +17,9 @@ class RelatorioController extends Zend_Controller_Action {
 
         $excel = new Aplicacao_Relatorio_Excel();
         if (base64_decode($this->getParam('unico_sheet')) == 'nao')
-            $resultado = $excel->writeAlunos($mapper_turma->getAlunosTurma(unserialize(base64_decode($this->getParam('turmas'))), false, (int) base64_decode($this->getParam('periodo'))), base64_decode($this->getParam('formato')));
+            $resultado = $excel->writeAlunos($mapper_turma->getAlunosOrganizadosByTurma(unserialize(base64_decode($this->getParam('turmas'))), false, (int) base64_decode($this->getParam('periodo'))), base64_decode($this->getParam('formato')));
         else
-            $resultado = $excel->writeAlunosUnicoSheet($mapper_turma->getAlunosTurmaSeparados(unserialize(base64_decode($this->getParam('turmas'))), false, (int) base64_decode($this->getParam('periodo'))), base64_decode($this->getParam('formato')));
+            $resultado = $excel->writeAlunosUnicoSheet($mapper_turma->getAlunosTurmaUnicoArray(unserialize(base64_decode($this->getParam('turmas'))), false, (int) base64_decode($this->getParam('periodo'))), base64_decode($this->getParam('formato')));
 
         if (is_null($resultado))
             $this->_helper->redirector->goToRoute(array('controller' => 'error', 'action' => 'error', 'msg' => 'As salas escolhidas não possuem nenhum aluno cadastrado'), null, true);
@@ -83,7 +83,7 @@ class RelatorioController extends Zend_Controller_Action {
         $mapper_turma = new Application_Model_Mappers_Aluno();
 
         $excel = new Aplicacao_Relatorio_Excel();
-        $resultado = $excel->getListaPresenca($mapper_turma->getAlunosTurma(unserialize(base64_decode($this->getParam('turmas'))), true), base64_decode($this->getParam('formato')));
+        $resultado = $excel->getListaPresenca($mapper_turma->getAlunosOrganizadosByTurma(unserialize(base64_decode($this->getParam('turmas'))), true), base64_decode($this->getParam('formato')));
 
         if (is_null($resultado))
             $this->_helper->redirector->goToRoute(array('controller' => 'error', 'action' => 'error', 'msg' => 'As salas escolhidas não possuem nenhum aluno cadastrado'), null, true);
@@ -99,7 +99,7 @@ class RelatorioController extends Zend_Controller_Action {
         $mapper_turma = new Application_Model_Mappers_Aluno();
 
         $excel = new Aplicacao_Relatorio_Excel();
-        $resultado = $excel->getRelatorioFrequenciaAluno($mapper_turma->getAlunosTurma(unserialize(base64_decode($this->getParam('turmas'))), true, null, true), base64_decode($this->getParam('formato')));
+        $resultado = $excel->getRelatorioFrequenciaAluno($mapper_turma->getAlunosOrganizadosByTurma(unserialize(base64_decode($this->getParam('turmas'))), true, null, true), base64_decode($this->getParam('formato')));
 
         if (is_null($resultado))
             $this->_helper->redirector->goToRoute(array('controller' => 'error', 'action' => 'error', 'msg' => 'As salas escolhidas não possuem nenhum aluno cadastrado'), null, true);
@@ -161,7 +161,7 @@ class RelatorioController extends Zend_Controller_Action {
         $mapper_turma = new Application_Model_Mappers_Aluno();
 
         $excel = new Aplicacao_Relatorio_Excel();
-        $resultado = $excel->getRelatorioNotasAluno($mapper_turma->getAlunosTurmaSeparados(unserialize(base64_decode($this->getParam('turmas'))), true), base64_decode($this->getParam('formato')));
+        $resultado = $excel->getRelatorioNotasAluno($mapper_turma->getAlunosTurmaUnicoArray(unserialize(base64_decode($this->getParam('turmas'))), true), base64_decode($this->getParam('formato')));
 
         if (is_null($resultado))
             $this->_helper->redirector->goToRoute(array('controller' => 'error', 'action' => 'error', 'msg' => 'As salas escolhidas não possuem nenhum aluno cadastrado'), null, true);

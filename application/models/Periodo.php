@@ -47,9 +47,11 @@ class Application_Model_Periodo {
     }
 
     public function getQuantidadeAlimentos() {
-        if (!$this->verificaFimPeriodo())
-            return $this->quantidade_alimentos;
-        return null;
+        return $this->quantidade_alimentos;
+    }
+    
+    public function getFrequenciaLiberacao(){
+        return $this->frequencia_min_aprovacao;
     }
 
     public function getTotalPontosPeriodo() {
