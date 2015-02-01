@@ -93,7 +93,7 @@ class Application_Model_Mappers_Turma {
 
                 if (!empty($id_turma))
                     $select->where('turma.id_turma = ?', (int) $id_turma);
-                
+
                 return $this->db_turma->fetchAll($select)->toArray();
             }
 
@@ -110,6 +110,40 @@ class Application_Model_Mappers_Turma {
                 } else
                     return $this->db_turma->fetchAll($select)->toArray();
             }
+        } catch (Zend_Exception $e) {
+            echo $e->getMessage();
+            return null;
+        }
+    }
+
+    /**
+     * Utilizado para finalizar o período
+     * @return null
+     */
+    public function getQuantidadeAlunosByPeriodo($id_periodo) {
+        try {
+            $this->db_turma = new Application_Model_DbTable_Turma();
+            $select = $this->db_turma->select()
+                    ->setIntegrityCheck(false)
+                    ->from('turma', array('id_turma'))
+                    ->joinleft('turma_alunos', 'turma.id_turma = turma_alunos.id_turma', array('count(aluno.id_aluno) as quantidade'))
+                    ->joinLeft('aluno', 'turma_alunos.id_aluno = aluno.id_aluno AND ' . $this->db_turma->getDefaultAdapter()->quoteInto('aluno.status = ?', Application_Model_Aluno::$status_ativo), array())
+                    ->group('turma.id_turma');
+
+            if (!empty($id_periodo))
+                $select->where('turma.id_periodo = ?', (int) $id_periodo);
+
+            $quantidades = $this->db_turma->fetchAll($select);
+
+            if (!empty($quantidades)) {
+                $array_quantidades = array();
+
+                foreach ($quantidades as $quantidade)
+                    $array_quantidades[$quantidade->id_turma] = $quantidade->quantidade;
+
+                return $array_quantidades;
+            }
+            return null;
         } catch (Zend_Exception $e) {
             echo $e->getMessage();
             return null;
@@ -135,7 +169,7 @@ class Application_Model_Mappers_Turma {
 
             if (!empty($filtros_busca['periodo']))
                 $select->where('turma.id_periodo = ?', (int) $filtros_busca['periodo']);
-            
+
             if (empty($paginator)) {
                 $turmas = $this->db_turma->fetchAll($select);
                 if (!empty($turmas)) {

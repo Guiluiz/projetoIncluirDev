@@ -230,7 +230,7 @@ class Application_Model_Mappers_Atividade {
      */
     public function getTurmaAtividadesID($turma = null) {
         try {
-            $this->db_atividade = new Application_Model_DbTable_Falta();
+            $this->db_atividade = new Application_Model_DbTable_TurmaAtividades();
             $select = $this->db_atividade->select()
                     ->from('turma_atividades', array('id_atividades_turma', 'id_atividade', 'id_turma'));
 
