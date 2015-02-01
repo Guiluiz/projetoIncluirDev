@@ -94,9 +94,8 @@ class Application_Model_Mappers_Frequencia {
                     if ($turma instanceof Application_Model_Turma) {
                         $id_turma = $turma->getIdTurma();
 
-                        foreach ($datas as $data) {
+                        foreach ($datas as $data)
                             $db_datas_lancamentos->insert(array('data_funcionamento' => $data->format('Y-m-d'), 'id_turma' => $id_turma));
-                        }
                     }
                 }
             }
@@ -118,9 +117,10 @@ class Application_Model_Mappers_Frequencia {
                 $db_datas_lancamentos = new Application_Model_DbTable_DatasLancamentosFrequenciaTurmas();
 
                 $select = $db_datas_lancamentos->select()
+                        ->setIntegrityCheck(false)
                         ->from('datas_lancamentos_frequencias_turmas')
                         ->joinInner('datas_funcionamento', 'datas_lancamentos_frequencias_turmas.data_funcionamento = datas_funcionamento.data_funcionamento')
-                        ->where('data_funcionamento.id_periodo = ?', $periodo->getIdPeriodo());
+                        ->where('datas_funcionamento.id_periodo = ?', $periodo->getIdPeriodo());
 
                 if (!empty($turma))
                     $select->where('datas_lancamentos_frequencias_turmas.id_turma = ?', (int) $turma);
@@ -135,9 +135,8 @@ class Application_Model_Mappers_Frequencia {
 
                     return $array_datas;
                 }
-
-                return null;
             }
+            return null;
         } catch (Exception $ex) {
             throw $ex;
         }
