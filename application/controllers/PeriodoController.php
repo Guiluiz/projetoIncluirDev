@@ -1,15 +1,12 @@
 <?php
 
-class PeriodoController extends Zend_Controller_Action
-{
+class PeriodoController extends Zend_Controller_Action {
 
-    public function init()
-    {
+    public function init() {
         
     }
 
-    public function indexAction()
-    {
+    public function indexAction() {
         $usuario = Zend_Auth::getInstance()->getIdentity();
 
         $this->view->title = "Projeto Incluir - Período de Atividades";
@@ -41,12 +38,12 @@ class PeriodoController extends Zend_Controller_Action
             $this->view->novo_periodo = true;
     }
 
-    public function configuraFimPeriodoAction()
-    {
-        // action body
+    public function configuraFimPeriodoAction() {
+        $this->view->title = "Projeto Incluir - Configurar Fim do Período";
+
+        $form_fim_periodo = new Application_Form_FormConfigFimPeriodo();
+        $this->view->form = $form_fim_periodo;
+        
     }
 
-
 }
-
-

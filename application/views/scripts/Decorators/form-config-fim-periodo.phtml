@@ -1,0 +1,25 @@
+<form enctype="application/x-www-form-urlencoded" action="" method="post">
+    <h2>Configurar Fim do Período</h2>
+    
+    <div class="container-aviso aviso-periodo"><div class="ui-widget">
+            <div style="padding: 0 .7em; width:90%; margin: 0 auto; margin-bottom: 2em" class="ui-state-error ui-corner-all">
+                <p><span style="float: left; margin-right: .3em;" class="ui-icon ui-icon-alert"></span>
+                    <b>Atenção!</b> Houve uma tentativa de finalizar o semestre, contudo há lançamentos que não foram feitos. Portanto ele não pode ser fechado.
+                    Utilize as opções abaixo para resolver o problema.
+            </div>
+        </div>
+    </div>
+    
+    <table class="form-dados" style="width: 40%">
+        <tr>
+            <td colspan="3"><?= $this->element->opcoes_adiamento ?></td>
+        </tr>
+    </table>
+
+    <table class="submit" style="float: left;">
+        <tr>
+            <td><?= $this->element->enviar ?></td>
+        </tr>
+    </table>
+
+</form>
