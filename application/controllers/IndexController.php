@@ -17,6 +17,7 @@ class IndexController extends Zend_Controller_Action {
         $periodo_atual = $mapper_periodo->getPeriodoAtual();
 
         $mapper_frequencia->setDatasLancamentos($mapper_turma->buscaTurmas(array('periodo' => $periodo_atual->getIdPeriodo())), $mapper_calendario->getDatasByPeriodo($periodo_atual));*/
+
     }
 
 }
