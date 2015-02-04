@@ -17,7 +17,7 @@ class Aplicacao_Plugin_Periodo extends Zend_Controller_Plugin_Abstract {
         $auth = Zend_Auth::getInstance();
         if ($auth->hasIdentity()) {
             $user = $auth->getIdentity();
-            
+
             if ($user instanceof Application_Model_Administrador && $request->getControllerName() != 'periodo' && $request->getActionName() != 'configura-fim-periodo') {
                 if ($this->mapper_periodo->verificaFimPeriodo()) {
                     $periodo_atual = $this->mapper_periodo->getPeriodoAtual();
@@ -29,20 +29,14 @@ class Aplicacao_Plugin_Periodo extends Zend_Controller_Plugin_Abstract {
                         $mapper_frequencia = new Application_Model_Mappers_Frequencia();
                         $mapper_notas = new Application_Model_Mappers_Nota();
                         $mapper_alunos = new Application_Model_Mappers_Aluno();
-                        
-                        /*
-                        $periodo_atual;
-                        $mapper_turma->getQuantidadeAlunos();
-                        $mapper_calendario->getDatasByPeriodo($periodo_atual);
-                        $mapper_frequencia->getDatasLancamentosByPeriodo($periodo_atual);
-                        $mapper_atividades->getTurmaAtividadesID();
-                        $mapper_notas->getNotasAlunos();
-                        */
-                        
+
                         if (!$mapper_alunos->finalizaAlunos($mapper_turma->getQuantidadeAlunosByPeriodo($periodo_atual->getIdPeriodo()), $mapper_calendario->getDatasByPeriodo($periodo_atual), $mapper_frequencia->getDatasLancamentosByPeriodo($periodo_atual), $mapper_atividades->getTurmaAtividadesID(), $mapper_notas->getNotasAlunos())) {
                             $request->setControllerName('periodo');
                             $request->setActionName('configura-fim-periodo');
                         }
+                        
+                        else
+                            $this->mapper_periodo->finalizaPeriodoReserva();
                     }
                 }
             }

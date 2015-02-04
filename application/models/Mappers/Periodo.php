@@ -103,7 +103,7 @@ class Application_Model_Mappers_Periodo {
     public function finalizaPeriodoReserva() {
         try {
             $this->db_periodo = new Application_Model_DbTable_Periodo();
-            $where = $this->db_periodo->getAdapter()->quoteInto('id_periodo = ?', $this->id_periodo);
+            $where = $this->db_periodo->getAdapter()->quoteInto('is_atual = ?', true);
 
             $this->db_periodo->update(array('is_atual' => false), $where);
 
