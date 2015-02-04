@@ -53,12 +53,12 @@ class RelatorioController extends Zend_Controller_Action {
 
     public function opcoesListaPresencaAction() {
         $usuario = Zend_Auth::getInstance()->getIdentity();
-        //$periodo = new Application_Model_Mappers_Periodo();
+        $periodo = new Application_Model_Mappers_Periodo();
         $form_opcoes_relatorio = new Application_Form_RelatorioListaPresenca();
 
         $this->view->title = "Projeto Incluir - Emissão de Lista de Presença";
 
-        //$form_opcoes_relatorio->initializePeriodo($periodo->getPeriodos());
+        $form_opcoes_relatorio->initializePeriodo($periodo->getPeriodos());
 
         if ($this->_request->isPost()) {
             $dados = $this->_request->getPost();
@@ -83,7 +83,7 @@ class RelatorioController extends Zend_Controller_Action {
         $mapper_turma = new Application_Model_Mappers_Aluno();
 
         $excel = new Aplicacao_Relatorio_Excel();
-        $resultado = $excel->getListaPresenca($mapper_turma->getAlunosOrganizadosByTurma(unserialize(base64_decode($this->getParam('turmas'))), true), base64_decode($this->getParam('formato')));
+        $resultado = $excel->getListaPresenca($mapper_turma->getAlunosOrganizadosByTurma(unserialize(base64_decode($this->getParam('turmas'))), false, (int) base64_decode($this->getParam('periodo'))), base64_decode($this->getParam('formato')));
 
         if (is_null($resultado))
             $this->_helper->redirector->goToRoute(array('controller' => 'error', 'action' => 'error', 'msg' => 'As salas escolhidas não possuem nenhum aluno cadastrado'), null, true);
