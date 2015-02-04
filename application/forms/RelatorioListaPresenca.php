@@ -7,7 +7,7 @@ class Application_Form_RelatorioListaPresenca extends Zend_Form {
             array('ViewScript', array('viewScript' => 'Decorators/form-relatorio-lista-presenca.phtml')))
         );
         
-        $periodo = new Zend_Form_Element_Select('periodo');
+        /*$periodo = new Zend_Form_Element_Select('periodo');
         $periodo->setLabel('Período:')
                 ->setAttrib('class', 'obrigatorio')
                 ->addFilter('StripTags')
@@ -19,7 +19,7 @@ class Application_Form_RelatorioListaPresenca extends Zend_Form {
                     'ViewHelper',
                     'Label',
                     'Errors'
-        ));
+        ));*/
 
         $todas_turmas = new Zend_Form_Element_Radio('todas_turmas');
         $todas_turmas->setLabel('Todas as Turmas: ')
@@ -78,7 +78,7 @@ class Application_Form_RelatorioListaPresenca extends Zend_Form {
         ));
 
         $this->addElements(array(
-            $periodo,
+            //$periodo,
             $todas_turmas,
             $turmas,
             $submit,
@@ -104,7 +104,7 @@ class Application_Form_RelatorioListaPresenca extends Zend_Form {
             $this->getElement('turmas')->clearValidators()->setRequired(false);
     }
     
-    public function initializePeriodo($periodos, $periodo_atual = null) {
+    /*public function initializePeriodo($periodos, $periodo_atual = null) {
         $array_periodos = array();
 
         if (!empty($periodos)) {
@@ -119,6 +119,6 @@ class Application_Form_RelatorioListaPresenca extends Zend_Form {
                     ->setMultiOptions($array_periodos)
                     ->setValue(($periodo_atual instanceof Application_Model_Periodo) ? $periodo_atual->getIdPeriodo(true) : '');
         }
-    }
+    }*/
 
 }
