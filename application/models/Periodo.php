@@ -123,5 +123,9 @@ class Application_Model_Periodo {
         }
         return false;
     }
+    
+    public function getMinPtsAprovacao(){
+        return $this->min_pts_aprovacao;
+    }
 
 }

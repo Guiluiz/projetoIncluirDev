@@ -194,7 +194,7 @@ class Application_Model_Aluno {
     }
 
     public function getPorcentagemFaltas($id_turma, $total_aulas, $isView = null) {
-        if (isset($this->turmas[$id_turma]) && (int)$total_aulas > 0) {
+        if (isset($this->turmas[$id_turma]) && (int) $total_aulas > 0) {
             $total_faltas = count($this->turmas[$id_turma][Application_Model_Aluno::$index_faltas_turma]);
 
             if (!empty($isView))
@@ -263,7 +263,7 @@ class Application_Model_Aluno {
         }
     }
 
-    public function getNotaAcumulada($id_turma, $get_label = true) {
+    public function getNotaAcumulada($id_turma, $get_label = true, $only_nota = false) {
         if (isset($this->turmas[$id_turma]) && !empty($this->turmas[$id_turma][Application_Model_Aluno::$index_notas_turma])) {
             $nota_acumulada = 0;
             $total_atividades = 0;
@@ -277,7 +277,11 @@ class Application_Model_Aluno {
 
             if ($get_label)
                 return '(Nota Acumulada/Total Distribuído):<b>(' . $nota_acumulada . ' / ' . $total_atividades . ')</b>';
-            return $nota_acumulada . ' / ' . $total_atividades;
+
+            if (!$only_nota)
+                return $nota_acumulada . ' / ' . $total_atividades;
+
+            return $nota_acumulada;
         }
         return 'Não há nenhuma atividade do aluno na turma especificada';
     }
@@ -324,8 +328,7 @@ class Application_Model_Aluno {
             if (empty($is_array)) {
                 foreach ($this->turmas as $turma)
                     $aux[$turma[Application_Model_Aluno::$index_turma]->getIdTurma(true)] = $turma[Application_Model_Aluno::$index_notas_turma];
-            } 
-            else {
+            } else {
                 foreach ($this->turmas as $turma) {
                     $notas = array();
                     if (!empty($turma[Application_Model_Aluno::$index_notas_turma])) {

@@ -957,7 +957,7 @@ class Application_Model_Mappers_Aluno {
         try {
             if ($this->verificaLancamentos($quantidade_alunos_turma, $calendario_atual, $turmas_datas_lancamentos, $ids_atividades_turma, $notas_lancadas)) {
                 if ($calendario_atual instanceof Application_Model_DatasAtividade) {
-                    $alunos = $this->getAlunos();
+                    $alunos = $this->getAlunos(null, true, true, true);
                     $periodo_atual = $calendario_atual->getPeriodoCalendario();
 
                     if ($periodo_atual instanceof Application_Model_Periodo && $this->verificaLancamentos($quantidade_alunos_turma, $calendario_atual, $turmas_datas_lancamentos, $ids_atividades_turma, $notas_lancadas)) {
@@ -967,7 +967,8 @@ class Application_Model_Mappers_Aluno {
                             $turmas_aluno = $aluno->getCompleteTurmas();
 
                             foreach ($turmas_aluno as $id_turma => $turma) {
-                                if ($aluno->getNotaAcumulada($id_turma) >= $periodo_atual->getValorLiberacao() && $aluno->getPorcentagemFaltas($id_turma, $calendario_atual->getQuantidadeAulas()) >= $periodo_atual->getFrequenciaLiberacao())
+                                if ($aluno->getNotaAcumulada($id_turma, false, true) >= $periodo_atual->getMinPtsAprovacao() 
+                                        && $aluno->getPorcentagemFaltas($id_turma, $calendario_atual->getQuantidadeAulas())*100 >= $periodo_atual->getFrequenciaLiberacao())
                                     $db_turmas_alunos->update(array('aprovado' => true), $db_turmas_alunos->getAdapter()->quoteInto('id_turma = ? AND ', $id_turma) .
                                             $db_turmas_alunos->getAdapter()->quoteInto('id_aluno = ?', $aluno->getIdAluno())
                                     );
@@ -977,6 +978,7 @@ class Application_Model_Mappers_Aluno {
                                     );
                             }
                         }
+                        return true;
                     }
                 }
             }
@@ -997,8 +999,7 @@ class Application_Model_Mappers_Aluno {
                         if ($count_datas_calendario != count($datas))
                             return false;
                     }
-                }
-                else
+                } else
                     return false;
 
                 // verifica o lançamento de notas
