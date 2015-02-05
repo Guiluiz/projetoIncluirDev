@@ -1,3 +1,8 @@
+/**
+ * Controle do lançamento de frequência dos alunos
+ * @type Function|_L5.Anonym$5
+ */
+
 var controle_frequencia_aluno = (function() {
     var frequencia = {
         curso: $('#curso'),
@@ -8,7 +13,7 @@ var controle_frequencia_aluno = (function() {
         container: $('#calendario_frequencia'),
         container_frequencias: $('#frequencia'),
         url_ajax_aluno: '',
-        url_ajax_disxiplina: '',
+        url_ajax_disciplina: '',
         url_ajax_turma: '',
         datas_calendario_academico: '',
         data_atual: '',
@@ -186,7 +191,7 @@ var controle_frequencia_aluno = (function() {
 
             frequencia.printContador();
         });
-
+        
         frequencia.printContador();
     }
 

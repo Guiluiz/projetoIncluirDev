@@ -179,6 +179,7 @@ class DisciplinaController extends Zend_Controller_Action {
 
             if ($this->_request->isPost()) {
                 $id_curso = (int) base64_decode($this->getRequest()->getParam('id_curso'));
+                
                 if ($id_curso > 0) {
                     $id_exclude = null;
 
