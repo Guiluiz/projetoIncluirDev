@@ -11,21 +11,21 @@ var controle_disciplinas = (function() {
         btn_incluir: $('#incluir_pre_requisito'),
         btn_cancelar: $('#cancelar'),
         action: '', // 1 - cadastro, 2 alteração, 3 exclusão
-        url_ajax_disciplina: '',
-        disciplinas_buscadas: null
+        url_ajax_disciplina: ''
     };
 
     disciplina.setValues = function(url_ajax_disciplina, action) {
         disciplina.action = action;
         disciplina.url_ajax_disciplina = url_ajax_disciplina;
+        disciplina.ini();
     };
 
     disciplina.ini = function() {
         disciplina.container.append($('#opcoes_escolhidas').children()).show();
+        disciplina.eventRemovePreRequisito();
         // em caso de alteração ou erro de cadastro, os pré requisitos selecionados vem populados em um container escondido
 
         if (disciplina.action != 3) { // se não for exclusão
-
             disciplina.campo_curso.change(function() {
                 disciplina.campo_pre_requisito.html('');
                 disciplina.buscaPreRequisitos();
@@ -54,12 +54,28 @@ var controle_disciplinas = (function() {
         if (disciplina.campo_curso.children().length > 0 && opcao != '') {
             $.ajax({
                 type: "POST",
-                url: url,
+                url: disciplina.url_ajax_disciplina,
                 dataType: "JSON",
                 data: parametros_requisicao,
                 success: function(resultado) {
-                    disciplina.disciplinas_buscadas = resultado;
-                    disciplina.printPreRequisitos();
+                    var html = "";
+                    if (resultado instanceof Object) {
+                        if (resultado.length == 0)
+                            if (disciplina.action != 2)
+                                exibeMensagem('Não há nenhuma disciplina cadastrada para esse curso.', 'Busca de Disciplinas');
+                            else
+                                exibeMensagem('Não há nenhuma disciplina que você possa incluir para esse curso.', 'Busca de Disciplinas');
+
+                        else {
+                            html += '<option value="">Selecione</option>';
+                            for (var i = 0; i < resultado.length; i++)
+                                html += "<option value='" + resultado[i].id_disciplina + "'>" + resultado[i].nome_disciplina + "</option>";
+                        }
+                    }
+                    else
+                        exibeMensagem('Houve problemas ao realizar a busca.', 'Busca de Disciplinas');
+
+                    disciplina.campo_pre_requisito.html(html);
                 },
                 error: function(error) {
                     console.log(error);
@@ -71,37 +87,8 @@ var controle_disciplinas = (function() {
             disciplina.campo_pre_requisito.html('');
     };
 
-    disciplina.printPreRequisitos = function() {
-        var html = "";
-        if (disciplina.disciplinas_buscadas instanceof Object) {
-            if (disciplina.disciplinas_buscadas.length == 0)
-                if (disciplina.action != 2)
-                    exibeMensagem('Não há nenhuma disciplina cadastrada para esse curso.', 'Busca de Disciplinas');
-                else
-                    exibeMensagem('Não há nenhuma disciplina que você possa incluir para esse curso.', 'Busca de Disciplinas');
-
-            else {
-                html += '<option value="">Selecione</option>';
-                for (var i = 0; i < disciplina.disciplinas_buscadas.length; i++)
-                    html += "<option value='" + disciplina.disciplinas_buscadas[i].id_disciplina + "'>" + disciplina.disciplinas_buscadas[i].nome_disciplina + "</option>";
-            }
-        }
-        else
-            exibeMensagem('Houve problemas ao realizar a busca.', 'Busca de Disciplinas');
-
-        disciplina.campo_pre_requisito.html(html);
-    };
-
-    disciplina.getIdPreRequisito = function() {
-        return disciplina.campo_pre_requisito.find('option:selected').val();
-    };
-
-    disciplina.getOptionPreRequisito = function() {
-        return disciplina.campo_pre_requisito.find('option:selected');
-    }
-
     disciplina.addPreRequisito = function() {
-        var option = disciplina.getOptionPreRequisito();
+        var option = disciplina.campo_pre_requisito.find('option:selected');
         var id_pre_requisito = $(option).val();
 
         if (id_pre_requisito != "" && disciplina.campo_pre_requisito.children().length > 0 && !disciplina.find('tr').hasClass(id_pre_requisito)) {
@@ -113,7 +100,7 @@ var controle_disciplinas = (function() {
             }
 
             html += '<tr class="' + id_pre_requisito + '"><input type="hidden" name="pre_requisitos[]" value="' + id_pre_requisito + '"/><td>' + $(option).html() + '</td><td><div class="excluir_geral" >Excluir</div></td></tr>';
-            
+
             $(container).append(html);
         }
         else
