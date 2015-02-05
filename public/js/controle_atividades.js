@@ -29,7 +29,9 @@
         atividade.data_inicio = data_inicio;
         atividade.data_fim = data_fim;
         atividade.datas_calendario_academico = datas;
-        atividade.action = action; 
+        atividade.action = action;
+        
+        atividade.ini();
     };
 
     atividade.ini = function() {

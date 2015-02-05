@@ -22,7 +22,8 @@ var controle_calendario = (function() {
         calendario.url_img = url_img;
         calendario.min_date = min_date;
         calendario.max_date = max_date;
-
+        
+        calendario.ini();
     };
 
     calendario.ini = function() {

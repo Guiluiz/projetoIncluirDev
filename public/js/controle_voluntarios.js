@@ -29,6 +29,8 @@ var controle_voluntarios = (function() {
         voluntario.status_desligado = status;
         voluntario.atividade_aula = atividade;
         voluntario.action = action;
+        
+        voluntario.ini();
     };
 
     voluntario.ini = function() {
