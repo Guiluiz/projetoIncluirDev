@@ -68,7 +68,7 @@ class RelatorioController extends Zend_Controller_Action {
                 $this->_helper->redirector->goToRoute($usuario->getUserIndex(), null, true);
 
             if ($form_opcoes_relatorio->isValid($dados))
-                $this->_helper->redirector->goToRoute(array('controller' => 'relatorio', 'action' => 'lista-presenca', 'turmas' => base64_encode(serialize($form_opcoes_relatorio->getValue('turmas'))), 'formato' => $form_opcoes_relatorio->getValue('formato_saida')), null, true);
+                $this->_helper->redirector->goToRoute(array('controller' => 'relatorio', 'action' => 'lista-presenca', 'turmas' => base64_encode(serialize($form_opcoes_relatorio->getValue('turmas'))), 'formato' => $form_opcoes_relatorio->getValue('formato_saida'), 'periodo' => $form_opcoes_relatorio->getValue('periodo')), null, true);
         }
 
         $this->view->form = $form_opcoes_relatorio;
@@ -97,9 +97,10 @@ class RelatorioController extends Zend_Controller_Action {
         $this->_helper->viewRenderer->setNoRender(true);
 
         $mapper_turma = new Application_Model_Mappers_Aluno();
+        $mapper_calendario = new Application_Model_Mappers_DatasAtividade();
 
         $excel = new Aplicacao_Relatorio_Excel();
-        $resultado = $excel->getRelatorioFrequenciaAluno($mapper_turma->getAlunosOrganizadosByTurma(unserialize(base64_decode($this->getParam('turmas'))), false, (int) base64_decode($this->getParam('periodo')), true), base64_decode($this->getParam('formato')));
+        $resultado = $excel->getRelatorioFrequenciaAluno($mapper_turma->getAlunosOrganizadosByTurma(unserialize(base64_decode($this->getParam('turmas'))), false, (int) base64_decode($this->getParam('periodo')), true), base64_decode($this->getParam('formato')), $mapper_calendario->getDatasByPeriodo(new Application_Model_Periodo((int) base64_decode($this->getParam('periodo')))));
 
         if (is_null($resultado))
             $this->_helper->redirector->goToRoute(array('controller' => 'error', 'action' => 'error', 'msg' => 'As salas escolhidas não possuem nenhum aluno cadastrado'), null, true);
@@ -125,7 +126,7 @@ class RelatorioController extends Zend_Controller_Action {
                 $this->_helper->redirector->goToRoute($usuario->getUserIndex(), null, true);
 
             if ($form_opcoes_relatorio->isValid($dados))
-                $this->_helper->redirector->goToRoute(array('controller' => 'relatorio', 'action' => 'relatorio-frequencia-aluno', 'turmas' => base64_encode(serialize($form_opcoes_relatorio->getValue('turmas'))), 'formato' => $form_opcoes_relatorio->getValue('formato_saida')), null, true);
+                $this->_helper->redirector->goToRoute(array('controller' => 'relatorio', 'action' => 'relatorio-frequencia-aluno', 'turmas' => base64_encode(serialize($form_opcoes_relatorio->getValue('turmas'))), 'formato' => $form_opcoes_relatorio->getValue('formato_saida'), 'periodo' => $form_opcoes_relatorio->getValue('periodo')), null, true);
         }
 
         $this->view->form = $form_opcoes_relatorio;
@@ -148,7 +149,7 @@ class RelatorioController extends Zend_Controller_Action {
                 $this->_helper->redirector->goToRoute($usuario->getUserIndex(), null, true);
 
             if ($form_opcoes_relatorio->isValid($dados))
-                $this->_helper->redirector->goToRoute(array('controller' => 'relatorio', 'action' => 'relatorio-notas-aluno-turma', 'turmas' => base64_encode(serialize($form_opcoes_relatorio->getValue('turmas'))), 'formato' => $form_opcoes_relatorio->getValue('formato_saida')), null, true);
+                $this->_helper->redirector->goToRoute(array('controller' => 'relatorio', 'action' => 'relatorio-notas-aluno-turma', 'turmas' => base64_encode(serialize($form_opcoes_relatorio->getValue('turmas'))), 'formato' => $form_opcoes_relatorio->getValue('formato_saida'), 'periodo' => $form_opcoes_relatorio->getValue('periodo')), null, true);
         }
 
         $this->view->form = $form_opcoes_relatorio;
@@ -159,9 +160,10 @@ class RelatorioController extends Zend_Controller_Action {
         $this->_helper->viewRenderer->setNoRender(true);
 
         $mapper_turma = new Application_Model_Mappers_Aluno();
+        $mapper_calendario = new Application_Model_Mappers_DatasAtividade();
 
         $excel = new Aplicacao_Relatorio_Excel();
-        $resultado = $excel->getRelatorioNotasAluno($mapper_turma->getAlunosTurmaUnicoArray(unserialize(base64_decode($this->getParam('turmas'))), false, (int) base64_decode($this->getParam('periodo'))), base64_decode($this->getParam('formato')));
+        $resultado = $excel->getRelatorioNotasAluno($mapper_turma->getAlunosTurmaUnicoArray(unserialize(base64_decode($this->getParam('turmas'))), false, (int) base64_decode($this->getParam('periodo'))), base64_decode($this->getParam('formato')), $mapper_calendario->getDatasByPeriodo(new Application_Model_Periodo((int) base64_decode($this->getParam('periodo')))));
 
         if (is_null($resultado))
             $this->_helper->redirector->goToRoute(array('controller' => 'error', 'action' => 'error', 'msg' => 'As salas escolhidas não possuem nenhum aluno cadastrado'), null, true);

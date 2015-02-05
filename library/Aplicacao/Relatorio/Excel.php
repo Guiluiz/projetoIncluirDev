@@ -784,13 +784,13 @@ class Aplicacao_Relatorio_Excel {
         }
     }
 
-    public function getRelatorioFrequenciaAluno($alunos_turmas, $formato_saida) {
+    public function getRelatorioFrequenciaAluno($alunos_turmas, $formato_saida, $calendario) {
         try {
             setlocale(LC_ALL, "pt_BR", "pt_BR.iso-8859-1", "pt_BR.utf-8", "portuguese");
             date_default_timezone_set('America/Sao_Paulo');
             @ini_set('memory_limit', '768M');
 
-            if (!empty($alunos_turmas)) {
+            if (!empty($alunos_turmas) && $calendario instanceof Application_Model_DatasAtividade) {
                 set_time_limit(0);
 
                 $image = file_get_contents('imagens/logo-projeto-incluir.PNG');
@@ -816,8 +816,7 @@ class Aplicacao_Relatorio_Excel {
                 $excel->removeSheetByIndex(0);
                 $linhas = 0;
 
-                $mapper_datas_calendario_letivo = new Application_Model_DatasAtividade();
-                $datas = $mapper_datas_calendario_letivo->getDatas();
+                $datas = $calendario->getDatas();
 
                 $j = 1;
 
@@ -1008,15 +1007,14 @@ class Aplicacao_Relatorio_Excel {
         }
     }
 
-    public function getRelatorioNotasAluno($alunos, $formato_saida) {
+    public function getRelatorioNotasAluno($alunos, $formato_saida, $calendario_atual) {
         try {
-            if (!empty($alunos)) {
+            if (!empty($alunos) && $calendario_atual instanceof Application_Model_DatasAtividade) {
                 set_time_limit(0);
                 @ini_set('memory_limit', '512M');
-                
-                $datas_calendario_letivo = new Application_Model_DatasAtividade();
-                $total_aulas = $datas_calendario_letivo->getQuantidadeAulas();
-                
+
+                $total_aulas = $calendario_atual->getQuantidadeAulas();
+
                 $mapper_turma = new Application_Model_Mappers_Turma();
                 //$filter = new Aplicacao_Filtros_StringSimpleFilter();
 
@@ -1061,13 +1059,13 @@ class Aplicacao_Relatorio_Excel {
                 $sheet->setCellValue('C5', 'Email');
                 $sheet->setCellValue('D5', 'Nota Acumulada/Total Distribuído');
                 $sheet->setCellValue('E5', 'Frequência (%)');
-                
+
                 $sheet->getColumnDimension('A')->setWidth(50);
                 $sheet->getColumnDimension('B')->setAutoSize(true);
                 $sheet->getColumnDimension('C')->setAutoSize(true);
                 $sheet->getColumnDimension('D')->setAutoSize(true);
                 $sheet->getColumnDimension('E')->setAutoSize(true);
-                
+
                 $objDrawing = new PHPExcel_Worksheet_Drawing();
                 $objDrawing->setName('Logo Projeto Incluir')
                         ->setDescription('Logo Projeto Incluir')
