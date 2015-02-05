@@ -9,7 +9,7 @@ var controle_disciplinas = (function() {
         campo_disciplina: $('#id_disciplina'),
         container: $('.form_incrementa'),
         btn_incluir: $('#incluir_pre_requisito'),
-        btn_cancelar: $('#cancelar'),
+        //btn_cancelar: $('#cancelar'),
         action: '', // 1 - cadastro, 2 alteração, 3 exclusão
         url_ajax_disciplina: ''
     };
@@ -116,7 +116,6 @@ var controle_disciplinas = (function() {
             else
                 $(table).html('').hide();
         });
-
     };
 
     return {ini: disciplina.setValues};
