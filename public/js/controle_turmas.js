@@ -12,7 +12,7 @@ var controle_turmas = (function() {
         campo_disciplina: $('#disciplina'),
         campo_professor: $('#professor'),
         campo_data_ini: $('#data_inicio'),
-        campo_data_fim: $('#data_termino'),
+        campo_data_fim: $('#data_fim'),
         btn_incluir_professor: $('#incluir_professor'),
         //btn_cancelar: $('#cancelar'),
         action: '', // 1 - cadastro, 2 alteração, 3 exclusão

@@ -10,7 +10,6 @@ class Application_Model_Turma {
     public static $status_iniciada = 2;
     public static $status_cancelada = 3;
     public static $status_concluida = 4;
-    
     private $id_turma;
     private $nome;
     private $data_inicio;
@@ -20,6 +19,7 @@ class Application_Model_Turma {
     private $professores;
     private $disciplina;
     private $status;
+
     /**
      *
      * @var Application_Model_Periodo 
@@ -75,7 +75,7 @@ class Application_Model_Turma {
     }
 
     public function getNomeTurma() {
-        return $this->nome;
+        return mb_strtoupper($this->nome, 'UTF-8');
     }
 
     public function getDataFim($isView = null) {
@@ -130,8 +130,8 @@ class Application_Model_Turma {
     public function getDisciplina() {
         return $this->disciplina;
     }
-    
-    public function getPeriodo(){
+
+    public function getPeriodo() {
         return $this->periodo;
     }
 

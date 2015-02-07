@@ -35,7 +35,7 @@ class RelatorioController extends Zend_Controller_Action {
         $this->view->title = "Projeto Incluir - Relatório Alunos por Turma";
 
         $form_opcoes_relatorio = new Application_Form_RelatorioAlunosTurma();
-        $form_opcoes_relatorio->initializePeriodo($periodo->getPeriodos());
+        $form_opcoes_relatorio->initializePeriodo($periodo->getPeriodos(), $periodo->getPeriodoAtual());
 
         if ($this->_request->isPost()) {
             $dados = $this->_request->getPost();
@@ -58,7 +58,7 @@ class RelatorioController extends Zend_Controller_Action {
 
         $this->view->title = "Projeto Incluir - Emissão de Lista de Presença";
 
-        $form_opcoes_relatorio->initializePeriodo($periodo->getPeriodos());
+        $form_opcoes_relatorio->initializePeriodo($periodo->getPeriodos(), $periodo->getPeriodoAtual());
 
         if ($this->_request->isPost()) {
             $dados = $this->_request->getPost();
@@ -116,7 +116,7 @@ class RelatorioController extends Zend_Controller_Action {
         $form_opcoes_relatorio = new Application_Form_RelatorioFrequenciaAlunos();
 
         $periodo = new Application_Model_Mappers_Periodo();
-        $form_opcoes_relatorio->initializePeriodo($periodo->getPeriodos());
+        $form_opcoes_relatorio->initializePeriodo($periodo->getPeriodos(), $periodo->getPeriodoAtual());
 
         if ($this->_request->isPost()) {
             $dados = $this->_request->getPost();
@@ -139,7 +139,7 @@ class RelatorioController extends Zend_Controller_Action {
         $form_opcoes_relatorio = new Application_Form_RelatorioNotaAlunos();
 
         $periodo = new Application_Model_Mappers_Periodo();
-        $form_opcoes_relatorio->initializePeriodo($periodo->getPeriodos());
+        $form_opcoes_relatorio->initializePeriodo($periodo->getPeriodos(), $periodo->getPeriodoAtual());
 
         if ($this->_request->isPost()) {
             $dados = $this->_request->getPost();

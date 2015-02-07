@@ -13,8 +13,10 @@ class TurmaController extends Zend_Controller_Action {
         $mapper_disciplina = new Application_Model_Mappers_Disciplina();
 
         $periodo = new Application_Model_Mappers_Periodo();
-
+        
+        $form_consulta->initializePeriodo($periodo->getPeriodos());
         $form_consulta->initializeDisciplinas($mapper_disciplina->buscaDisciplinas());
+        
         $this->view->form = $form_consulta;
         $this->view->inativo = ($periodo->verificaFimPeriodo()) ? true : null;
 
