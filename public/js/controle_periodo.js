@@ -8,7 +8,7 @@
         max_date: '',
         url_img: '',
         campo_data_ini: $('#data_inicio'),
-        campo_data_fim: $('#data_termino'),
+        campo_data_fim: $('#data_termino')
     };
 
     periodo.setValues = function(url_img, min_date, max_date) {

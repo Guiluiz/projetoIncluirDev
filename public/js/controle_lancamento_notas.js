@@ -2,7 +2,8 @@
  * Controle do gerenciamento de notas
  * @returns {undefined}
  */
-(function() {
+
+var controle_notas = (function() {
     var notas = {
         campo_curso: $('#curso'),
         campo_disciplina: $('#disciplina'),
@@ -13,7 +14,7 @@
         url_ajax_disciplina: '',
         url_ajax_turma: '',
         datas_calendario_academico: '',
-        data_atual: '',
+        //data_atual: '',
         alunos: null
     };
 
@@ -22,7 +23,9 @@
         notas.url_ajax_disciplina = url_ajax_disciplina;
         notas.url_ajax_turma = url_ajax_turma;
         notas.datas_calendario_academico = datas_calendario_academico;
-        notas.data_atual = data_atual;
+        //notas.data_atual = data_atual;
+
+        notas.ini();
     };
 
     notas.ini = function() {
@@ -120,10 +123,9 @@
             success: function(alunos) {
                 notas.alunos = alunos;
 
-                if (notas.alunos instanceof Object) {
+                if (notas.alunos instanceof Object)
                     notas.printAlunos();
-                    notas.printCamposNota();
-                }
+
                 else {
                     notas.container_atividade.find('select').html('');
                     notas.printMsg("Não há nenhum aluno cadastrado na turma selecionada");
@@ -145,7 +147,9 @@
             html += '<tr><td>' + notas.alunos[key].nome_aluno + '</td><td id="aluno_nota_' + notas.alunos[key].id_aluno + '"> - </td></tr>';
 
         html += '</table>';
+        
         notas.container_alunos.html(html);
+        notas.printCamposNota();
     };
 
     notas.printMsg = function(msg) {
@@ -202,4 +206,5 @@
         });
     };
 
+    return {ini: notas.setValues};
 })();
