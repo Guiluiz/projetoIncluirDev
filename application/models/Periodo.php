@@ -49,8 +49,8 @@ class Application_Model_Periodo {
     public function getQuantidadeAlimentos() {
         return $this->quantidade_alimentos;
     }
-    
-    public function getFrequenciaLiberacao(){
+
+    public function getFrequenciaLiberacao() {
         return $this->frequencia_min_aprovacao;
     }
 
@@ -98,7 +98,8 @@ class Application_Model_Periodo {
             'freq_min_aprov' => $this->frequencia_min_aprovacao,
             'total_pts_periodo' => $this->total_pts_periodo,
             'min_pts_aprov' => $this->min_pts_aprovacao,
-            'quantidade_alimentos' => $this->quantidade_alimentos
+            'quantidade_alimentos' => $this->quantidade_alimentos,
+            'is_atual' => $this->is_semestre_atual
         );
     }
 
@@ -118,13 +119,13 @@ class Application_Model_Periodo {
 
     public function isValid() {
         if ($this->data_inicial instanceof DateTime && $this->data_final instanceof DateTime) {
-            if ($this->data_inicial < $this->data_final && $this->valor_liberacao > 0.0 && !empty($this->id_periodo))
+            if ($this->data_inicial < $this->data_final && $this->valor_liberacao > 0.0)
                 return true;
         }
         return false;
     }
-    
-    public function getMinPtsAprovacao(){
+
+    public function getMinPtsAprovacao() {
         return $this->min_pts_aprovacao;
     }
 

@@ -51,14 +51,14 @@ class Application_Model_Mappers_Periodo {
                 if ($this->verificaFimPeriodo() && $this->periodoIsValid($data_inicio->format('Y-m-d'), $data_termino->format('Y-m-d'))) {
                     $this->db_periodo->insert($periodo->parseArray());
                     return true;
-                } elseif ($this->periodoIsValid($data_inicio->format('Y-m-d'), $data_termino->format('Y-m-d'), $periodo->getIdPeriodo()) && $calendario instanceof Application_Model_Mappers_DatasAtividade) {
+                } 
+                
+                elseif (!is_null($periodo->getIdPeriodo()) && $this->periodoIsValid($data_inicio->format('Y-m-d'), $data_termino->format('Y-m-d'), $periodo->getIdPeriodo()) && $calendario instanceof Application_Model_Mappers_DatasAtividade) {
                     $this->db_periodo->update($periodo->parseArray(), $this->db_periodo->getAdapter()->quoteInto('is_atual = ?', true));
                     $calendario->removeDatasForaPeriodoAtual($data_inicio, $data_termino, $periodo->getIdPeriodo());
                     return true;
                 }
             }
-
-
             return false;
         } catch (Zend_Exception $e) {
             echo $e->getMessage();
