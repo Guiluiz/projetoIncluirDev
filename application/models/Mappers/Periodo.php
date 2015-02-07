@@ -8,6 +8,8 @@
 
 class Application_Model_Mappers_Periodo {
 
+    public static $adiar_um_dia = 1;
+    public static $adiar_uma_semana = 2;
     private $db_periodo;
 
     public function __construct() {
@@ -162,4 +164,32 @@ class Application_Model_Mappers_Periodo {
             throw $ex;
         }
     }
+
+    public function adiarFimPeriodo($opcao_adiamento) {
+        try {
+            if ($opcao_adiamento == Application_Model_Mappers_Periodo::$adiar_um_dia || $opcao_adiamento == Application_Model_Mappers_Periodo::$adiar_uma_semana) {
+                $periodo_atual = $this->getPeriodoAtual();
+
+                if ($periodo_atual instanceof Application_Model_Periodo) {
+                    $data_final = $periodo_atual->getDataTermino(true);
+
+                    if ($data_final instanceof DateTime) {
+                        if ($opcao_adiamento == Application_Model_Mappers_Periodo::$adiar_um_dia)
+                            $data_final->add(new DateInterval('P1D'));
+
+                        elseif ($opcao_adiamento == Application_Model_Mappers_Periodo::$adiar_uma_semana)
+                            $data_final->add(new DateInterval('P1W'));
+
+                        $this->db_periodo->update(array('data_termino' => $data_final->format('Y-m-d')), 'is_atual = true');
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } catch (Zend_Exception $ex) {
+            echo $ex->getMessage();
+            return false;
+        }
+    }
+
 }

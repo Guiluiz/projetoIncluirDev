@@ -43,7 +43,20 @@ class PeriodoController extends Zend_Controller_Action {
 
         $form_fim_periodo = new Application_Form_FormConfigFimPeriodo();
         $this->view->form = $form_fim_periodo;
-        
+
+        if ($this->getRequest()->isPost()) {
+            $dados = $this->getRequest()->getPost();
+
+            if ($form_fim_periodo->isValid($dados)) {
+                $mapper_periodo = new Application_Model_Mappers_Periodo();
+
+                if ($mapper_periodo->adiarFimPeriodo((int)base64_decode($form_fim_periodo->getValue('opcoes_adiamento'))))
+                    $this->_helper->redirector->goToRoute(array('controller' => 'index', 'action' => 'index'), null, true);
+                else
+                    $this->view->mensagem = 'Houve algum problema, contate o administrador do sistema';
+            } else
+                $form_fim_periodo->populate($dados);
+        }
     }
 
 }

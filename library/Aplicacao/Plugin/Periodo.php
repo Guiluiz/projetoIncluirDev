@@ -36,7 +36,7 @@ class Aplicacao_Plugin_Periodo extends Zend_Controller_Plugin_Abstract {
                         }
                         
                         else
-                            $this->mapper_periodo->finalizaPeriodoReserva();
+                            $this->mapper_periodo->finalizaPeriodoReserva(); // se não conseguir finaliza o período, redireciona o usuário para ele configurar o adiamento do fim do período.
                     }
                 }
             }

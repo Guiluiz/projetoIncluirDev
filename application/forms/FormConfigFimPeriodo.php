@@ -16,8 +16,8 @@ class Application_Form_FormConfigFimPeriodo extends Zend_Form {
                 ->setRequired(true)
                 ->setMultiOptions(array(
                     '' => 'Selecione',
-                    'um_dia' => 'Adiar uma dia',
-                    'uma_semana' => 'Adiar uma semana'
+                    base64_encode(Application_Model_Mappers_Periodo::$adiar_um_dia) => 'Adiar uma dia',
+                    base64_decode(Application_Model_Mappers_Periodo::$adiar_uma_semana) => 'Adiar uma semana'
                 ))
                 ->addValidator('NotEmpty')
                 ->setDecorators(array(
