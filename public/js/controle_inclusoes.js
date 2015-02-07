@@ -814,7 +814,7 @@ var controle = {
      */
     iniPeriodoCalendario: function(url_img, min_date, max_date) {
         var data_inicio = $('#data_inicio');
-        var data_termino = $('#data_termino');
+        var data_termino = $('#data_fim');
         
         $(data_inicio).datepicker({
             buttonText: "Clique para selecionar a data inicial",

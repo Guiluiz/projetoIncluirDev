@@ -108,7 +108,7 @@ class TurmaController extends Zend_Controller_Action {
             if ($id_turma > 0) {
                 $form_alteracao = new Application_Form_FormTurma();
                 $mapper_turma = new Application_Model_Mappers_Turma();
-                $periodo_atual = new Application_Model_Mappers_Periodo();
+                $periodo_atual = $periodo->getPeriodoAtual();
 
                 if ($this->getRequest()->isPost()) {
                     $dados = $this->getRequest()->getPost();
@@ -117,7 +117,7 @@ class TurmaController extends Zend_Controller_Action {
                         $this->_helper->redirector->goToRoute(array('controller' => 'turma', 'action' => 'index'), null, true);
 
                     if ($form_alteracao->isValid($dados)) {
-                        $turma = new Application_Model_Turma(base64_decode($form_alteracao->getValue('id_turma')), $form_alteracao->getValue('nome_turma'), $form_alteracao->getValue('data_inicio'), $form_alteracao->getValue('data_fim'), $form_alteracao->getValue('horario_inicio'), $form_alteracao->getValue('horario_fim'), new Application_Model_Disciplina(base64_decode($form_alteracao->getValue('disciplina'))), Application_Model_Turma::$status_iniciada, null, $periodo->getIdPeriodo());
+                        $turma = new Application_Model_Turma(base64_decode($form_alteracao->getValue('id_turma')), $form_alteracao->getValue('nome_turma'), $form_alteracao->getValue('data_inicio'), $form_alteracao->getValue('data_fim'), $form_alteracao->getValue('horario_inicio'), $form_alteracao->getValue('horario_fim'), new Application_Model_Disciplina(base64_decode($form_alteracao->getValue('disciplina'))), Application_Model_Turma::$status_iniciada, null, $periodo_atual->getIdPeriodo());
 
                         if (!empty($dados['professores'])) {
                             foreach ($dados['professores']as $professor)
@@ -164,7 +164,7 @@ class TurmaController extends Zend_Controller_Action {
             $id_turma = (int) base64_decode($this->getParam('turma'));
 
             if ($id_turma > 0) {
-                $periodo = new Application_Model_Mappers_Periodo();
+                $periodo_atual = $periodo->getPeriodoAtual();
 
                 $form_exclusao = new Application_Form_FormTurma();
                 $mapper_turma = new Application_Model_Mappers_Turma();
@@ -186,7 +186,7 @@ class TurmaController extends Zend_Controller_Action {
                 }
 
                 else {
-                    $turma = $mapper_turma->buscaTurmaByID($id_turma, $periodo->getIdPeriodo(), true);
+                    $turma = $mapper_turma->buscaTurmaByID($id_turma, $periodo_atual->getIdPeriodo(), true);
 
                     if ($turma instanceof Application_Model_Turma) {
                         $mapper_cursos = new Application_Model_Mappers_Curso();
@@ -222,9 +222,9 @@ class TurmaController extends Zend_Controller_Action {
             if ($this->_request->isPost()) {
                 $periodo = new Application_Model_Mappers_Periodo();
                 $periodo_atual = $periodo->getPeriodoAtual();
-                
+
                 $id_periodo_atual = ($periodo_atual instanceof Application_Model_Periodo) ? $periodo_atual->getIdPeriodo() : 0;
-                
+
                 $id_disciplina = $this->getRequest()->getParam('id_disciplina');
                 $id_periodo = (strlen($this->getRequest()->getParam('id_periodo')) > 0) ? (int) base64_decode($this->getRequest()->getParam('id_periodo')) : $id_periodo_atual;
 
@@ -306,7 +306,6 @@ class TurmaController extends Zend_Controller_Action {
         $periodo = new Application_Model_Mappers_Periodo();
 
         if (!$periodo->verificaFimPeriodo()) {
-
             $id_turma = (int) base64_decode($this->getParam('turma'));
 
             if ($id_turma > 0) {
@@ -314,7 +313,7 @@ class TurmaController extends Zend_Controller_Action {
 
                 $form_cancelamento = new Application_Form_FormConfirmacao();
                 $mapper_turma = new Application_Model_Mappers_Turma();
-                $periodo = new Application_Model_Mappers_Periodo();
+                $periodo_atual = $periodo->getPeriodoAtual();
 
                 $this->view->form = $form_cancelamento;
 
@@ -332,7 +331,7 @@ class TurmaController extends Zend_Controller_Action {
                     }
                 }
 
-                $turma = $mapper_turma->buscaTurmaByID($id_turma, $periodo->getIdPeriodo(), true);
+                $turma = $mapper_turma->buscaTurmaByID($id_turma, $periodo_atual->getIdPeriodo(), true);
 
                 if ($turma instanceof Application_Model_Turma) {
                     $form_cancelamento->populate(array('id' => $turma->getIdTurma(true)));
