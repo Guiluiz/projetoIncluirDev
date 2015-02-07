@@ -20,6 +20,10 @@ class Application_Model_Turma {
     private $professores;
     private $disciplina;
     private $status;
+    /**
+     *
+     * @var Application_Model_Periodo 
+     */
     private $periodo;
 
     public function __construct($id, $nome = null, $data_inicio = null, $data_fim = null, $horario_inicio = null, $horario_termino = null, $disciplina = null, $status = null, $professor = null, $periodo = null) {
@@ -168,7 +172,7 @@ class Application_Model_Turma {
 
         if (is_null($isView)) {
             $aux['id_disciplina'] = $this->getDisciplina()->getIdDisciplina();
-            $aux['id_periodo'] = $this->periodo;
+            $aux['id_periodo'] = $this->periodo->getIdPeriodo();
         }
         return $aux;
     }

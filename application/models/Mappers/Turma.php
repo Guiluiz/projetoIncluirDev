@@ -117,6 +117,7 @@ class Application_Model_Mappers_Turma {
     }
 
     /**
+     * Retorna a quantidade de alunos de todas as turmas
      * Utilizado para finalizar o período
      * @return null
      */
@@ -176,7 +177,7 @@ class Application_Model_Mappers_Turma {
                     $array_turmas = array();
 
                     foreach ($turmas as $turma)
-                        $array_turmas[$turma->id_turma] = new Application_Model_Turma($turma->id_turma, $turma->nome_turma, null, null, null, null, new Application_Model_Disciplina($turma->id_disciplina, $turma->nome_disciplina), $turma->status, null, $turma->id_periodo);
+                        $array_turmas[$turma->id_turma] = new Application_Model_Turma($turma->id_turma, $turma->nome_turma, null, null, null, null, new Application_Model_Disciplina($turma->id_disciplina, $turma->nome_disciplina), $turma->status, null, new Application_Model_Periodo($turma->id_periodo));
 
                     return $array_turmas;
                 }
@@ -232,6 +233,12 @@ class Application_Model_Mappers_Turma {
         }
     }
 
+    /**
+     * Retorna as turmas com os id's indicados por parâmetro. 
+     * Utilizado para popular as turmas selecionadas para o aluno
+     * @param type $array_ids
+     * @return \Application_Model_Turma|null
+     */
     public function buscaTurmasByID($array_ids) {
         try {
             if (!empty($array_ids) && is_array($array_ids)) {
@@ -253,7 +260,7 @@ class Application_Model_Mappers_Turma {
                 if (!empty($turmas)) {
                     $array_turmas = array();
                     foreach ($turmas as $turma)
-                        $array_turmas[$turma->id_turma] = new Application_Model_Turma($turma->id_turma, $turma->nome_turma, null, null, null, null, new Application_Model_Disciplina($turma->id_disciplina, $turma->nome_disciplina, null, new Application_Model_Curso($turma->id_curso, $turma->nome_curso)));
+                        $array_turmas[$turma->id_turma] = new Application_Model_Turma($turma->id_turma, $turma->nome_turma, null, null, null, null, new Application_Model_Disciplina($turma->id_disciplina, $turma->nome_disciplina, null, new Application_Model_Curso($turma->id_curso, $turma->nome_curso)), null, new Application_Model_Periodo($turma->id_periodo));
                     return $array_turmas;
                 }
             }
@@ -264,6 +271,11 @@ class Application_Model_Mappers_Turma {
         }
     }
 
+    /**
+     * Verifica se há turmas do semestre atual e da mesma disciplina com o nome indicado.
+     * @param Application_Model_Turma $turma
+     * @return boolean
+     */
     private function isValid($turma) {
         try {
             if ($turma instanceof Application_Model_Turma) {
@@ -274,7 +286,9 @@ class Application_Model_Mappers_Turma {
                         ->setIntegrityCheck(false)
                         ->from('turma', array('id_turma', 'nome_turma', 'id_disciplina'))
                         ->where($this->db_turma->getAdapter()->quoteInto('(turma.nome_turma = ? AND ', $turma->getNomeTurma()) .
-                        $this->db_turma->getAdapter()->quoteInto('turma.id_disciplina = ?)', $turma->getDisciplina()->getIdDisciplina()));
+                        $this->db_turma->getAdapter()->quoteInto('turma.id_disciplina = ? AND ', $turma->getDisciplina()->getIdDisciplina()) .
+                        $this->db_turma->getAdapter()->quoteInto('turma.id_periodo = ?)', $turma->getPeriodo()->getIdPeriodo())
+                );
 
                 if (!is_null($turma->getIdTurma()))
                     $select->where('turma.id_turma <> ?', $turma->getIdTurma());
@@ -289,6 +303,11 @@ class Application_Model_Mappers_Turma {
         }
     }
 
+    /**
+     * Busca as turmas do período indicado por parâmetro
+     * @param type $periodo 
+     * @return \Application_Model_Turma|null
+     */
     public function buscaTurmasSimples($periodo = null) {
         try {
             $this->db_turma = new Application_Model_DbTable_Turma();
@@ -307,7 +326,7 @@ class Application_Model_Mappers_Turma {
                 $array_turmas = array();
 
                 foreach ($turmas as $turma)
-                    $array_turmas[$turma->id_turma] = new Application_Model_Turma($turma->id_turma, $turma->nome_turma, null, null, null, null, new Application_Model_Disciplina($turma->id_disciplina, $turma->nome_disciplina));
+                    $array_turmas[$turma->id_turma] = new Application_Model_Turma($turma->id_turma, $turma->nome_turma, null, null, null, null, new Application_Model_Disciplina($turma->id_disciplina, $turma->nome_disciplina), null, new Application_Model_Periodo($turma->id_periodo));
 
                 return $array_turmas;
             }
@@ -318,6 +337,11 @@ class Application_Model_Mappers_Turma {
         }
     }
 
+    /**
+     * Retornas as turmas do período atual do professor com o id passado por parâmetro
+     * @param type $id_voluntario
+     * @return null
+     */
     public function getTurmasProfessorPeriodoAtual($id_voluntario) {
         try {
             $id_voluntario = (int) $id_voluntario;
@@ -339,6 +363,14 @@ class Application_Model_Mappers_Turma {
         }
     }
 
+    /**
+     * Busca as turmas de uma disciplina de acordo com os horários especificados. Usado para redistribuir alunos 
+     * nas turmas
+     * @param type $id_disciplina
+     * @param type $horario_inicio
+     * @param type $horario_termino
+     * @return \Application_Model_Turma|null
+     */
     public function getTurmasByDisciplinaHorario($id_disciplina, $horario_inicio, $horario_termino) {
         try {
             $this->db_turma = new Application_Model_DbTable_Turma();

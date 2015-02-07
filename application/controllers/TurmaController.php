@@ -65,7 +65,7 @@ class TurmaController extends Zend_Controller_Action {
                     $mapper_turma = new Application_Model_Mappers_Turma();
                     $periodo_atual = $periodo->getPeriodoAtual();
 
-                    $turma = new Application_Model_Turma(null, $form_cadastro->getValue('nome_turma'), $form_cadastro->getValue('data_inicio'), $form_cadastro->getValue('data_fim'), $form_cadastro->getValue('horario_inicio'), $form_cadastro->getValue('horario_fim'), new Application_Model_Disciplina(base64_decode($form_cadastro->getValue('disciplina'))), Application_Model_Turma::$status_iniciada, null, $periodo_atual->getIdPeriodo());
+                    $turma = new Application_Model_Turma(null, $form_cadastro->getValue('nome_turma'), $form_cadastro->getValue('data_inicio'), $form_cadastro->getValue('data_fim'), $form_cadastro->getValue('horario_inicio'), $form_cadastro->getValue('horario_fim'), new Application_Model_Disciplina(base64_decode($form_cadastro->getValue('disciplina'))), Application_Model_Turma::$status_iniciada, null, $periodo_atual);
 
                     if (!empty($dados['professores'])) {
                         foreach ($dados['professores']as $professor)
@@ -78,7 +78,7 @@ class TurmaController extends Zend_Controller_Action {
                         return;
                     }
 
-                    $this->view->mensagem = "A turma não foi cadastrada.<br/>Por favor, verifique se há alguma turma cadastrada com o nome especificado";
+                    $this->view->mensagem = "A turma não foi cadastrada.<br/>Por favor, verifique se há alguma turma do período atual cadastrada com o nome especificado";
                 }
 
                 $mapper_voluntarios = new Application_Model_Mappers_Voluntario();
@@ -117,7 +117,7 @@ class TurmaController extends Zend_Controller_Action {
                         $this->_helper->redirector->goToRoute(array('controller' => 'turma', 'action' => 'index'), null, true);
 
                     if ($form_alteracao->isValid($dados)) {
-                        $turma = new Application_Model_Turma(base64_decode($form_alteracao->getValue('id_turma')), $form_alteracao->getValue('nome_turma'), $form_alteracao->getValue('data_inicio'), $form_alteracao->getValue('data_fim'), $form_alteracao->getValue('horario_inicio'), $form_alteracao->getValue('horario_fim'), new Application_Model_Disciplina(base64_decode($form_alteracao->getValue('disciplina'))), Application_Model_Turma::$status_iniciada, null, $periodo_atual->getIdPeriodo());
+                        $turma = new Application_Model_Turma(base64_decode($form_alteracao->getValue('id_turma')), $form_alteracao->getValue('nome_turma'), $form_alteracao->getValue('data_inicio'), $form_alteracao->getValue('data_fim'), $form_alteracao->getValue('horario_inicio'), $form_alteracao->getValue('horario_fim'), new Application_Model_Disciplina(base64_decode($form_alteracao->getValue('disciplina'))), Application_Model_Turma::$status_iniciada, null, $periodo_atual);
 
                         if (!empty($dados['professores'])) {
                             foreach ($dados['professores']as $professor)
@@ -127,7 +127,7 @@ class TurmaController extends Zend_Controller_Action {
                         if ($mapper_turma->alterarTurma($turma))
                             $this->view->mensagem = "Turma alterada com sucesso!";
                         else
-                            $this->view->mensagem = "A turma não foi alterada.<br/>Por favor, verifique se há alguma turma cadastrada com o nome especificado";
+                            $this->view->mensagem = "A turma não foi alterada.<br/>Por favor, verifique se há alguma turma do período atual cadastrada com o nome especificado";
                     }
                 }
 
