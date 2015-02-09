@@ -39,7 +39,8 @@
         action: '', // 1- cadastro 2 - alteracao 3 - exclusao
         qt_min_alimentos: '', // quantidade mínima de alimentos para pagamento ser válido
         valor_min_pagamento: '', // valor mínimo para pagamento ser válido
-        trava_busca_liberacao: false
+        trava_busca_liberacao: false,
+        liberacao_turma: null
     };
 
     aluno.aetValues = function(url_verifica_aluno, url_img, url_ajax_alimentos, url_ajax_disciplina, url_ajax_turma, url_quantidade, url_verificacao_liberacao, action, qt_alimentos, valor_min) {
@@ -166,6 +167,14 @@
         return '#alimentos_' + helpers.retira_acentos(helpers.trim(aluno.select_turma_pagamento.find('option:selected').html())).toLowerCase();
     };
 
+    aluno.getClassPagamentoTurma = function() {
+        return '.pagamento_' + helpers.retira_acentos(helpers.trim(aluno.select_turma_pagamento.find('option:selected').html())).toLowerCase();
+    };
+
+    aluno.getNameTurmaAluno = function() {
+        return helpers.retira_acentos(helpers.trim(aluno.campo_disciplina.find('option:selected').html() + ' - ' + aluno.campo_turma.find('option:selected').html())).toLowerCase();
+    };
+
     aluno.getIdTurma = function() {
         aluno.campo_turma.find('option:selected').val();
     };
@@ -173,46 +182,56 @@
     aluno.getIdDisciplina = function() {
         aluno.campo_disciplina.find('option:selected').val();
     };
-    
+
     aluno.incrementaTurma = function() {
-        var aux = $(disciplina).find('option:selected').html() + ' - ' + $(turma).find('option:selected').html();
-        var option = $(turma).find('option:selected');
-        var id_turma = $(option).val();
+        //var aux = $(disciplina).find('option:selected').html() + ' - ' + $(turma).find('option:selected').html();
+        //var option = aluno.campo_turma.find('option:selected');
+        var id_turma = aluno.getIdTurma();
         var html = '';
 
-        if ($(container).children().length == 0) {
-            $(container).show();
+        if (aluno.container_turma.children().length == 0) {
+            aluno.container_turma.show();
             html = '<tr><th>Curso</th><th>Disciplina</th><th>Turma</th><th>Liberação de Requisitos</th><th>Opções</th></tr>';
         }
 
-        html += '<tr class="' + controle.retira_acentos(controle.trim(aux)).toLowerCase() + '"><input type="hidden" name="turmas[]" value="' + id_turma + '"/><td>' + $(curso).find('option:selected').html() + '</td><td>' + $(disciplina).find('option:selected').html() + '</td><td>' + $(turma).find('option:selected').html() + '</td><td><input type="hidden" name="liberacao[' + id_turma + ']" value="' + liberacao_requisitos + '"/>' + liberacao_requisitos + '</td><td><div class="excluir_geral" >Excluir</div></td></tr>';
-        $(container).append(html);
-        controle.eventExcluirTurmaAluno(container, turma_pagamento);
+        html += '<tr class="' + aluno.getNameTurmaAluno() + '"><input type="hidden" name="turmas[]" value="' + id_turma + '"/><td>' + aluno.campo_curso.find('option:selected').html() + '</td><td>' + aluno.campo_disciplina.find('option:selected').html() + '</td><td>' + aluno.campo_turma.find('option:selected').html() + '</td><td><input type="hidden" name="liberacao[' + id_turma + ']" value="' + aluno.liberacao_turma + '"/>' + aluno.liberacao_turma + '</td><td><div class="excluir_geral" >Excluir</div></td></tr>';
+        aluno.container_turma.append(html);
+        aluno.eventExcluirTurmaAluno();
     };
-    
+
+    aluno.incrementaTurmasAluno = function() {
+        //var aux = $(disciplina).find('option:selected').html() + ' - ' + $(turma).find('option:selected').html();
+        aluno.select_turma_pagamento.append('<option value="' + aluno.getIdTurma() + '">' + aluno.getNameTurmaAluno() + '</option>');
+    };
+
     aluno.incrementaAlimentoTurma = function() {
-        if ($(turma).children().length > 0) {
-            var turma_option = $(turma).find('option:selected');
-            var aux_id_turma = controle.retira_acentos(controle.trim($(turma_option).html())).toLowerCase();
-            var id_container = '#alimentos_' + aux_id_turma;
+        if (aluno.select_turma_pagamento.children().length > 0) {
+            //var turma_option = $(turma).find('option:selected');
+            //var aux_id_turma = controle.retira_acentos(controle.trim($(turma_option).html())).toLowerCase();
+            var id_container = aluno.getNameTurmaAluno();
             var container_alimentos_turma = $('' + id_container);
-            var tipo_alimento_option = $(tipo_alimento).find('option:selected');
-            var quantidade = controle.parseNumero($(quantidade_alimento).val());
+            var tipo_alimento_option = aluno.campo_tipo_alimento.find('option:selected');
+            var quantidade = helpers.parseNumero(aluno.campo_quantidade_alimento.val());
 
-            $('.ali_pag').hide();
+            $(aluno.class_container_alimentos_pagamento).hide();
 
-            if ($(tipo_alimento).children().length > 0 && quantidade > 0 && $(tipo_alimento_option).val() != "" && !$(container_alimentos_turma).find('tr').hasClass($(tipo_alimento_option).val())) {
+            if (aluno.campo_tipo_alimento.children().length > 0
+                    && quantidade > 0
+                    && $(tipo_alimento_option).val() != ""
+                    && !$(container_alimentos_turma).find('tr').hasClass($(tipo_alimento_option).val())) {
+
                 if ($(container_alimentos_turma).length == 0) {
-                    $('#container_alimentos').append('<table class="ali_pag form_incrementa" id="' + id_container.replace('#', '') + '" cellpadding="0" cellspacing="0"><tr><th>Alimento</th><th>Quantidade(kg)</th><th>Opções</th></tr></table>');
-                    container_alimentos_turma = $('#container_alimentos').find(id_container);
+                    aluno.container_alimentos.append('<table class="ali_pag form_incrementa" id="' + id_container.replace('#', '') + '" cellpadding="0" cellspacing="0"><tr><th>Alimento</th><th>Quantidade(kg)</th><th>Opções</th></tr></table>');
+                    container_alimentos_turma = aluno.container_alimentos.find(id_container);
                 }
 
                 if ($(container_alimentos_turma).children().length == 0)
                     $(container_alimentos_turma).append('<tr><th>Alimento</th><th>Quantidade(kg)</th><th>Opções</th></tr>');
 
-                $(container_alimentos_turma).append('<tr class="' + $(tipo_alimento_option).val() + '"><input type="hidden" name="alimentos[' + $(turma_option).val() + '][' + $(tipo_alimento_option).val() + ']" value="' + quantidade + '"/><td>' + $(tipo_alimento_option).html() + '</td><td class="quantidade_alimento_turma">' + quantidade + '</td><td><div class="excluir_geral" >Excluir</div></td></tr>');
-                controle.atualizaAlimentosPagamento(quantidade, aux_id_turma);
-                controle.eventExcluirAlimento(container_alimentos_turma);
+                $(container_alimentos_turma).append('<tr class="' + $(tipo_alimento_option).val() + '"><input type="hidden" name="alimentos[' + aluno.getIdTurma() + '][' + $(tipo_alimento_option).val() + ']" value="' + quantidade + '"/><td>' + $(tipo_alimento_option).html() + '</td><td class="quantidade_alimento_turma">' + quantidade + '</td><td><div class="excluir_geral" >Excluir</div></td></tr>');
+
+                //          aluno.atualizaAlimentosPagamento(quantidade);
+                aluno.eventExcluirAlimento();
             }
             else
                 exibeMensagem('O alimento já foi incluído ou nenhum foi selecionado. Verifique também se a quantidade de alimentos foi preenchida corretamente (ex: <b>"0.5"</b>, <b>"1"</b>).', 'Inclusão de Alimentos');
@@ -222,57 +241,63 @@
         else
             exibeMensagem('Nenhuma turma foi incluida.', 'Inclusão de Alimentos');
     };
-    
-    aluno.atualizaAlimentosPagamento = function() {
-        var linha_pagamento = $('.pagamento_' + class_turma);
 
-        if ($(linha_pagamento).length > 0) {
-            var container_valor = $(linha_pagamento).find('.quant_alimento');
-            var valor_pago = controle.parseNumero($(linha_pagamento).find('.valor_pago').html());
-            var valor_atual = controle.parseNumero($(container_valor).html());
-            var total_alimentos = valor_atual + quantidade;
+    /*aluno.atualizaAlimentosPagamento = function(quantidade) {
+     var linha_pagamento = $(aluno.getClassPagamentoTurma());
+     
+     if ($(linha_pagamento).length > 0) {
+     var container_valor = $(linha_pagamento).find('.quant_alimento');
+     
+     var valor_pago = helpers.parseNumero($(linha_pagamento).find('.valor_pago').html());
+     var valor_atual = helpers.parseNumero($(container_valor).html());
+     
+     var total_alimentos = valor_atual + quantidade;
+     
+     var situacao = ((total_alimentos >= aluno.qt_min_alimentos && valor_pago >= aluno.valor_min_pagamento) ? 'Liberado' : 'Pendente');
+     var situacao_container = $(linha_pagamento).find('.situacao');
+     var id_turma = $(situacao_container).find('input').attr('name');
+     
+     $(container_valor).html(total_alimentos);// atualiza o total de alimentos e a situação 
+     $(situacao_container).html('<input type="hidden" name="' + id_turma + '" value="' + situacao + '"/>' + situacao);
+     }
+     };*/
 
-            var situacao = ((total_alimentos >= qt_min_alimentos_liberacao && valor_pago >= valor_min_liberacao) ? 'Liberado' : 'Pendente');
-            var situacao_container = $(linha_pagamento).find('.situacao');
-            var id_turma = $(situacao_container).find('input').attr('name');
-
-            $(container_valor).html(total_alimentos);
-            $(situacao_container).html('<input type="hidden" name="' + id_turma + '" value="' + situacao + '"/>' + situacao);
-        }
-    };
-    
     aluno.incrementaPagamentoTurma = function() {
-        var option = $(turma).find('option:selected');
+        var option = aluno.select_turma_pagamento.find('option:selected');
 
         if ($(option).length > 0) {
             var id_turma = $(option).val();
-            var pagamento_class = controle.retira_acentos(controle.trim($(option).html())).toLowerCase();
-            var valor_pago = controle.parseNumero($(valor).val());
+            var pagamento_class = aluno.getClassPagamentoTurma();//controle.retira_acentos(controle.trim($(option).html())).toLowerCase();
+            var valor_pago = helpers.parseNumero(aluno.campo_valor_pagamento.val());
             var total_alimentos = 0.0;
 
             //soma quantidades de alimentos
-            $('#alimentos_' + pagamento_class).find('.quantidade_alimento_turma').each(function() {
-                var aux = controle.parseNumero($(this).html());
-                if (aux != -1)
-                    total_alimentos += aux;
+            $(aluno.getIdAlimentosTurma()).find('.quantidade_alimento_turma').each(function() {
+                var quantidade_alimento = helpers.parseNumero($(this).html());
+
+                if (quantidade_alimento != -1)
+                    total_alimentos += quantidade_alimento;
                 else
-                    total_alimentos = -1;
+                    total_alimentos = quantidade_alimento;
             });
 
-            if ($(turma).children().length > 0 && total_alimentos != -1 && valor_pago != -1 && !$(container_pagamento).find('tr').hasClass('pagamento_' + pagamento_class) && $(option).val() != "") {
-                var html = '';
-                var situacao;
+            if (aluno.select_turma_pagamento.children().length > 0
+                    && total_alimentos != -1
+                    && valor_pago != -1
+                    && !aluno.container_pagamentos.find('tr').hasClass(pagamento_class.replace('.', ''))
+                    && $(option).val() != "") {
 
-                if ($(container_pagamento).children().length == 0) {
-                    $(container_pagamento).show();
+                var html = '';
+                var situacao = ((total_alimentos >= aluno.qt_min_alimentos && valor_pago >= aluno.valor_min_pagamento) ? 'Liberado' : 'Pendente');
+
+                if (aluno.container_pagamentos.children().length == 0) {
+                    aluno.container_pagamentos.show();
                     html = '<tr><th>Disciplina - Turma</th><th>Total Pago(R$)</th><th>Total de Alimentos(kg)</th><th>Situação</th><th>Opções</th></tr>';
                 }
 
-                situacao = ((total_alimentos >= qt_min_alimentos_liberacao && valor_pago >= valor_min_liberacao) ? 'Liberado' : 'Pendente');
-
-                html += '<tr class="pagamento_' + pagamento_class + '"><input type="hidden" name="pagamento_turmas[' + id_turma + ']" value="' + valor_pago + '"/><td>' + $(option).html() + '</td><td class="valor_pago">' + valor_pago + '</td><td class="quant_alimento">' + total_alimentos + '</td><td class="situacao"><input type="hidden" name="situacao_turmas[' + id_turma + ']" value="' + situacao + '"/>' + situacao + '</td><td><div class="excluir_geral" >Excluir</div></td></tr>';
-                $(container_pagamento).append(html);
-                controle.eventOpcaoExcluir();
+                html += '<tr class="pagamento_' + pagamento_class.replace('.', '') + '"><input type="hidden" name="pagamento_turmas[' + id_turma + ']" value="' + valor_pago + '"/><td>' + $(option).html() + '</td><td class="valor_pago">' + valor_pago + '</td><td class="quant_alimento">' + total_alimentos + '</td><td class="situacao"><input type="hidden" name="situacao_turmas[' + id_turma + ']" value="' + situacao + '"/>' + situacao + '</td><td><div class="excluir_geral" >Excluir</div></td></tr>';
+                aluno.container_pagamentos.append(html);
+                aluno.eventOpcaoExcluirPagamento();
             }
             else
                 exibeMensagem('O pagamento dessa turma já foi inserido, Nesse caso, se quiser fazer alguma alteração, exclua esse pagamento, faça as alterações e registre-o novamente.', 'Inclusão de Pagamento');
@@ -280,7 +305,7 @@
         else
             exibeMensagem('Inclua primeiro a turma', 'Registro de Pagamento');
     };
-    
+
     aluno.eventExcluirTurmaAluno = function() {
         aluno.container_turma.find('.excluir_geral').click(function() {
             var aux_class = $(this).parents('tr').attr('class'); // a linha correspondente a turma armazena o id para retirar os pagamentos/alimentos da turma
@@ -310,15 +335,20 @@
 
     aluno.eventExcluirAlimento = function() {
         $(aluno.getIdAlimentosTurma()).find('.excluir_geral').click(function() {
-            var quantidade = helpers.parseNumero($(this).parents('tr').find('.quantidade_alimento_turma').html());
+            //var quantidade = helpers.parseNumero($(this).parents('tr').find('.quantidade_alimento_turma').html());
             var table = $(this).parents('table');
+            var id_container_alimentos = $(table).attr('id');
 
-            aluno.atualizaAlimentosPagamento(quantidade * (-1), $(table).attr('id').replace('alimentos_', ''));
+            if (!aluno.container_pagamentos.find('tr').hasClass(id_container_alimentos.replace('alimentos_', ''))) { // procura se já tem um pagamento registrado para a turma, se houver a remoção não é realizada
+                //aluno.atualizaAlimentosPagamento(quantidade * (-1));
 
-            if ($(table).find('tr').length > 2) // se tiver somente uma turma, remove somente a linha, caso contrário, pra n ficar feio, remove a tabela toda
-                $(this).parents('tr').remove();
+                if ($(table).find('tr').length > 2) // se tiver somente uma turma, remove somente a linha, caso contrário, pra n ficar feio, remove a tabela toda
+                    $(this).parents('tr').remove();
+                else
+                    $(table).html('').hide();
+            }
             else
-                $(table).html('').hide();
+                exibeMensagem('Para realizar a exclusão, você deve cancelar o pagamento dessa turma primeiro.');
         });
     };
 
@@ -360,16 +390,16 @@
             aluno.container_quantidade_alunos_turma.html('');
     };
 
-    aluno.verificaLiberacaoTurma = function() {
-        var aux = aluno.campo_disciplina.find('option:selected').html() + ' - ' + aluno.campo_turma.find('option:selected').html();
+    aluno.verificaTurmasAluno = function() {
+        //var aux = aluno.campo_disciplina.find('option:selected').html() + ' - ' + aluno.campo_turma.find('option:selected').html();
         //var option = aluno.container_turma.find('option:selected');
 
-        if (aluno.campo_turma.children().length > 0 && !aluno.container_turma.find('tr').hasClass(helpers.retira_acentos(helpers.trim(aux)).toLowerCase())) //&& $(option).val() != "")
+        if (aluno.campo_turma.children().length > 0 && !aluno.container_turma.find('tr').hasClass(helpers.retira_acentos(helpers.trim(aluno.getNameTurmaAluno())).toLowerCase())) //&& $(option).val() != "")
             return true;
 
         exibeMensagem('Nenhuma turma foi selecionada ou ela já foi incluída.', 'Inclusão de Turma');
         return false;
-    }
+    };
 
     aluno.verificaLiberacaoTurma = function() {
         if (!aluno.trava_busca_liberacao) {
@@ -424,15 +454,17 @@
                                     }],
                                 close: function() {
                                     if (tipo_liberacao.length > 0 && tipo_liberacao != 'cancelado') {
+                                        aluno.liberacao_turma = tipo_liberacao;
                                         aluno.incrementaTurma();
-                                        aluno.incrementaTurmasAluno();
+                                        aluno.incrementaSelectTurmasAluno();
                                     }
                                 }
                             }).html('Aluno não possui pré-requisitos (<b>' + pre_requisitos + '</b>) para cursar essa disciplina. Favor Selecionar uma das opções abaixo.');
                         }
                         else {
-                            controle.incrementaTurma();
-                            controle.incrementaTurmasAluno();
+                            aluno.liberacao_turma = tipo_liberacao;
+                            aluno.incrementaTurma();
+                            aluno.incrementaSelectTurmasAluno();
                         }
                         aluno.trava_busca_liberacao = false;
                     },
