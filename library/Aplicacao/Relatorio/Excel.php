@@ -1102,7 +1102,7 @@ class Aplicacao_Relatorio_Excel {
                             }
                         }
 
-                        $sheet->getStyle('A' . $i . ':E' . $i)->applyFromArray(
+                        $sheet->getStyle('A' . $i . ':F' . $i)->applyFromArray(
                                 array('alignment' => array(
                                         'wrap' => true,
                                         'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
@@ -1117,7 +1117,7 @@ class Aplicacao_Relatorio_Excel {
                         );
 
                         if ($i % 2 != 0) {
-                            $sheet->getStyle('A' . $i . ':E' . $i)->applyFromArray(
+                            $sheet->getStyle('A' . $i . ':F' . $i)->applyFromArray(
                                     array(
                                         'fill' => array(
                                             'type' => PHPExcel_Style_Fill::FILL_SOLID,
@@ -1133,7 +1133,7 @@ class Aplicacao_Relatorio_Excel {
 
                 $linhas += $i;
                 //$new_sheet->getStyle('A0:P' . $linhas)->getAlignment()->setWrapText(true);
-                $sheet->getStyle('A5:E5')->applyFromArray(
+                $sheet->getStyle('A5:F5')->applyFromArray(
                         array('borders' => array(
                                 'allborders' => array(
                                     'style' => PHPExcel_Style_Border::BORDER_THIN,
