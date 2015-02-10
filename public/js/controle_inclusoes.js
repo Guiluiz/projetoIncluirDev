@@ -448,6 +448,11 @@ var controle = {
     relatorio_alunos_turma: function(url_turmas, url_relatorio) {
         iniPorcentagem(url_relatorio, 1);
 
+        var id_turma = $('#periodo').find('option:selected').val();
+
+        if (id_turma != undefined && id_turma.length > 0)
+            controle.buscaTurmas(url_turmas, null, $('#turmas'), id_turma);
+
         if ($('input:radio[name="todas_turmas"]:checked').val() == 'sim')
             $('.linha').hide().find('select').attr('disabled', 'disabled').val('');
         else
@@ -461,7 +466,12 @@ var controle = {
         });
 
         $('#periodo').change(function() {
-            controle.buscaTurmas(url_turmas, null, $('#turmas'), $(this).find('option:selected').val());
+            var id_turma = $(this).find('option:selected').val();
+            $('#turmas').html('');
+
+            if (id_turma != undefined && id_turma.length > 0) {
+                controle.buscaTurmas(url_turmas, null, $('#turmas'), id_turma);
+            }
         });
     },
     getQuantidadeAlunos: function(url, campo_quantidade, id_turma) {
@@ -803,7 +813,6 @@ var controle = {
             buttonImage: url_img
         });
     },
-
     /**
      * Função responsável pelo gerenciamento dos campos de período
      * Inicialização dos calendários
@@ -815,7 +824,7 @@ var controle = {
     iniPeriodoCalendario: function(url_img, min_date, max_date) {
         var data_inicio = $('#data_inicio');
         var data_termino = $('#data_fim');
-        
+
         $(data_inicio).datepicker({
             buttonText: "Clique para selecionar a data inicial",
             showOn: "button",
@@ -850,7 +859,6 @@ var controle = {
             });
         }
     },
-    
     /*Calendário Acadêmico*/
 
     datas_atividades: function(url_img, min_date, max_date) {

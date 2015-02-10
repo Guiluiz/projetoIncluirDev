@@ -1013,6 +1013,7 @@ class Aplicacao_Relatorio_Excel {
                 set_time_limit(0);
                 @ini_set('memory_limit', '512M');
 
+                $array_aprovacao = array(1 => 'Sim', 0 => 'Não', null => '-');
                 $total_aulas = $calendario_atual->getQuantidadeAulas();
 
                 $mapper_turma = new Application_Model_Mappers_Turma();
@@ -1059,6 +1060,7 @@ class Aplicacao_Relatorio_Excel {
                 $sheet->setCellValue('C5', 'Email');
                 $sheet->setCellValue('D5', 'Nota Acumulada/Total Distribuído');
                 $sheet->setCellValue('E5', 'Frequência (%)');
+                $sheet->setCellValue('F5', 'Aprovado');
 
                 $sheet->getColumnDimension('A')->setWidth(50);
                 $sheet->getColumnDimension('B')->setAutoSize(true);
@@ -1096,6 +1098,7 @@ class Aplicacao_Relatorio_Excel {
                                 $sheet->setCellValue('B' . $i, $aux_nome_turma);
                                 $sheet->setCellValue('D' . $i, $aluno->getNotaAcumulada($id_turma, false));
                                 $sheet->setCellValue('E' . $i, $aluno->getPorcentagemFaltas($id_turma, $total_aulas, true));
+                                $sheet->setCellValue('F' . $i, $array_aprovacao[$turma[Application_Model_Aluno::$index_aprovacao_turma]]);
                             }
                         }
 
