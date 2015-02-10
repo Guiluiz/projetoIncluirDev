@@ -17,7 +17,7 @@ class Application_Form_FormConfigFimPeriodo extends Zend_Form {
                 ->setMultiOptions(array(
                     '' => 'Selecione',
                     base64_encode(Application_Model_Mappers_Periodo::$adiar_um_dia) => 'Adiar uma dia',
-                    base64_decode(Application_Model_Mappers_Periodo::$adiar_uma_semana) => 'Adiar uma semana'
+                    base64_encode(Application_Model_Mappers_Periodo::$adiar_uma_semana) => 'Adiar uma semana'
                 ))
                 ->addValidator('NotEmpty')
                 ->setDecorators(array(
@@ -35,8 +35,8 @@ class Application_Form_FormConfigFimPeriodo extends Zend_Form {
 
         $this->addElements(array(
             $opcoes_adiamento,
-            $enviar)
-        );
+            $enviar
+        ));
     }
 
 }
