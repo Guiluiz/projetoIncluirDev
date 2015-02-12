@@ -9,11 +9,21 @@ if (!empty($this->professores))
 <script src="<?php echo $this->baseUrl() . '/js/jquery.maskedinput.min.js' ?>"></script>
 <script src="<?php echo $this->baseUrl() . '/js/jquery.validate.min.js' ?>"></script>
 <script src="<?php echo $this->baseUrl() . '/js/form.js' ?>"></script>
-<script src="<?php echo $this->baseUrl() . '/js/controle_inclusoes.js' ?>"></script>
+
+<script src="<?php echo $this->baseUrl() . '/js/functions.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/controle_turmas.js' ?>"></script>
 
 <script>
     $(function() {
-        controle.iniTurma('<?= $this->baseUrl() . "/imagens/calendar.png" ?>', '<?php echo $this->url(array('controller' => 'disciplina', 'action' => 'buscar-disciplinas'), null, true); ?>', '<?php echo $this->url(array('controller' => 'voluntario', 'action' => 'buscar-professores'), null, true); ?>', 1, '<?php echo $this->data(0) ?>', '<?php echo $this->data(1) ?>');
+        controle_turmas.ini(
+                '<?php echo $this->baseUrl() . "/imagens/calendar.png" ?>',
+                '<?php echo $this->url(array('controller' => 'disciplina', 'action' => 'buscar-disciplinas'), null, true); ?>',
+                '<?php echo $this->url(array('controller' => 'voluntario', 'action' => 'buscar-professores'), null, true); ?>',
+                1,
+                '<?php echo $this->data(0) ?>',
+                '<?php echo $this->data(1) ?>'
+                );
+        
         form.iniForm();
     });
 </script>

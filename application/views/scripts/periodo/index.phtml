@@ -23,11 +23,11 @@
 <script src="<?php echo $this->baseUrl() . '/js/jquery.maskedinput.min.js' ?>"></script>
 <script src="<?php echo $this->baseUrl() . '/js/jquery.validate.min.js' ?>"></script>
 <script src="<?php echo $this->baseUrl() . '/js/form.js' ?>"></script>
-<script src="<?php echo $this->baseUrl() . '/js/controle_inclusoes.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/controle_periodo.js' ?>"></script>
 
 <script>
     $(function() {
         form.iniForm();
-        controle.iniPeriodoCalendario('<?= $this->baseUrl() . "/imagens/calendar.png" ?>');
+        controle_periodo.ini('<?php echo $this->baseUrl() . "/imagens/calendar.png" ?>');
     });
 </script>

@@ -22,12 +22,21 @@
 <script src="<?php echo $this->baseUrl() . '/js/ui.datepicker-pt-BR.js' ?>"></script>
 <script src="<?php echo $this->baseUrl() . '/js/jquery.maskedinput.min.js' ?>"></script>
 <script src="<?php echo $this->baseUrl() . '/js/jquery.validate.min.js' ?>"></script>
-<script src="<?php echo $this->baseUrl() . '/js/controle_inclusoes.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/functions.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/controle_alunos.js' ?>"></script>
 <script src="<?php echo $this->baseUrl() . '/js/form.js' ?>"></script>
 
 <script>
     $(function() {
-        controle.iniAluno('<?php echo $this->url(array('controller' => 'aluno', 'action' => 'verifica-aluno'), null, true); ?>', '<?= $this->baseUrl() . "/imagens/calendar.png" ?>', '<?php echo $this->url(array('controller' => 'disciplina', 'action' => 'buscar-disciplinas'), null, true); ?>', '<?php echo $this->url(array('controller' => 'turma', 'action' => 'buscar-turmas'), null, true); ?>', '<?php echo $this->url(array('controller' => 'turma', 'action' => 'buscar-quantidade-turma'), null, true); ?>', '<?php echo $this->url(array('controller' => 'turma', 'action' => 'verificar-liberacao-turma'), null, true); ?>', 3);
-        form.iniForm('<?= $this->url(array('controller' => 'ajax', 'action' => 'cep'), null, true) ?>');
+        controle_aluno.ini(
+                '<?php echo $this->url(array('controller' => 'error', 'action' => 'error'), null, true); ?>',
+                '<?php echo $this->baseUrl() . "/imagens/calendar.png" ?>',
+                '<?php echo $this->url(array('controller' => 'error', 'action' => 'error'), null, true); ?>',
+                '<?php echo $this->url(array('controller' => 'error', 'action' => 'error'), null, true); ?>',
+                '<?php echo $this->url(array('controller' => 'error', 'action' => 'error'), null, true); ?>',
+                '<?php echo $this->url(array('controller' => 'error', 'action' => 'error'), null, true); ?>',
+                3
+            );
+        form.iniForm('');
     });
-</script>
+</script>   

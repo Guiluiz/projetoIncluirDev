@@ -2,7 +2,7 @@
  * Controle do gerenciamento de relatórios
  * @returns {undefined}
  */
-(function() {
+var controle_relatorios = (function() {
     var relatorio = {
         url_ajax_turma: '',
         url_ajax_relatorio: '',
@@ -97,6 +97,6 @@
         });
     };
 
-
+    return {ini: relatorio.setValues};
 })();
 

@@ -2,7 +2,7 @@
  * Controle do gerenciamento do Período
  * @returns {undefined}
  */
-(function() {
+var controle_periodo = (function() {
     var periodo = {
         min_date: '',
         max_date: '',
@@ -56,6 +56,8 @@
             });
         }
     };
-
+    
+    return {ini: periodo.setValues};
+    
 })();
 

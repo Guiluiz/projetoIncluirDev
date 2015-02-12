@@ -2,7 +2,7 @@
  * Controle do gerenciamento de Alunos
  * @returns {undefined}
  */
-(function() {
+var controle_aluno = (function() {
     var aluno = {
         container_turma: $('#turmas_aluno'),
         container_pagamentos: $('#table_pagamentos_turmas'),
@@ -40,7 +40,7 @@
         qt_min_alimentos: '', // quantidade mínima de alimentos para pagamento ser válido
         valor_min_pagamento: '', // valor mínimo para pagamento ser válido
         trava_busca_liberacao: false,
-        liberacao_turma: null
+        liberacao_turma: null,
     };
 
     aluno.aetValues = function(url_verifica_aluno, url_img, url_ajax_alimentos, url_ajax_disciplina, url_ajax_turma, url_quantidade, url_verificacao_liberacao, action, qt_alimentos, valor_min) {
@@ -54,11 +54,15 @@
         aluno.action = action;
         aluno.qt_min_alimentos = parseInt(qt_alimentos);
         aluno.valor_min_pagamento = parseFloat(valor_min);
+
+        aluno.ini();
     };
 
     aluno.ini = function() {
         aluno.campo_curso.val('');
-
+        
+        // em caso de alterção de aluno, ou correção no cadastro após enviar a requisição, o servidor exibe os dados 
+        // em um container, que deve ser movido para o lugar certo;
         if (aluno.container_turmas_pre_definidas.length == 1) {
             aluno.container_turma.append(aluno.container_turmas_pre_definidas.children()).show();
             aluno.eventExcluirTurmaAluno();
@@ -78,7 +82,7 @@
             aluno.eventOpcaoExcluirPagamento();
         }
 
-        if (aluno.action != 3) {
+        if (aluno.action != 3) { //  se não for exclusão
             if (aluno.check_is_responsavel.prop('checked'))
                 aluno.check_is_responsavel.parents('td').next().children('div').show().find('input').removeAttr('disabled');
 
@@ -515,6 +519,10 @@
         }
         else
             aluno.campo_tipo_alimento.html('');
+    };
+    
+    return {
+        ini: aluno.setValues
     };
 })();
 

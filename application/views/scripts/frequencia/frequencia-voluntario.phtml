@@ -5,12 +5,20 @@
 
     <script src="<?php echo $this->baseUrl() . '/js/ui.datepicker-pt-BR.js' ?>"></script>
     <script src="<?php echo $this->baseUrl() . '/js/jquery.maskedinput.min.js' ?>"></script>
-    <script src="<?php echo $this->baseUrl() . '/js/controle_inclusoes.js' ?>"></script>
-    
+
+    <script src="<?php echo $this->baseUrl() . '/js/functions.js' ?>"></script>
+    <script src="<?php echo $this->baseUrl() . '/js/controle_lancamento_frequencia_voluntario.js' ?>"></script>
+
     <script>
         $(function() {
             var datas_atividades = $.parseJSON('<?php echo $this->datas_atividade; ?>');
-            controle.frequenciaVoluntarios('<?php echo $this->url(array('controller' => 'voluntario', 'action' => 'busca-voluntarios-setor'), null, true); ?>', datas_atividades, '<?php echo $this->data(2) ?>', '<?php echo $this->data(0) ?>', '<?php echo $this->data(1) ?>');
+            controle_frequencia_voluntario.ini(
+                    '<?php echo $this->url(array('controller' => 'voluntario', 'action' => 'busca-voluntarios-setor'), null, true); ?>',
+                    datas_atividades,
+                    '<?php echo $this->data(2) ?>',
+                    '<?php echo $this->data(0) ?>',
+                    '<?php echo $this->data(1) ?>'
+            );
         });
     </script>
 

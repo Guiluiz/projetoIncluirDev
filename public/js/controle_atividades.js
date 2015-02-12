@@ -3,7 +3,7 @@
  * @returns {undefined}
  */
 
-(function() {
+var controle_atividades = (function() {
 
     var atividade = {
         campo_curso: $('#curso'),

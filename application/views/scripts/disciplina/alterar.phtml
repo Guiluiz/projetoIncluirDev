@@ -1,15 +1,19 @@
 <?= $this->form ?>
 
-<?php if(!empty($this->pre_requisitos))
-       echo $this->table($this->pre_requisitos, 1);
- ?>
+<?php
+if (!empty($this->pre_requisitos))
+    echo $this->table($this->pre_requisitos, 1);
+?>
 
 <script src="<?php echo $this->baseUrl() . '/js/jquery.validate.min.js' ?>"></script>
 <script src="<?php echo $this->baseUrl() . '/js/form.js' ?>"></script>
-<script src="<?php echo $this->baseUrl() . '/js/controle_inclusoes.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/controle_disciplinas.js' ?>"></script>
 <script>
     $(function() {
-        controle.iniDisciplinas('<?php echo $this->url(array('controller' => 'disciplina', 'action' => 'buscar-disciplinas'), null, true); ?>', 2);
+        controle_disciplinas.ini(
+            '<?php echo $this->url(array('controller' => 'disciplina', 'action' => 'buscar-disciplinas'), null, true); ?>',
+            2
+        );
         form.iniForm();
     });
 </script>

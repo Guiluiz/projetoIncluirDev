@@ -1,4 +1,8 @@
-(function() {
+/**
+ * Controle do gerenciamento de lanççaento de frequencia de voluntários
+ * @returns {_L4.Anonym$5}
+ */
+var controle_frequencia_voluntario = (function() {
     var frequencia_vol = {
         calendario: $('#calendario'),
         setor: $('#setor'),

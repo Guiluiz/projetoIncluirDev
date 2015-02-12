@@ -4,11 +4,19 @@
     <div id="mensagem-ajax">Por favor, aguarde um momento.</div>
 
     <script src="<?php echo $this->baseUrl() . '/js/ui.datepicker-pt-BR.js' ?>"></script>
-    <script src="<?php echo $this->baseUrl() . '/js/controle_inclusoes.js' ?>"></script>
+
+    <script src="<?php echo $this->baseUrl() . '/js/functions.js' ?>"></script>
+    <script src="<?php echo $this->baseUrl() . '/js/controle_lancamento_notas.js' ?>"></script>
 
     <script>
         $(function() {
-            controle.notasAlunos('<?php echo $this->url(array('controller' => 'aluno', 'action' => 'busca-alunos-turma-nota'), null, true); ?>', '<?php echo $this->url(array('controller' => 'disciplina', 'action' => 'buscar-disciplinas'), null, true); ?>', '<?php echo $this->url(array('controller' => 'turma', 'action' => 'buscar-turmas'), null, true); ?>', '<?php echo $this->data(5) ?>', '<?php echo $this->url(array('controller' => 'atividade', 'action' => 'busca-atividades-turma'), null, true); ?>');
+            controle_notas.ini(
+                    '<?php echo $this->url(array('controller' => 'aluno', 'action' => 'busca-alunos-turma-nota'), null, true); ?>',
+                    '<?php echo $this->url(array('controller' => 'disciplina', 'action' => 'buscar-disciplinas'), null, true); ?>',
+                    '<?php echo $this->url(array('controller' => 'turma', 'action' => 'buscar-turmas'), null, true); ?>',
+                    '<?php echo $this->data(5) ?>',
+                    '<?php echo $this->url(array('controller' => 'atividade', 'action' => 'busca-atividades-turma'), null, true); ?>'
+                );
         });
     </script>
 <?php endif; ?>

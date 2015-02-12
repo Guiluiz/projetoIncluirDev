@@ -9,16 +9,26 @@ if (!empty($this->disciplinas))
 <script src="<?php echo $this->baseUrl() . '/js/ui.datepicker-pt-BR.js' ?>"></script>
 <script src="<?php echo $this->baseUrl() . '/js/jquery.maskedinput.min.js' ?>"></script>
 <script src="<?php echo $this->baseUrl() . '/js/jquery.validate.min.js' ?>"></script>
-<script src="<?php echo $this->baseUrl() . '/js/additional-methods.min.js' ?>"></script>
-<script src="<?php echo $this->baseUrl() . '/js/controle_inclusoes.js' ?>"></script>
 <script src="<?php echo $this->baseUrl() . '/js/form.js' ?>"></script>
+
+<script src="<?php echo $this->baseUrl() . '/js/functions.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/controle_voluntarios.js' ?>"></script>
+
 <script>
     $(function() {
         $('#enviar').click(function(){
             return confirm('Deseja realmente excluir esse voluntário?');
         });
-        controle.iniVoluntario('<?php echo $this->url(array('controller' => 'error', 'action' => 'error'), null, true); ?>', '<?= $this->url(array('controller' => 'voluntario', 'action' => 'index'), null, true) ?>', '<?= $this->baseUrl() . "/imagens/calendar.png" ?>', '<?= base64_encode(Application_Model_Voluntario::$status_desligado) ?>', '<?= Application_Model_Voluntario::$atividade_aulas ?>', 3);
-        form.iniForm('<?= $this->url(array('controller' => 'ajax', 'action' => 'cep'), null, true) ?>');
-        
+
+        form.iniForm('<?= $this->url(array('controller' => 'error', 'action' => 'error'), null, true) ?>');
+        controle.iniVoluntario(
+                '<?php echo $this->url(array('controller' => 'error', 'action' => 'error'), null, true); ?>',
+                '<?php echo $this->url(array('controller' => 'error', 'action' => 'error'), null, true); ?>',
+                '<?php echo $this->url(array('controller' => 'error', 'action' => 'error'), null, true) ?>',
+                '<?php echo $this->baseUrl() . "/imagens/calendar.png" ?>',
+                '<?php echo base64_encode(Application_Model_Voluntario::$status_desligado) ?>',
+                '<?php echo Application_Model_Voluntario::$atividade_aulas ?>',
+                3
+                );
     });
 </script>
