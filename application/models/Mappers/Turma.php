@@ -313,7 +313,7 @@ class Application_Model_Mappers_Turma {
             $this->db_turma = new Application_Model_DbTable_Turma();
             $select = $this->db_turma->select()
                     ->setIntegrityCheck(false)
-                    ->from('turma', array('id_turma', 'nome_turma', 'id_disciplina'))
+                    ->from('turma', array('id_turma', 'nome_turma', 'id_disciplina', 'id_periodo'))
                     ->joinInner('disciplina', 'disciplina.id_disciplina = turma.id_disciplina', array('nome_disciplina'))
                     ->order('turma.nome_turma');
 

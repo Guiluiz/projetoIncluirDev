@@ -11,7 +11,7 @@ var controle_calendario = (function() {
         container_datas_cadastradas: $('#container-datas'),
         btn_enviar: $('#enviar'),
         checkbox_todos_sabados: $('#todos_sabados'),
-        selecionados: 'data_selecionada',
+        selecionados: 'data-selecionada',
         remove_btn: 'remove',
         min_date: '',
         max_date: '',
@@ -29,7 +29,7 @@ var controle_calendario = (function() {
     calendario.ini = function() {
         // as datas escolhidas previamente, inicialmente  são mantidas nesse container
         if (calendario.container_datas_cadastradas.children().length > 0)
-            calendario.append(calendario.container_datas_cadastradas.children());
+            calendario.container.append(calendario.container_datas_cadastradas.children());
 
         $('.' + calendario.remove_btn).click(function() {
             $(this).parent().remove();
@@ -76,7 +76,7 @@ var controle_calendario = (function() {
             buttonText: "Clique para selecionar uma data",
             showOn: "button",
             buttonImageOnly: true,
-            buttonImage: url_img,
+            buttonImage: calendario.url_img,
             onSelect: function(data) {
                 if (calendario.container.find('div[valor="' + data + '"]').length == 0)
                     calendario.container.append('<div class="data-selecionada" valor="' + data + '">' + data + '<span title="Clique para remover essa data" class="remove">X</span></div>');
@@ -88,8 +88,8 @@ var controle_calendario = (function() {
         });
 
         if (calendario.min_date != undefined && calendario.max_date != undefined) {
-            $(campo_data).datepicker('option', 'minDate', calendario.min_date);
-            $(campo_data).datepicker('option', 'maxDate', calendario.max_date);
+            calendario.campo_data.datepicker('option', 'minDate', calendario.min_date);
+            calendario.campo_data.datepicker('option', 'maxDate', calendario.max_date);
         }
 
         calendario.btn_enviar.click(function() {

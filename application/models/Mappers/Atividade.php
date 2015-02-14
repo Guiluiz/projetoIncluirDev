@@ -128,7 +128,10 @@ class Application_Model_Mappers_Atividade {
      */
     public function validaAtividade($atividade, $exclude = false) {
         try {
-            if ($atividade instanceof Application_Model_Atividade) {
+            $mapper_periodo = new Application_Model_Mappers_Periodo();
+            $periodo_atual = $mapper_periodo->getPeriodoAtual();
+            
+            if ($atividade instanceof Application_Model_Atividade && $periodo_atual instanceof Application_Model_Periodo) {
                 $this->db_atividade = new Application_Model_DbTable_Atividade();
 
                 $select = $this->db_atividade->select();
@@ -144,12 +147,11 @@ class Application_Model_Mappers_Atividade {
 
                 if (!empty($atividades)) {
                     $valor = 0;
-                    $periodo = new Application_Model_Periodo();
 
                     foreach ($atividades as $atividade_turma)
                         $valor += $atividade_turma->valor_total;
 
-                    if (($valor + $atividade->getValor()) > $periodo->getTotalPontosPeriodo())
+                    if (($valor + $atividade->getValor()) > $periodo_atual->getTotalPontosPeriodo())
                         return false;
 
                     return true;

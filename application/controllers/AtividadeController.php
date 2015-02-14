@@ -30,7 +30,7 @@ class AtividadeController extends Zend_Controller_Action {
 
         if ($periodo->verificaFimPeriodo())
             $this->view->inativo = true;
-
+        
         if ($form_consulta->isValid($dados)) {
             if ($this->getRequest()->isPost() || !empty($pagina)) {
                 $mapper_atividades = new Application_Model_Mappers_Atividade();

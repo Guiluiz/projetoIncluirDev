@@ -44,7 +44,7 @@ var controle_disciplinas = (function() {
             id_curso: opcao
         };
 
-        if (action == 2) { // se for alteracao
+        if (disciplina.action == 2) { // se for alteracao
             parametros_requisicao = {
                 id_curso: opcao,
                 id_disciplina_exclude: disciplina.campo_disciplina.val()
@@ -91,7 +91,7 @@ var controle_disciplinas = (function() {
         var option = disciplina.campo_pre_requisito.find('option:selected');
         var id_pre_requisito = $(option).val();
 
-        if (id_pre_requisito != "" && disciplina.campo_pre_requisito.children().length > 0 && !disciplina.find('tr').hasClass(id_pre_requisito)) {
+        if (id_pre_requisito != "" && disciplina.campo_pre_requisito.children().length > 0 && !disciplina.container.find('tr').hasClass(id_pre_requisito)) {
             var html = '';
 
             if (disciplina.container.children().length == 0) {
@@ -101,7 +101,8 @@ var controle_disciplinas = (function() {
 
             html += '<tr class="' + id_pre_requisito + '"><input type="hidden" name="pre_requisitos[]" value="' + id_pre_requisito + '"/><td>' + $(option).html() + '</td><td><div class="excluir_geral" >Excluir</div></td></tr>';
 
-            $(container).append(html);
+            disciplina.container.append(html);
+            disciplina.eventRemovePreRequisito();
         }
         else
             exibeMensagem('Nenhuma disciplina foi selecionada ou ela já foi incluída.', 'Inclusão de Pré-Requisitos');

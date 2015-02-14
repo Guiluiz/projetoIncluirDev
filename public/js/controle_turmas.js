@@ -24,7 +24,6 @@ var controle_turmas = (function() {
         turma.url_img = url_img;
         turma.url_ajax_busca_disciplina = url_ajax_busca_disciplina;
         turma.url_ajax_busca_professor = url_ajax_busca_professor;
-        turma.url_ajax_busca_turma = url_ajax_busca_turma;
         turma.action = action;
         turma.min_date = min_date;
         turma.max_date = max_date;
@@ -76,7 +75,7 @@ var controle_turmas = (function() {
         // em caso de alteração ou erro de cadastro, os pré requisitos selecionados vem populados em um container escondido
 
         if (turma.action != 3) {
-            turma.iniPeriodoCalendario();
+            turma.iniCalendario();
 
             turma.campo_curso.change(function() {
                 turma.limpaContainer();
@@ -86,7 +85,7 @@ var controle_turmas = (function() {
             });
 
             turma.btn_incluir_professor.click(function() {
-                turma.incrementaProfessor();
+                turma.addProfessor();
             });
 
             turma.campo_disciplina.change(function() {
@@ -103,7 +102,6 @@ var controle_turmas = (function() {
     };
 
     turma.iniCalendario = function() {
-
         turma.campo_data_ini.datepicker({
             buttonText: "Clique para selecionar a data inicial",
             showOn: "button",
@@ -116,7 +114,7 @@ var controle_turmas = (function() {
                     buttonText: "Clique para selecionar a data inicial",
                     showOn: "button",
                     buttonImageOnly: true,
-                    buttonImage: url_img,
+                    buttonImage: turma.url_img,
                     minDate: data
                 });
 
@@ -135,8 +133,8 @@ var controle_turmas = (function() {
                 buttonText: "Clique para selecionar a data final",
                 showOn: "button",
                 buttonImageOnly: true,
-                buttonImage: url_img,
-                minDate: min_date
+                buttonImage: turma.url_img,
+                minDate: turma.min_date
             });
         }
     };

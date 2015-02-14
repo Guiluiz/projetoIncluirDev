@@ -61,7 +61,7 @@ var controle_atividades = (function() {
         atividade.campo_disciplina.change(function() {
             atividade.campo_turma.html('');
             atividade.container_atividades.html('');
-            helpers.buscaTurmasByDisciplina(atividade.url_ajax_turma, $(this), atividade.campo_turma);
+            helpers.buscaTurmasByDisciplina(atividade.url_ajax_turma, $(this), atividade.campo_turma, null, true);
         });
 
         atividade.getIdTurma = function() {
