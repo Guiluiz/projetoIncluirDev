@@ -13,18 +13,18 @@ var controle_notas = (function() {
         url_ajax_aluno: '',
         url_ajax_disciplina: '',
         url_ajax_turma: '',
-        datas_calendario_academico: '',
-        //data_atual: '',
+        url_ajax_atividade: '',
+        data_atual: '',
         alunos: null
     };
 
-    notas.setValues = function(url_ajax_aluno, url_ajax_disciplina, url_ajax_turma, datas_calendario_academico, data_atual) {
+    notas.setValues = function(url_ajax_aluno, url_ajax_disciplina, url_ajax_turma, data_atual, url_ajax_atividade) {
         notas.url_ajax_aluno = url_ajax_aluno;
         notas.url_ajax_disciplina = url_ajax_disciplina;
         notas.url_ajax_turma = url_ajax_turma;
-        notas.datas_calendario_academico = datas_calendario_academico;
-        //notas.data_atual = data_atual;
-
+        notas.data_atual = data_atual;
+        notas.url_ajax_atividade = url_ajax_atividade;
+        
         notas.ini();
     };
 
@@ -40,7 +40,7 @@ var controle_notas = (function() {
         });
 
         notas.campo_disciplina.change(function() {
-            helpers.buscaTurmasByDisciplina(notas.url_ajax_turma, $(this), notas.campo_turma);
+            helpers.buscaTurmasByDisciplina(notas.url_ajax_turma, $(this), notas.campo_turma, null, true);
             notas.campo_turma.html('');
             notas.container_alunos.html('');
             notas.container_atividade.find('select').html('');
@@ -57,7 +57,7 @@ var controle_notas = (function() {
                 notas.container_atividade.hide();
             }
             else
-                notas.getAtividadesAlunosTurma();
+                notas.getAtividadesTurma();
         });
     };
 
@@ -72,7 +72,7 @@ var controle_notas = (function() {
             dataType: "JSON",
             data: {
                 id_turma: notas.getIdTurma(),
-                data: data
+                data: notas.data_atual
             },
             success: function(atividades) {
                 var html = '';
