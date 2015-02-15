@@ -56,7 +56,21 @@ class Application_Form_FormTurma extends Zend_Form {
                     'Errors'
                 ));
 
+        $sala = new Zend_Form_Element_Text('sala');
+        $sala->setLabel('Sala:')
+                ->addFilter('StripTags')
+                ->addFilter('StringTrim')
+                ->setAttrib('class', 'obrigatorio')
+                ->setRequired(true)
+                ->addValidator('NotEmpty')
+                ->setRegisterInArrayValidator(false)
+                ->setDecorators(array(
+                    'ViewHelper',
+                    'Label',
+                    'Errors'
+                ));
 
+        
         $professor = new Zend_Form_Element_Select('professor');
         $professor->setLabel('Professor:')
                 ->addFilter('StripTags')
@@ -180,6 +194,7 @@ class Application_Form_FormTurma extends Zend_Form {
             $data_final,
             $data_inicio,
             $disciplina,
+            $sala,
             $enviar,
             $hora_inicio,
             $hora_termino,

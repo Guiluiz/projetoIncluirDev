@@ -4,11 +4,9 @@ $url = new Zend_View_Helper_Url();
 <form enctype="application/x-www-form-urlencoded" action="" method="post">
     <h2>Dados do Aluno</h2>
     <div class="obs">
-        <p>Ao preencher o campo "cep" o endereço é buscado automaticamente.</p>
         <p>Caso encontre o aluno desejado ao digitar um nome clique nele para alterá-lo.</p>
-        <p>Só é permitida a alteração das turmas do período atual.</p>
     </div>
-    
+
     <table class="form-dados" style="width: 85%;">
         <tr>
             <td colspan="3">
@@ -29,6 +27,7 @@ $url = new Zend_View_Helper_Url();
         <tr>
             <td><?= $this->element->telefone ?></td>
             <td><?= $this->element->celular ?></td>
+            <td><?= $this->element->sexo ?></td>
         </tr>
 
         <tr>
@@ -36,6 +35,13 @@ $url = new Zend_View_Helper_Url();
             <td colspan="2"><?= $this->element->email ?></td>
         </tr>
 
+        <tr>
+            <td colspan="3">
+                <div class="obs">
+                    <p>Ao preencher o campo "cep" o endereço é buscado automaticamente.</p>
+                </div>
+            </td>
+        </tr>
         <tr>
             <td><?= $this->element->cep ?><div id="loading" class="loading"></div></td>
             <td><?= $this->element->estado ?></td>
@@ -60,7 +66,14 @@ $url = new Zend_View_Helper_Url();
 
     <h2>Seleção de Turmas</h2>
 
+    <div class="obs">
+        <p>Só é permitida a alteração das turmas do período atual.</p>
+    </div>
+    
     <table class="form-dados">
+        <tr colspan="2">
+            <td><?= $this->element->quantidade_turmas ?></td>
+        </tr>
         <tr>
             <td colspan="2"><?= $this->element->curso ?></td>
         </tr>
@@ -72,7 +85,6 @@ $url = new Zend_View_Helper_Url();
             <td><?= $this->element->incluir_turma ?></td>
             <td id="quant_alunos_cadastrados"></td>
         </tr>
-
     </table>
 
     <table class="form_incrementa" id="turmas_aluno" cellpadding="0" cellspacing="0"></table>
@@ -107,9 +119,9 @@ $url = new Zend_View_Helper_Url();
             <td><?= $this->element->registrar_pagamento ?></td>
         </tr>    
     </table>
-    
+
     <h2>Pagamentos Registrados</h2>
-        
+
     <table id="table_pagamentos_turmas" class="escondido form_incrementa" cellpadding="0" cellspacing="0"></table>
 
     <table class="submit">

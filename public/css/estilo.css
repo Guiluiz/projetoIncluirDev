@@ -306,7 +306,7 @@ label, .span-radio{
 }
 
 
-#resultado-busca a, .excluir_geral, .excluir_alimento, .excluir_turma, .excluir_pagamento, #add-alimento{
+#resultado-busca a, .alterar_turma, .excluir_geral, .excluir_alimento, .excluir_turma, .excluir_pagamento, #add-alimento{
     color: #f69f2b;
     font-size:1em!important;
     text-decoration: none;
@@ -605,4 +605,8 @@ table label.error{
 #calendario{
     margin-left: 2em;
     margin-bottom: 2em;
+}
+
+.alterar_turma{
+    margin-bottom: 1em;
 }

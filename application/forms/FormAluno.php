@@ -23,6 +23,37 @@ class Application_Form_FormAluno extends Zend_Form {
                     'Label'
         ));
 
+        $sexo = new Zend_Form_Element_Select('sexo');
+        $sexo->setLabel('Sexo:')
+                ->addFilter('StripTags')
+                ->addFilter('StringTrim')
+                ->setRequired(false)
+                ->setMultiOptions(array(
+                    '' => 'Selecione',
+                    'Masculino' => 'Masculino',
+                    'Feminino' => 'Feminino'
+                ))
+                ->setDecorators(array(
+                    'ViewHelper',
+                    'Label',
+                    'Errors'
+        ));
+        
+        $quantidade_turmas = new Zend_Form_Element_Select('quantidade_turmas');
+        $quantidade_turmas->setLabel('Quantidade de Turmas:')
+                ->addFilter('StripTags')
+                ->addFilter('StringTrim')
+                ->setRequired(false)
+                ->setMultiOptions(array(
+                    '1' => '1',
+                    '2' => '2'
+                ))
+                ->setDecorators(array(
+                    'ViewHelper',
+                    'Label',
+                    'Errors'
+        ));
+        
         $tel_fixo = new Zend_Form_Element_Text('telefone');
         $tel_fixo->setLabel('Telefone Fixo:')
                 ->setAttrib('class', 'telefone')
@@ -413,7 +444,9 @@ class Application_Form_FormAluno extends Zend_Form {
             $numero,
             $pagamento_turma,
             $quantidade_alimento,
+            $quantidade_turmas,
             $registrar_pagamento,
+            $sexo,
             $tel_celular,
             $tel_fixo,
             $turma,

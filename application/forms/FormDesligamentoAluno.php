@@ -17,7 +17,7 @@ class Application_Form_FormDesligamentoAluno extends Zend_Form {
         $data_desligamento = new Zend_Form_Element_Text('data_desligamento');
         $data_desligamento->setLabel('Data de Desligamento:')
                 ->addFilter('StripTags')
-                ->setAttrib('class', 'obrigatorio')
+                ->setAttrib('class', 'data')
                 ->addFilter('StringTrim')
                 ->setRequired(true)
                 ->addValidator('NotEmpty')

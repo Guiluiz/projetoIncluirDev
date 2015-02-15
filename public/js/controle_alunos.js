@@ -12,8 +12,7 @@ var controle_aluno = (function() {
         btn_incluir_alimento: $('#incluir_alimento'),
         btn_atualizar_alimentos: $('#atualizar_alimentos'),
         btn_enviar: $('#enviar'),
-        //btn_cancelar: $('#cancelar'),
-        ///btn_add_alimento: $('#add_alimento'),
+        campo_quantidade_turmas: $('#quantidade_turmas'),
         campo_nome_aluno: $('#nome_aluno'),
         campo_curso: $('#curso'),
         campo_disciplina: $('#disciplina'),
@@ -41,6 +40,7 @@ var controle_aluno = (function() {
         valor_min_pagamento: '', // valor mínimo para pagamento ser válido
         trava_busca_liberacao: false,
         liberacao_turma: null,
+        horarios_turmas_incluidas: new Array() // utilizado para verificar se há inconsistências de horários nas turmas que serão escolhidas pelo usuário
     };
 
     aluno.setValues = function(url_verifica_aluno, url_img, url_ajax_alimentos, url_ajax_disciplina, url_ajax_turma, url_quantidade, url_verificacao_liberacao, action, qt_alimentos, valor_min) {
@@ -70,9 +70,6 @@ var controle_aluno = (function() {
 
         if (aluno.container_alimentos_pre_definidos.length == 1) {
             aluno.container_alimentos.append(aluno.container_alimentos_pre_definidos.children()).show();
-            //var aux = controle.retira_acentos(controle.trim($(pagamento_turma).find('option:selected').html())).toLowerCase();
-            //console.log(aux);
-            //$('#alimentos_' + aux).show();
             $(aluno.getIdAlimentosTurma()).show();
             aluno.eventExcluirAlimento($(aluno.getIdAlimentosTurma()).show());
         }
@@ -167,13 +164,22 @@ var controle_aluno = (function() {
         }
     };
 
+    /**
+     * Retorna o identificador do container de alimentos da turma selecionada
+     * @returns {String}
+     */
     aluno.getIdAlimentosTurma = function() {
         return '#alimentos_' + helpers.retira_acentos(helpers.trim(aluno.select_turma_pagamento.find('option:selected').html())).toLowerCase();
     };
 
+    /**
+     * Retorna o identificador do pagamento da turma selecionada 
+     * @returns {String}
+     */
     aluno.getClassPagamentoTurma = function() {
         return '.pagamento_' + helpers.retira_acentos(helpers.trim(aluno.select_turma_pagamento.find('option:selected').html())).toLowerCase();
     };
+
 
     aluno.getNameTurmaAluno = function(not_filter) {
         if (not_filter == undefined)
@@ -189,31 +195,78 @@ var controle_aluno = (function() {
         return aluno.campo_disciplina.find('option:selected').val();
     };
 
-    aluno.incrementaTurma = function() {
-        //var aux = $(disciplina).find('option:selected').html() + ' - ' + $(turma).find('option:selected').html();
-        //var option = aluno.campo_turma.find('option:selected');
-        var id_turma = aluno.getIdTurma();
-        var html = '';
+    aluno.getQuantidadeTurmas = function() {
+        return helpers.parseNumero(aluno.campo_quantidade_turmas.val());
+    };
 
-        if (aluno.container_turma.children().length == 0) {
-            aluno.container_turma.show();
-            html = '<tr><th>Curso</th><th>Disciplina</th><th>Turma</th><th>Liberação de Requisitos</th><th>Opções</th></tr>';
+    aluno.addHorarioTurma = function(id_turma) {
+        aluno.horarios_turmas_incluidas.push(
+                {
+                    id: id_turma,
+                    horario_inicio: aluno.getHoraInicial(),
+                    horario_fim: aluno.getHoraFinal(),
+                    data_inicio: aluno.getDataInicial(),
+                    data_fim: aluno.getDataFinal()
+                }
+        );
+    };
+
+    aluno.removeHorarioTurma = function(id_turma) {
+        for (var i in aluno.horarios_turmas_incluidas) {
+            if (aluno.horarios_turmas_incluidas[i].id_turma == id_turma) {
+                delete aluno.horarios_turmas_incluidas[i];
+                return true;
+            }
         }
+        return false;
+    };
 
-        html += '<tr class="' + aluno.getNameTurmaAluno() + '"><input type="hidden" name="turmas[]" value="' + id_turma + '"/><td>' + aluno.campo_curso.find('option:selected').html() + '</td><td>' + aluno.campo_disciplina.find('option:selected').html() + '</td><td>' + aluno.campo_turma.find('option:selected').html() + '</td><td><input type="hidden" name="liberacao[' + id_turma + ']" value="' + aluno.liberacao_turma + '"/>' + aluno.liberacao_turma + '</td><td><div class="excluir_turma" >Excluir</div></td></tr>';
-        aluno.container_turma.append(html);
-        aluno.eventExcluirTurmaAluno();
+    aluno.getHoraInicial = function() {
+        return aluno.campo_turma.find('option:selected').attr('hora_inicio');
+    };
+
+    aluno.getHoraFinal = function() {
+        return aluno.campo_turma.find('option:selected').attr('hora_fim');
+    };
+
+    aluno.getDataInicial = function() {
+        return aluno.campo_turma.find('option:selected').attr('data_inicio');
+    };
+
+    aluno.getDataFinal = function() {
+        return aluno.campo_turma.find('option:selected').attr('data_fim');
+    };
+
+    aluno.verificaHorariosTurma = function() {
+
+    };
+
+    aluno.incrementaTurma = function() {
+        if ((aluno.container_turma.find('tr').length - 1) < aluno.getQuantidadeTurmas()) { //exclui a linha de cabeçalho na verificação de turmas inseridas
+            var id_turma = aluno.getIdTurma();
+            var html = '';
+
+            aluno.addHorarioTurma(id_turma);
+
+            if (aluno.container_turma.children().length == 0) {
+                aluno.container_turma.show();
+                html = '<tr><th>Curso</th><th>Disciplina</th><th>Turma</th><th>Liberação de Requisitos</th><th>Opções</th></tr>';
+            }
+
+            html += '<tr class="' + aluno.getNameTurmaAluno() + '"><input type="hidden" name="turmas[]" value="' + id_turma + '"/><td>' + aluno.campo_curso.find('option:selected').html() + '</td><td>' + aluno.campo_disciplina.find('option:selected').html() + '</td><td>' + aluno.campo_turma.find('option:selected').html() + '</td><td><input type="hidden" name="liberacao[' + id_turma + ']" value="' + aluno.liberacao_turma + '"/>' + aluno.liberacao_turma + '</td><td><div class="alterar_turma">Alterar</div><div class="excluir_turma" >Excluir</div></td></tr>';
+            aluno.container_turma.append(html);
+            aluno.eventExcluirTurmaAluno();
+        }
+        else
+            exibeMensagem('O limite de turmas especificado é: <b>' + aluno.getQuantidadeTurmas() + '</b>', 'Inclusão de Turmas');
     };
 
     aluno.incrementaSelectTurmasAluno = function() {
-        //var aux = $(disciplina).find('option:selected').html() + ' - ' + $(turma).find('option:selected').html();
         aluno.select_turma_pagamento.append('<option value="' + aluno.getIdTurma() + '">' + aluno.getNameTurmaAluno(true) + '</option>');
     };
 
     aluno.incrementaAlimentoTurma = function() {
         if (aluno.select_turma_pagamento.children().length > 0) {
-            //var turma_option = $(turma).find('option:selected');
-            //var aux_id_turma = controle.retira_acentos(controle.trim($(turma_option).html())).toLowerCase();
             var id_container = aluno.getIdAlimentosTurma();
             var container_alimentos_turma = $('' + id_container);
             var tipo_alimento_option = aluno.campo_tipo_alimento.find('option:selected');
@@ -237,38 +290,16 @@ var controle_aluno = (function() {
 
                 $(container_alimentos_turma).append('<tr class="' + $(tipo_alimento_option).val() + '"><input type="hidden" name="alimentos[' + aluno.getIdTurma() + '][' + $(tipo_alimento_option).val() + ']" value="' + quantidade + '"/><td>' + $(tipo_alimento_option).html() + '</td><td class="quantidade_alimento_turma">' + quantidade + '</td><td><div class="excluir_alimento" >Excluir</div></td></tr>');
 
-                //          aluno.atualizaAlimentosPagamento(quantidade);
                 aluno.eventExcluirAlimento();
                 $(container_alimentos_turma).show();
             }
             else
                 exibeMensagem('O alimento já foi incluído ou nenhum foi selecionado. Verifique também se a quantidade de alimentos foi preenchida corretamente (ex: <b>"0.5"</b>, <b>"1"</b>).', 'Inclusão de Alimentos');
 
-            //$(aluno.class_container_alimentos_pagamento).show();
         }
         else
             exibeMensagem('Nenhuma turma foi incluida.', 'Inclusão de Alimentos');
     };
-
-    /*aluno.atualizaAlimentosPagamento = function(quantidade) {
-     var linha_pagamento = $(aluno.getClassPagamentoTurma());
-     
-     if ($(linha_pagamento).length > 0) {
-     var container_valor = $(linha_pagamento).find('.quant_alimento');
-     
-     var valor_pago = helpers.parseNumero($(linha_pagamento).find('.valor_pago').html());
-     var valor_atual = helpers.parseNumero($(container_valor).html());
-     
-     var total_alimentos = valor_atual + quantidade;
-     
-     var situacao = ((total_alimentos >= aluno.qt_min_alimentos && valor_pago >= aluno.valor_min_pagamento) ? 'Liberado' : 'Pendente');
-     var situacao_container = $(linha_pagamento).find('.situacao');
-     var id_turma = $(situacao_container).find('input').attr('name');
-     
-     $(container_valor).html(total_alimentos);// atualiza o total de alimentos e a situação 
-     $(situacao_container).html('<input type="hidden" name="' + id_turma + '" value="' + situacao + '"/>' + situacao);
-     }
-     };*/
 
     aluno.incrementaPagamentoTurma = function() {
         var option = aluno.select_turma_pagamento.find('option:selected');
@@ -317,39 +348,40 @@ var controle_aluno = (function() {
 
     aluno.eventExcluirTurmaAluno = function() {
         aluno.container_turma.find('.excluir_turma').click(function() {
-            var aux_class = $(this).parents('tr').attr('class'); // a linha correspondente a turma armazena o id para retirar os pagamentos/alimentos da turma
-            var table = $(this).parents('table');
-            //var table_pagamento = $('.pagamento_' + aux_class).parents('table');
-            var id_turma = $(this).parents('tr').children('input').val();
+            var confirma_exclusao = confirm('Deseja realmente retirar o aluno dessa turma?');
 
-            aluno.select_turma_pagamento.find('option').each(function() {
-                if ($(this).val() == id_turma)
-                    $(this).remove();
-            });
+            if (confirma_exclusao) {
+                var aux_class = $(this).parents('tr').attr('class'); // a linha correspondente a turma armazena o id para retirar os pagamentos/alimentos da turma
+                var table = $(this).parents('table');
+                var id_turma = $(this).parents('tr').children('input').val();
+                
+                aluno.removeHorarioTurma(id_turma);
+                
+                aluno.select_turma_pagamento.find('option').each(function() {
+                    if ($(this).val() == id_turma)
+                        $(this).remove();
+                });
 
-            $('#alimentos_' + aux_class).remove();
-            $('.pagamento_' + aux_class).remove();
+                $('#alimentos_' + aux_class).remove();
+                $('.pagamento_' + aux_class).remove();
 
-            if (aluno.container_pagamentos.find('tr').length == 1)
-                aluno.container_pagamentos.html('').hide();
+                if (aluno.container_pagamentos.find('tr').length == 1)
+                    aluno.container_pagamentos.html('').hide();
 
-            if ($(table).find('tr').length > 2) // se tiver somente uma turma, remove somente a linha, caso contrário, pra n ficar feio, remove a tabela toda
-                $(this).parents('tr').remove();
+                if ($(table).find('tr').length > 2) // se tiver somente uma turma, remove somente a linha, caso contrário, pra n ficar feio, remove a tabela toda
+                    $(this).parents('tr').remove();
 
-            else
-                $(table).html('').hide();
-
+                else
+                    $(table).html('').hide();
+            }
         });
     };
 
     aluno.eventExcluirAlimento = function() {
         $(aluno.getIdAlimentosTurma()).find('.excluir_alimento').click(function() {
-            //var quantidade = helpers.parseNumero($(this).parents('tr').find('.quantidade_alimento_turma').html());
             var table = $(this).parents('table');
-            //var id_container_alimentos = $(table).attr('id');
 
             if (!aluno.container_pagamentos.find('tr').hasClass(aluno.getClassPagamentoTurma().replace('.', ''))) { // procura se já tem um pagamento registrado para a turma, se houver a remoção não é realizada
-                //aluno.atualizaAlimentosPagamento(quantidade * (-1));
                 if ($(table).find('tr').length > 2) // se tiver somente uma turma, remove somente a linha, caso contrário, pra n ficar feio, remove a tabela toda
                     $(this).parents('tr').remove();
                 else
@@ -400,9 +432,6 @@ var controle_aluno = (function() {
     };
 
     aluno.verificaTurmasAluno = function() {
-        //var aux = aluno.campo_disciplina.find('option:selected').html() + ' - ' + aluno.campo_turma.find('option:selected').html();
-        //var option = aluno.container_turma.find('option:selected');
-
         if (aluno.campo_turma.children().length > 0 && !aluno.container_turma.find('tr').hasClass(aluno.getNameTurmaAluno())) //&& $(option).val() != "")
             return true;
 

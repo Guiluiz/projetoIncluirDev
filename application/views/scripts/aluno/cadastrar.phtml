@@ -14,6 +14,9 @@ if (!empty($this->alimentos))
 <script type="text/javascript" src="http://cidades-estados-js.googlecode.com/files/cidades-estados-1.2-utf8.js"></script>
 <script src="<?php echo $this->baseUrl() . '/js/ui.datepicker-pt-BR.js' ?>"></script>
 <script src="<?php echo $this->baseUrl() . '/js/jquery.maskedinput.min.js' ?>"></script>
+
+<script src="<?php echo $this->baseUrl() . '/js/date-pt-BR.js' ?>"></script>
+
 <script src="<?php echo $this->baseUrl() . '/js/jquery.validate.min.js' ?>"></script>
 <script src="<?php echo $this->baseUrl() . '/js/form.js' ?>"></script>
 <script src="<?php echo $this->baseUrl() . '/js/functions.js' ?>"></script>
@@ -22,7 +25,7 @@ if (!empty($this->alimentos))
 <script>
     $(function() {
         form.iniForm('<?= $this->url(array('controller' => 'ajax', 'action' => 'cep'), null, true) ?>');
-        
+
         controle_aluno.ini(
                 '<?php echo $this->url(array('controller' => 'aluno', 'action' => 'verifica-aluno'), null, true); ?>',
                 '<?php echo $this->baseUrl() . "/imagens/calendar.png" ?>',
@@ -35,7 +38,7 @@ if (!empty($this->alimentos))
                 '<?php echo $this->data(3) ?>',
                 '<?php echo $this->data(4) ?>'
                 );
-        
-        
+
+
     });
 </script>

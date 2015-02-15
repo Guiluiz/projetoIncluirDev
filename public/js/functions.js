@@ -84,7 +84,7 @@ var helpers = (function() {
                                 html += '<option value="">Selecione</option>';
 
                             for (var i = 0; i < turmas.length; i++)
-                                html += "<option value='" + turmas[i].id_turma + "'>" + turmas[i].nome_turma + "</option>";
+                                html += "<option hora_inicio='" + turmas[i].horario_inicio + "' hora_fim='" + turmas[i].horario_fim + "' data_inicio='" + turmas[i].data_inicio + "' data_fim='" + turmas[i].data_fim + "' value='" + turmas[i].id_turma + "'>" + turmas[i].nome_turma  + ' | ' + turmas[i].horario_inicio + ' - ' + turmas[i].horario_fim + "</option>";
                         }
                     }
                     else
@@ -138,7 +138,7 @@ var helpers = (function() {
                 $(elemento).fadeOut('fast').find('input, select').attr('disabled', 'disabled').val('');
         }
     };
-    
+
     auxiliares.retira_acentos = function(palavra) {
         var com_acento = 'áàãâäéèêëíìîïóòõôöúùûüçÁÀÃÂÄÉÈÊËÍÌÎÏÓÒÕÖÔÚÙÛÜÇ';
         var sem_acento = 'aaaaaeeeeiiiiooooouuuucAAAAAEEEEIIIIOOOOOUUUUC';
@@ -155,21 +155,21 @@ var helpers = (function() {
         }
         return nova;
     };
-    
+
     auxiliares.trim = function(vlr) {
         while (vlr.indexOf(" ") != - 1)
             vlr = vlr.replace(' - ', '_').replace(" ", "_");
 
         return vlr;
     };
-    
+
     auxiliares.validaNumero = function(valor) {
         var aux = parseFloat(valor);
         if (isNaN(aux) || aux < 0)
             return false;
         return true;
     };
-    
+
     auxiliares.parseNumero = function(valor) {
         if (valor.length == 0)
             return 0;
@@ -181,7 +181,7 @@ var helpers = (function() {
 
         return -1;
     };
-    
+
     auxiliares.parseDate = function(str_date) {
         if (str_date != "") {
             var split_data = str_date.toString().split('/');
@@ -197,6 +197,6 @@ var helpers = (function() {
         }
         return null;
     };
-    
+
     return auxiliares;
 })();

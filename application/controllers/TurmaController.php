@@ -244,6 +244,10 @@ class TurmaController extends Zend_Controller_Action {
                     foreach ($turmas as $turma) {
                         $array_turmas[$i]['id_turma'] = $turma->getIdTurma(true);
                         $array_turmas[$i]['nome_turma'] = $turma->getNomeTurma();
+                        $array_turmas[$i]['horario_inicio'] = $turma->getHorarioInicio();
+                        $array_turmas[$i]['horario_fim'] = $turma->getHorarioFim();
+                        $array_turmas[$i]['data_inicio'] = $turma->getDataInicio();
+                        $array_turmas[$i]['data_fim'] = $turma->getDataFim();
                         $i++;
                     }
                 }
