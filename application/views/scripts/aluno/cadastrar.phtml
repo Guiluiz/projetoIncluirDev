@@ -21,6 +21,8 @@ if (!empty($this->alimentos))
 
 <script>
     $(function() {
+        form.iniForm('<?= $this->url(array('controller' => 'ajax', 'action' => 'cep'), null, true) ?>');
+        
         controle_aluno.ini(
                 '<?php echo $this->url(array('controller' => 'aluno', 'action' => 'verifica-aluno'), null, true); ?>',
                 '<?php echo $this->baseUrl() . "/imagens/calendar.png" ?>',
@@ -33,6 +35,7 @@ if (!empty($this->alimentos))
                 '<?php echo $this->data(3) ?>',
                 '<?php echo $this->data(4) ?>'
                 );
-        form.iniForm('<?= $this->url(array('controller' => 'ajax', 'action' => 'cep'), null, true) ?>');
+        
+        
     });
 </script>

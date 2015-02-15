@@ -17,10 +17,9 @@ if (!empty($this->disciplinas))
 <script>
     $(function() {
         form.iniForm('<?= $this->url(array('controller' => 'ajax', 'action' => 'cep'), null, true) ?>');
-        controle.iniVoluntario(
+        controle_voluntarios.ini(
                 '<?php echo $this->url(array('controller' => 'voluntario', 'action' => 'verifica-voluntario'), null, true); ?>',
                 '<?php echo $this->url(array('controller' => 'disciplina', 'action' => 'buscar-disciplinas'), null, true); ?>',
-                '<?php echo $this->url(array('controller' => 'voluntario', 'action' => 'index'), null, true) ?>',
                 '<?php echo $this->baseUrl() . "/imagens/calendar.png" ?>',
                 '<?php echo base64_encode(Application_Model_Voluntario::$status_desligado) ?>',
                 '<?php echo Application_Model_Voluntario::$atividade_aulas ?>',

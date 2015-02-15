@@ -21,10 +21,9 @@ if (!empty($this->disciplinas))
         });
 
         form.iniForm('<?= $this->url(array('controller' => 'error', 'action' => 'error'), null, true) ?>');
-        controle.iniVoluntario(
+        controle_voluntarios.ini(
                 '<?php echo $this->url(array('controller' => 'error', 'action' => 'error'), null, true); ?>',
                 '<?php echo $this->url(array('controller' => 'error', 'action' => 'error'), null, true); ?>',
-                '<?php echo $this->url(array('controller' => 'error', 'action' => 'error'), null, true) ?>',
                 '<?php echo $this->baseUrl() . "/imagens/calendar.png" ?>',
                 '<?php echo base64_encode(Application_Model_Voluntario::$status_desligado) ?>',
                 '<?php echo Application_Model_Voluntario::$atividade_aulas ?>',
