@@ -70,7 +70,8 @@ class FrequenciaController extends Zend_Controller_Action {
         if (!$periodo->verificaFimPeriodo()) {
             $usuario = Zend_Auth::getInstance()->getIdentity();
 
-            $datas_atividade = new Application_Model_DatasAtividade();
+            $calendario_academico = new Application_Model_Mappers_DatasAtividade();
+            $datas_atividade = $calendario_academico->getDatasByPeriodo($periodo->getPeriodoAtual());
             $form_frequencia = new Application_Form_FormFrequenciaVoluntario();
 
             $form_frequencia->initializeSetores();

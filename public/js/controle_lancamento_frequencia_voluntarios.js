@@ -23,13 +23,13 @@ var controle_frequencia_voluntario = (function() {
         frequencia_vol.data_atual = (data_atual instanceof Date) ? data_atual : helpers.parseDate(data_atual);
         frequencia_vol.data_ini_periodo = data_ini_periodo;
         frequencia_vol.data_fim_periodo = data_fim_periodo;
-
+        
         frequencia_vol.ini();
     };
 
 
     frequencia_vol.getSetor = function() {
-        frequencia_vol.find('option:selected').val();
+        return frequencia_vol.setor.find('option:selected').val();
     };
 
     frequencia_vol.ini = function() {
@@ -79,7 +79,7 @@ var controle_frequencia_voluntario = (function() {
                             maxDate: frequencia_vol.data_fim_periodo,
                             beforeShowDay: function(calendar_date) {
                                 var aux = $.datepicker.formatDate('dd/mm/yy', calendar_date);
-
+                                
                                 if (frequencia_vol.datas_calendario_academico[aux] != undefined
                                         && +frequencia_vol.data_atual >= +calendar_date)
                                     return [true, ''];
@@ -113,7 +113,7 @@ var controle_frequencia_voluntario = (function() {
     };
 
     frequencia_vol.printVoluntarios = function() {
-        var html;
+        var html = '';
 
         html += "<div id='title-frequencia' class='obs'>Para fazer o lançamento escolha uma data no calendário acima.</div><div id='data_lancamento'></div>";
         html += '<table id="frequencia_voluntario" class="form_incrementa stripped"><tr><th>Voluntário</th><th>Presente?</th><th>Hora de Entrada</th><th>Hora de Saída</th><th>Total de Horas</th>';
