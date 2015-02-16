@@ -183,7 +183,7 @@ var helpers = (function() {
     };
 
     auxiliares.parseDate = function(str_date) {
-        if (str_date != "") {
+        if (str_date != undefined && str_date != "") {
             var split_data = str_date.toString().split('/');
 
             if (split_data != null && split_data.length == 3) {

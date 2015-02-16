@@ -54,7 +54,7 @@ var controle_aluno = (function() {
         aluno.action = action;
         aluno.qt_min_alimentos = parseInt(qt_alimentos);
         aluno.valor_min_pagamento = parseFloat(valor_min);
-
+//        aluno.verificaHorariosTurma();
         aluno.ini();
     };
 
@@ -201,13 +201,13 @@ var controle_aluno = (function() {
 
     aluno.addHorarioTurma = function(id_turma) {
         aluno.horarios_turmas_incluidas.push(
-                {
-                    id: id_turma,
-                    horario_inicio: aluno.getHoraInicial(),
-                    horario_fim: aluno.getHoraFinal(),
-                    data_inicio: aluno.getDataInicial(),
-                    data_fim: aluno.getDataFinal()
-                }
+            {
+                id: id_turma,
+                horario_inicio: aluno.getHoraInicial(),
+                horario_fim: aluno.getHoraFinal(),
+                data_inicio: aluno.getDataInicial(),
+                data_fim: aluno.getDataFinal()
+            }
         );
     };
 
@@ -222,27 +222,70 @@ var controle_aluno = (function() {
     };
 
     aluno.getHoraInicial = function() {
-        return aluno.campo_turma.find('option:selected').attr('hora_inicio');
+        return Date.parse(aluno.campo_turma.find('option:selected').attr('hora_inicio'));
     };
 
     aluno.getHoraFinal = function() {
-        return aluno.campo_turma.find('option:selected').attr('hora_fim');
+        return Date.parse(aluno.campo_turma.find('option:selected').attr('hora_fim'));
     };
 
     aluno.getDataInicial = function() {
-        return aluno.campo_turma.find('option:selected').attr('data_inicio');
+        return helpers.parseDate(aluno.campo_turma.find('option:selected').attr('data_inicio'));
     };
 
     aluno.getDataFinal = function() {
-        return aluno.campo_turma.find('option:selected').attr('data_fim');
+        return helpers.parseDate(aluno.campo_turma.find('option:selected').attr('data_fim'));
+    };
+
+    aluno.verificaPeriodosTurma = function() {
+        var data_inicio = aluno.getDataInicial(),
+                data_fim = aluno.getDataFinal();
+
+        for (var i in aluno.horarios_turmas_incluidas) {
+            if (// verifica se os períodos das turmas interferem uns nos outros
+                    (Date.compare(aluno.horarios_turmas_incluidas[i].data_inicio, data_inicio) >= 0 &&
+                            Date.compare(aluno.horarios_turmas_incluidas[i].data_fim, data_fim) <= 0) ||
+                    (Date.compare(aluno.horarios_turmas_incluidas[i].data_inicio, data_inicio) >= 0 &&
+                            Date.compare(aluno.horarios_turmas_incluidas[i].data_fim, data_inicio) < 0) ||
+                    (Date.compare(aluno.horarios_turmas_incluidas[i].data_inicio, data_fim) > 0 &&
+                            Date.compare(aluno.horarios_turmas_incluidas[i].data_fim, data_fim) <= 0) ||
+                    (Date.compare(aluno.horarios_turmas_incluidas[i].data_inicio, data_inicio) <= 0 &&
+                            Date.compare(aluno.horarios_turmas_incluidas[i].data_fim, data_fim) >= 0)) {
+
+                return true;
+            }
+        }
+        return false;
     };
 
     aluno.verificaHorariosTurma = function() {
+        var horario_inicio = aluno.getHoraInicial(),
+                horario_fim = aluno.getHoraFinal();
 
+        if (aluno.verificaPeriodosTurma()) {
+            for (var i in aluno.horarios_turmas_incluidas) {
+                if (// verifica se os horários das turmas interferem uns nos outros
+                        (Date.compare(aluno.horarios_turmas_incluidas[i].horario_inicio, horario_inicio) >= 0 &&
+                                Date.compare(aluno.horarios_turmas_incluidas[i].horario_fim, horario_fim) <= 0) ||
+                        (Date.compare(aluno.horarios_turmas_incluidas[i].horario_inicio, horario_inicio) >= 0 &&
+                                Date.compare(aluno.horarios_turmas_incluidas[i].horario_fim, horario_inicio) < 0) ||
+                        (Date.compare(aluno.horarios_turmas_incluidas[i].horario_inicio, horario_fim) > 0 &&
+                                Date.compare(aluno.horarios_turmas_incluidas[i].horario_fim, horario_fim) <= 0) ||
+                        (Date.compare(aluno.horarios_turmas_incluidas[i].horario_inicio, horario_inicio) <= 0 &&
+                                Date.compare(aluno.horarios_turmas_incluidas[i].horario_fim, horario_fim) >= 0)) {
+
+                    return true;
+                }
+            }
+        }
+        return false;
     };
 
     aluno.incrementaTurma = function() {
-        if ((aluno.container_turma.find('tr').length - 1) < aluno.getQuantidadeTurmas()) { //exclui a linha de cabeçalho na verificação de turmas inseridas
+        if (aluno.verificaHorariosTurma())
+            exibeMensagem('Já existe uma turma do aluno que interefere no horário dessa turma. Por favor, escolha outra turma', 'Inclusão de Turma');
+
+        else if ((aluno.container_turma.find('tr').length - 1) < aluno.getQuantidadeTurmas()) { //exclui a linha de cabeçalho na verificação de turmas inseridas
             var id_turma = aluno.getIdTurma();
             var html = '';
 
@@ -354,9 +397,9 @@ var controle_aluno = (function() {
                 var aux_class = $(this).parents('tr').attr('class'); // a linha correspondente a turma armazena o id para retirar os pagamentos/alimentos da turma
                 var table = $(this).parents('table');
                 var id_turma = $(this).parents('tr').children('input').val();
-                
+
                 aluno.removeHorarioTurma(id_turma);
-                
+
                 aluno.select_turma_pagamento.find('option').each(function() {
                     if ($(this).val() == id_turma)
                         $(this).remove();
