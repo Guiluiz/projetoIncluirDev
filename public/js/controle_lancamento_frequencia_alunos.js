@@ -12,6 +12,7 @@ var controle_frequencia_aluno = (function() {
         data: $('#data'),
         container: $('#calendario_frequencia'),
         container_frequencias: $('#frequencia'),
+        form: $('form'),
         url_ajax_aluno: '',
         url_ajax_disciplina: '',
         url_ajax_turma: '',
@@ -191,7 +192,7 @@ var controle_frequencia_aluno = (function() {
 
             frequencia.printContador();
         });
-        
+
         frequencia.printContador();
     }
 
@@ -202,7 +203,37 @@ var controle_frequencia_aluno = (function() {
 
     frequencia.printMensagem = function(msg) {
         frequencia.container_frequencias.html(msg);
-    }
+    };
+
+    frequencia.printConfirmacao = function() {
+        var clone = frequencia.container_frequencias.clone();
+        
+        clone.find('tr').each(function(){
+           if($(this).find('input[type="hidden"]').length > 0)
+               $(this).remove();
+        });
+        
+        $('body').append('<div style="display:none" id="confirm">'+clone.html()+'</div>');
+        
+        $("#confirm").dialog({
+            resizable: false,
+            height: 140,
+            modal: true,
+            buttons: {
+                'Confirm submit': function() {
+                    frequencia.form.submit();
+                },
+                Cancel: function() {
+                    $(this).dialog('destroy');
+                    $(this).remove();
+                }
+            }
+        });
+        frequencia.form.submit(function() {
+            $('#confirm').dialog('open');
+            return false;
+        });
+    };
 
     frequencia.getIdTurma = function() {
         return frequencia.turma.find('option:selected').val();
