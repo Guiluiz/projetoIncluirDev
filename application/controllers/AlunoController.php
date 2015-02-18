@@ -385,17 +385,13 @@ class AlunoController extends Zend_Controller_Action {
         if ($id_aluno > 0) {
             $this->view->title = "Projeto Incluir - Visualizar Aluno";
 
-            if ($this->getRequest()->isPost())
-                $this->_helper->redirector->goToRoute(array('controller' => 'aluno', 'action' => 'index'), null, true);
-
             $mapper_aluno = new Application_Model_Mappers_Aluno();
             $aluno = $mapper_aluno->buscaAlunosByID($id_aluno);
 
             if ($aluno instanceof Application_Model_Aluno) {
                 $mapper_calendario = new Application_Model_Mappers_DatasAtividade();
-                $calendarios = $mapper_calendario->getCalendarios();
                 
-                $this->view->calendarios = $calendarios;
+                $this->view->calendarios =  $mapper_calendario->getCalendarios();
                 $this->view->aluno = $aluno;
                 return;
             }

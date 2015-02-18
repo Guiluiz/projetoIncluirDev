@@ -53,6 +53,10 @@ h3{
     font-size: 0.9em;
 }
 
+p{
+    padding: 2em; 
+}
+
 div.ui-datepicker {
     font-size: 115%;
 }

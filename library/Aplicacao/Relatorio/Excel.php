@@ -1014,7 +1014,7 @@ class Aplicacao_Relatorio_Excel {
                 set_time_limit(0);
                 @ini_set('memory_limit', '512M');
 
-                $array_aprovacao = array(1 => 'Sim', 0 => 'Não', null => '-');
+                $array_aprovacao = array(1 => 'Aprovado', 0 => 'Reprovado', null => '-');
                 $total_aulas = $calendario_atual->getQuantidadeAulas();
 
                 $mapper_turma = new Application_Model_Mappers_Turma();
@@ -1061,7 +1061,7 @@ class Aplicacao_Relatorio_Excel {
                 $sheet->setCellValue('C5', 'Email');
                 $sheet->setCellValue('D5', 'Nota Acumulada/Total Distribuído');
                 $sheet->setCellValue('E5', 'Frequência (%)');
-                $sheet->setCellValue('F5', 'Aprovado');
+                $sheet->setCellValue('F5', 'Situação Final');
 
                 $sheet->getColumnDimension('A')->setWidth(50);
                 $sheet->getColumnDimension('B')->setAutoSize(true);

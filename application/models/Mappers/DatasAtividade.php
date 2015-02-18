@@ -113,14 +113,17 @@ class Application_Model_Mappers_DatasAtividade {
     public function getCalendarios() {
         try {
             $this->db_datas_atividades = new Application_Model_DbTable_DatasAtividade();
-            $datas = $this->db_datas_atividades->fetchAll($this->db_datas_atividades->select());
+            $datas = $this->db_datas_atividades->fetchAll($this->db_datas_atividades->select()
+                    ->from('datas_funcionamento')
+                    ->setIntegrityCheck(false)
+                    ->joinInner('periodo', 'datas_funcionamento.id_periodo = periodo.id_periodo', array('nome_periodo', 'is_atual')));
 
             $array_calendarios = array();
 
             if (!empty($datas)) {
                 foreach ($datas as $data) {
                     if (empty($array_calendarios[$data->id_periodo]))
-                        $array_calendarios[$data->id_periodo] = new Application_Model_DatasAtividade(new Application_Model_Periodo($data->id_periodo));
+                        $array_calendarios[$data->id_periodo] = new Application_Model_DatasAtividade(new Application_Model_Periodo($data->id_periodo, $data->is_atual, $data->nome_periodo));
 
                     $array_calendarios[$data->id_periodo]->addData($data->data_funcionamento);
                 };
