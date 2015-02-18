@@ -64,14 +64,14 @@ $url = new Zend_View_Helper_Url();
         </tr>
     </table>
 
-    <h2>Seleção de Turmas</h2>
+    <h2>Turmas Matriculadas</h2>
 
     <div class="obs">
         <p>Só é permitida a alteração das turmas do período atual.</p>
     </div>
     
-    <table class="form-dados">
-        <tr colspan="2">
+    <table class="form-dados" id="busca_turmas">
+        <tr colspan="2" class="quantidade_turmas">
             <td><?= $this->element->quantidade_turmas ?></td>
         </tr>
         <tr>
@@ -82,7 +82,7 @@ $url = new Zend_View_Helper_Url();
         </tr>
         <tr>
             <td><?= $this->element->turma ?></td>
-            <td><?= $this->element->incluir_turma ?></td>
+            <td class="incluir_turma"><?= $this->element->incluir_turma ?></td>
             <td id="quant_alunos_cadastrados"></td>
         </tr>
     </table>

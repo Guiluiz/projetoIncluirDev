@@ -27,6 +27,9 @@ var controle_aluno = (function() {
         container_turmas_pre_definidas: $('#opcoes_escolhidas'), // Container com as escolhas do usuário já pré definidas
         container_alimentos_pre_definidos: $('#alimentos_escolhidos'), // Container com opções de alimentos dos pagamentos das turmas do usuário já pré definidas
         container_pagamentos_pre_definidos: $('#opcoes_escolhidas_pagamentos'), // Container com os pagamentos das turmas do usuário já pré definidas
+        container_campo_quantidade_turmas: $('.quantidade_turmas'),
+        container_btn_incluir_turma: $('.incluir_turma'),
+        container_campos_escolha_turma: $('#busca_turmas'),
         class_container_alimentos_pagamento: '.ali_pag', // classe para as tabelas que armazenam os alimentos de um pagamento da turma
         url_ajax_verifica_aluno: '', // verifica a existência de alunos com nome próximo no bd
         url_img: '',
@@ -163,13 +166,26 @@ var controle_aluno = (function() {
             });
         }
     };
+    
+    aluno.getNomeTurma = function(campo_turma) {
+        var turma_horario;
 
+        if (campo_turma == undefined)
+            turma_horario = aluno.select_turma_pagamento.find('option:selected').html();
+        else
+            turma_horario = aluno.campo_turma.find('option:selected').html();
+
+        var pos = turma_horario.indexOf(' | ');
+
+        return turma_horario.substring(0, --pos);
+    };
+    
     /**
      * Retorna o identificador do container de alimentos da turma selecionada
      * @returns {String}
      */
     aluno.getIdAlimentosTurma = function() {
-        return '#alimentos_' + helpers.retira_acentos(helpers.trim(aluno.select_turma_pagamento.find('option:selected').html())).toLowerCase();
+        return '#alimentos_' + helpers.retira_acentos(helpers.trim(aluno.getNomeTurma())).toLowerCase();
     };
 
     /**
@@ -177,13 +193,13 @@ var controle_aluno = (function() {
      * @returns {String}
      */
     aluno.getClassPagamentoTurma = function() {
-        return '.pagamento_' + helpers.retira_acentos(helpers.trim(aluno.select_turma_pagamento.find('option:selected').html())).toLowerCase();
+        return '.pagamento_' + helpers.retira_acentos(helpers.trim(aluno.getNomeTurma())).toLowerCase();
     };
 
 
     aluno.getNameTurmaAluno = function(not_filter) {
         if (not_filter == undefined)
-            return helpers.retira_acentos(helpers.trim(aluno.campo_disciplina.find('option:selected').html() + ' - ' + aluno.campo_turma.find('option:selected').html())).toLowerCase();
+            return helpers.retira_acentos(helpers.trim(aluno.campo_disciplina.find('option:selected').html() + ' - ' + aluno.getNomeTurma(true))).toLowerCase();
         return aluno.campo_disciplina.find('option:selected').html() + ' - ' + aluno.campo_turma.find('option:selected').html();
     };
 
@@ -201,13 +217,13 @@ var controle_aluno = (function() {
 
     aluno.addHorarioTurma = function(id_turma) {
         aluno.horarios_turmas_incluidas.push(
-            {
-                id: id_turma,
-                horario_inicio: aluno.getHoraInicial(),
-                horario_fim: aluno.getHoraFinal(),
-                data_inicio: aluno.getDataInicial(),
-                data_fim: aluno.getDataFinal()
-            }
+                {
+                    id: id_turma,
+                    horario_inicio: aluno.getHoraInicial(),
+                    horario_fim: aluno.getHoraFinal(),
+                    data_inicio: aluno.getDataInicial(),
+                    data_fim: aluno.getDataFinal()
+                }
         );
     };
 
@@ -237,7 +253,31 @@ var controle_aluno = (function() {
         return helpers.parseDate(aluno.campo_turma.find('option:selected').attr('data_fim'));
     };
 
-    aluno.verificaPeriodosTurma = function() {
+
+    aluno.verificaHorariosTurma = function() {
+        var horario_inicio = aluno.getHoraInicial(),
+                horario_fim = aluno.getHoraFinal();
+
+        if (aluno.verificaInterfenciaPeriodosTurma()) {
+            for (var i in aluno.horarios_turmas_incluidas) {
+                if (// verifica se os horários das turmas interferem uns nos outros
+                        (Date.compare(aluno.horarios_turmas_incluidas[i].horario_inicio, horario_inicio) >= 0 &&
+                                Date.compare(aluno.horarios_turmas_incluidas[i].horario_fim, horario_fim) <= 0) ||
+                        (Date.compare(aluno.horarios_turmas_incluidas[i].horario_inicio, horario_inicio) >= 0 &&
+                                Date.compare(aluno.horarios_turmas_incluidas[i].horario_fim, horario_inicio) < 0) ||
+                        (Date.compare(aluno.horarios_turmas_incluidas[i].horario_inicio, horario_fim) > 0 &&
+                                Date.compare(aluno.horarios_turmas_incluidas[i].horario_fim, horario_fim) <= 0) ||
+                        (Date.compare(aluno.horarios_turmas_incluidas[i].horario_inicio, horario_inicio) <= 0 &&
+                                Date.compare(aluno.horarios_turmas_incluidas[i].horario_fim, horario_fim) >= 0)) {
+
+                    return false;
+                }
+            }
+        }
+        return true;
+    };
+
+    aluno.verificaInterfenciaPeriodosTurma = function() {
         var data_inicio = aluno.getDataInicial(),
                 data_fim = aluno.getDataFinal();
 
@@ -258,32 +298,144 @@ var controle_aluno = (function() {
         return false;
     };
 
-    aluno.verificaHorariosTurma = function() {
-        var horario_inicio = aluno.getHoraInicial(),
-                horario_fim = aluno.getHoraFinal();
 
-        if (aluno.verificaPeriodosTurma()) {
-            for (var i in aluno.horarios_turmas_incluidas) {
-                if (// verifica se os horários das turmas interferem uns nos outros
-                        (Date.compare(aluno.horarios_turmas_incluidas[i].horario_inicio, horario_inicio) >= 0 &&
-                                Date.compare(aluno.horarios_turmas_incluidas[i].horario_fim, horario_fim) <= 0) ||
-                        (Date.compare(aluno.horarios_turmas_incluidas[i].horario_inicio, horario_inicio) >= 0 &&
-                                Date.compare(aluno.horarios_turmas_incluidas[i].horario_fim, horario_inicio) < 0) ||
-                        (Date.compare(aluno.horarios_turmas_incluidas[i].horario_inicio, horario_fim) > 0 &&
-                                Date.compare(aluno.horarios_turmas_incluidas[i].horario_fim, horario_fim) <= 0) ||
-                        (Date.compare(aluno.horarios_turmas_incluidas[i].horario_inicio, horario_inicio) <= 0 &&
-                                Date.compare(aluno.horarios_turmas_incluidas[i].horario_fim, horario_fim) >= 0)) {
+    aluno.getQuantidadeAlunos = function() {
+        var id_turma = aluno.getIdTurma();
 
-                    return true;
+        if (aluno.container_quantidade_alunos_turma.length > 0 && id_turma.length > 0) {
+            $.ajax({
+                type: "POST",
+                url: aluno.url_ajax_quantidade_alunos_turma,
+                dataType: "JSON",
+                data: {
+                    id_turma: id_turma
+                },
+                success: function(data) {
+                    if (data.length > 0) {
+                        $.each(data[0], function(key, value) {
+                            if (key.indexOf('count') >= 0)
+                                aluno.container_quantidade_alunos_turma.html('Alunos Cadastrados nessa Turma: <b>' + value + '</b>');
+                        });
+                    }
+                },
+                error: function(error) {
+                    console.log(error);
                 }
-            }
+            });
         }
+        else
+            aluno.container_quantidade_alunos_turma.html('');
+    };
+
+    aluno.verificaTurmasAluno = function() {
+        if (aluno.campo_turma.children().length > 0 && !aluno.container_turma.find('tr').hasClass(aluno.getNameTurmaAluno())) //&& $(option).val() != "")
+            return true;
+
+        exibeMensagem('Nenhuma turma foi selecionada ou ela já foi incluída.', 'Inclusão de Turma');
         return false;
     };
 
+    aluno.verificaLiberacaoTurma = function(linha_turma_alterada) {
+        if (!aluno.trava_busca_liberacao) {
+            aluno.trava_busca_liberacao = true;
+
+            if (aluno.campo_turma.length > 0 && aluno.verificaTurmasAluno()) {
+                $.ajax({
+                    type: "POST",
+                    url: aluno.url_ajax_verificacao_liberacao,
+                    dataType: "JSON",
+                    data: {
+                        id_turma: aluno.getIdTurma(),
+                        id_disciplina: aluno.getIdDisciplina(),
+                        id_aluno: $('#id_aluno').val()
+                    },
+                    success: function(liberacao) {
+                        var tipo_liberacao = '';
+
+                        if (liberacao.length > 0) {
+                            var pre_requisitos = '';
+                            for (var i = 0; i < liberacao.length; i++)
+                                pre_requisitos += liberacao[i].nome_pre_requisito + ' ';
+
+                            $('form').append('<div id="liberacao_msg"></div>');
+
+                            $('#liberacao_msg').dialog({
+                                modal: true,
+                                resizable: false,
+                                draggable: false,
+                                title: 'Inclusão de Turmas',
+                                closeOnEscape: false,
+                                buttons: [{
+                                        text: "Prova de Nivelamento",
+                                        click: function() {
+                                            tipo_liberacao = 'Prova de Nivelamento';
+                                            $(this).dialog("close");
+                                        }
+                                    },
+                                    {
+                                        text: "Liberação",
+                                        click: function() {
+                                            tipo_liberacao = 'Liberado';
+                                            $(this).dialog("close");
+                                        }
+                                    },
+                                    {
+                                        text: "Cancelar",
+                                        click: function() {
+                                            $(this).dialog("close");
+                                            tipo_liberacao = 'cancelado';
+                                        }
+                                    }],
+                                close: function() {
+                                    if (tipo_liberacao.length > 0 && tipo_liberacao != 'cancelado') {
+                                        aluno.liberacao_turma = tipo_liberacao;
+                                        aluno.incrementaTurma();
+                                        aluno.incrementaSelectTurmasAluno();
+                                    }
+                                }
+                            }).html('Aluno não possui pré-requisitos (<b>' + pre_requisitos + '</b>) para cursar essa disciplina. Favor Selecionar uma das opções abaixo.');
+                        }
+                        else {
+                            aluno.liberacao_turma = tipo_liberacao;
+                            if (linha_turma_alterada == undefined) {
+                                aluno.incrementaTurma();
+                                aluno.incrementaSelectTurmasAluno();
+                            }
+                            else
+                                aluno.alteraTurma(linha_turma_alterada);
+                        }
+                        aluno.trava_busca_liberacao = false;
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            }
+            else
+                aluno.trava_busca_liberacao = false;
+        }
+    };
+
+    aluno.alteraTurma = function(linha_turma) {
+        if (linha_turma != undefined) {
+            var id_nova_turma = aluno.getIdTurma(), id_turma_antiga = linha_turma.children('input').val();
+            var aux_class = linha_turma.attr('class'); // a linha correspondente a turma armazena o id para retirar os pagamentos/alimentos da turma
+
+            $('#alimentos_' + aux_class).attr('id', aluno.getIdAlimentosTurma());
+            $('.pagamento_' + aux_class).attr('class', aluno.getClassPagamentoTurma());
+
+            linha_turma.replaceWith('<tr class="' + aluno.getNameTurmaAluno() + '"><input type="hidden" name="turmas[]" value="' + id_nova_turma + '"/><td>' + aluno.campo_curso.find('option:selected').html() + '</td><td>' + aluno.campo_disciplina.find('option:selected').html() + '</td><td>' + aluno.campo_turma.find('option:selected').html() + '</td><td><input type="hidden" name="liberacao[' + id_nova_turma + ']" value="' + aluno.liberacao_turma + '"/>' + aluno.liberacao_turma + '</td><td><div class="alterar_turma">Alterar</div><div class="excluir_turma" >Excluir</div></td></tr>');
+            aluno.select_turma_pagamento.find('option[value="' + id_turma_antiga + '"]').replaceWith('<option value="' + id_nova_turma + '">' + aluno.getNameTurmaAluno(true) + '</option>');
+
+            aluno.container_campos_escolha_turma.dialog("destroy");
+            aluno.container_campo_quantidade_turmas.show();
+            aluno.container_btn_incluir_turma.show();
+        }
+    };
+
     aluno.incrementaTurma = function() {
-        if (aluno.verificaHorariosTurma())
-            exibeMensagem('Já existe uma turma do aluno que interefere no horário dessa turma. Por favor, escolha outra turma', 'Inclusão de Turma');
+        if (!aluno.verificaHorariosTurma())
+            exibeMensagem('Já existe uma turma do aluno que interefere no horário dessa turma. Por favor, escolha outra.', 'Inclusão de Turma');
 
         else if ((aluno.container_turma.find('tr').length - 1) < aluno.getQuantidadeTurmas()) { //exclui a linha de cabeçalho na verificação de turmas inseridas
             var id_turma = aluno.getIdTurma();
@@ -298,6 +450,7 @@ var controle_aluno = (function() {
 
             html += '<tr class="' + aluno.getNameTurmaAluno() + '"><input type="hidden" name="turmas[]" value="' + id_turma + '"/><td>' + aluno.campo_curso.find('option:selected').html() + '</td><td>' + aluno.campo_disciplina.find('option:selected').html() + '</td><td>' + aluno.campo_turma.find('option:selected').html() + '</td><td><input type="hidden" name="liberacao[' + id_turma + ']" value="' + aluno.liberacao_turma + '"/>' + aluno.liberacao_turma + '</td><td><div class="alterar_turma">Alterar</div><div class="excluir_turma" >Excluir</div></td></tr>';
             aluno.container_turma.append(html);
+            aluno.eventAlterarTurmaAluno();
             aluno.eventExcluirTurmaAluno();
         }
         else
@@ -389,6 +542,36 @@ var controle_aluno = (function() {
             exibeMensagem('Inclua primeiro a turma', 'Registro de Pagamento');
     };
 
+
+    aluno.eventAlterarTurmaAluno = function() {
+        aluno.container_turma.find('.alterar_turma').click(function() {
+            var linha_turma = $(this).parents('tr'); // a linha correspondente a turma armazena o id para retirar os pagamentos/alimentos da turma
+
+            aluno.container_campo_quantidade_turmas.hide();
+            aluno.container_btn_incluir_turma.hide();
+
+            aluno.container_campos_escolha_turma.dialog({
+                dialogClass: "no-close",
+                modal: true,
+                resizable: false,
+                draggable: false,
+                title: 'Alterar Turma',
+                closeOnEscape: false,
+                width: 600,
+                buttons: {
+                    Ok: function() {
+                        aluno.verificaLiberacaoTurma(linha_turma);
+                    },
+                    Cancelar: function() {
+                        $(this).dialog("destroy");
+                        aluno.container_campo_quantidade_turmas.show();
+                        aluno.container_btn_incluir_turma.show();
+                    }
+                }
+            });
+        });
+    };
+
     aluno.eventExcluirTurmaAluno = function() {
         aluno.container_turma.find('.excluir_turma').click(function() {
             var confirma_exclusao = confirm('Deseja realmente retirar o aluno dessa turma?');
@@ -446,119 +629,6 @@ var controle_aluno = (function() {
         });
     };
 
-    aluno.getQuantidadeAlunos = function() {
-        var id_turma = aluno.getIdTurma();
-
-        if (aluno.container_quantidade_alunos_turma.length > 0 && id_turma.length > 0) {
-            $.ajax({
-                type: "POST",
-                url: aluno.url_ajax_quantidade_alunos_turma,
-                dataType: "JSON",
-                data: {
-                    id_turma: id_turma
-                },
-                success: function(data) {
-                    if (data.length > 0) {
-                        $.each(data[0], function(key, value) {
-                            if (key.indexOf('count') >= 0)
-                                aluno.container_quantidade_alunos_turma.html('Alunos Cadastrados nessa Turma: <b>' + value + '</b>');
-                        });
-                    }
-                },
-                error: function(error) {
-                    console.log(error);
-                }
-            });
-        }
-        else
-            aluno.container_quantidade_alunos_turma.html('');
-    };
-
-    aluno.verificaTurmasAluno = function() {
-        if (aluno.campo_turma.children().length > 0 && !aluno.container_turma.find('tr').hasClass(aluno.getNameTurmaAluno())) //&& $(option).val() != "")
-            return true;
-
-        exibeMensagem('Nenhuma turma foi selecionada ou ela já foi incluída.', 'Inclusão de Turma');
-        return false;
-    };
-
-    aluno.verificaLiberacaoTurma = function() {
-        if (!aluno.trava_busca_liberacao) {
-            aluno.trava_busca_liberacao = true;
-
-            if (aluno.campo_turma.length > 0 && aluno.verificaTurmasAluno()) {
-                $.ajax({
-                    type: "POST",
-                    url: aluno.url_ajax_verificacao_liberacao,
-                    dataType: "JSON",
-                    data: {
-                        id_turma: aluno.getIdTurma(),
-                        id_disciplina: aluno.getIdDisciplina(),
-                        id_aluno: $('#id_aluno').val()
-                    },
-                    success: function(liberacao) {
-                        var tipo_liberacao = '';
-
-                        if (liberacao.length > 0) {
-                            var pre_requisitos = '';
-                            for (var i = 0; i < liberacao.length; i++)
-                                pre_requisitos += liberacao[i].nome_pre_requisito + ' ';
-
-                            $('form').append('<div id="liberacao_msg"></div>');
-
-                            $('#liberacao_msg').dialog({
-                                modal: true,
-                                resizable: false,
-                                draggable: false,
-                                title: 'Inclusão de Turmas',
-                                closeOnEscape: false,
-                                buttons: [{
-                                        text: "Prova de Nivelamento",
-                                        click: function() {
-                                            tipo_liberacao = 'Prova de Nivelamento';
-                                            $(this).dialog("close");
-                                        }
-                                    },
-                                    {
-                                        text: "Liberação",
-                                        click: function() {
-                                            tipo_liberacao = 'Liberado';
-                                            $(this).dialog("close");
-                                        }
-                                    },
-                                    {
-                                        text: "Cancelar",
-                                        click: function() {
-                                            $(this).dialog("close");
-                                            tipo_liberacao = 'cancelado';
-                                        }
-                                    }],
-                                close: function() {
-                                    if (tipo_liberacao.length > 0 && tipo_liberacao != 'cancelado') {
-                                        aluno.liberacao_turma = tipo_liberacao;
-                                        aluno.incrementaTurma();
-                                        aluno.incrementaSelectTurmasAluno();
-                                    }
-                                }
-                            }).html('Aluno não possui pré-requisitos (<b>' + pre_requisitos + '</b>) para cursar essa disciplina. Favor Selecionar uma das opções abaixo.');
-                        }
-                        else {
-                            aluno.liberacao_turma = tipo_liberacao;
-                            aluno.incrementaTurma();
-                            aluno.incrementaSelectTurmasAluno();
-                        }
-                        aluno.trava_busca_liberacao = false;
-                    },
-                    error: function(error) {
-                        console.log(error);
-                    }
-                });
-            }
-            else
-                aluno.trava_busca_liberacao = false;
-        }
-    };
-
     aluno.buscaAlimentos = function() {
         if (aluno.campo_tipo_alimento.length > 0) {
             $.ajax({
@@ -597,6 +667,7 @@ var controle_aluno = (function() {
         else
             aluno.campo_tipo_alimento.html('');
     };
+
 
     return {
         ini: aluno.setValues

@@ -4,6 +4,7 @@ function exibeMensagem(mensagem, titulo) {
         $('#mensagem').html(mensagem);
 
         $("#mensagem").dialog({
+            dialogClass: "no-close",
             modal: true,
             resizable: false,
             draggable: false,

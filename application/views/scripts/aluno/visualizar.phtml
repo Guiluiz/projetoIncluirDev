@@ -1,4 +1,7 @@
-<?php if ($this->aluno instanceof Application_Model_Aluno): ?>
+<?php
+if ($this->aluno instanceof Application_Model_Aluno):
+    $array_aprovacao = array(1 => 'Sim', 0 => 'Não', null => '-');
+    ?>
     <h2>Informações Gerais do Aluno</h2>
 
     <table class="form-dados visualizacao" style="width: 60%;">
@@ -92,7 +95,8 @@
                 <th style="width: 16.6%">Resultado Final</th>
 
             </tr>
-            <?php foreach ($this->aluno->getCompleteTurmas() as $id_turma => $turma):
+            <?php
+            foreach ($this->aluno->getCompleteTurmas() as $id_turma => $turma):
                 $calendario = isset($this->calendarios[$turma[Application_Model_Aluno::$index_turma]->getPeriodo()->getIdPeriodo()]) ? $this->calendarios[$turma[Application_Model_Aluno::$index_turma]->getPeriodo()->getIdPeriodo()] : 0;
                 $total_aulas = ($calendario instanceof Application_Model_DatasAtividade) ? $calendario->getQuantidadeAulas() : 0;
                 ?>
@@ -110,7 +114,8 @@
                     </td>
 
                     <td><?php echo $this->aluno->getPorcentagemFaltas($turma[Application_Model_Aluno::$index_turma]->getIdTurma(), $total_aulas, true) ?></td>
-                    <td>Não disponível</td>
+                    <td><?php echo $array_aprovacao[$turma[Application_Model_Aluno::$index_aprovacao_turma]] ?></td>
+
                 </tr>
             <?php endforeach; ?>
         <?php endif; ?>

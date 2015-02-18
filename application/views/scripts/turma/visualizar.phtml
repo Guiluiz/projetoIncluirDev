@@ -1,4 +1,7 @@
-<?php if ($this->turma instanceof Application_Model_Turma): ?>
+<?php
+if ($this->turma instanceof Application_Model_Turma):
+    $array_aprovacao = array(1 => 'Sim', 0 => 'Não', null => '-');
+    ?>
     <h2>Informações Gerais da Turma</h2>
 
     <table class="form-dados visualizacao" style="width: 60%;">
@@ -41,10 +44,10 @@
                 <th style="">Nome</th>
                 <th style="">Email</th>
                 <th style="">CPF</th>
-                <th style="">Notas</th>
                 <th style="">Pagamento</th>
+                <th style="">Notas</th>
                 <th style="">(%)Frequência</th>
-
+                <th style="">Situação Final</th>
             </tr>
 
             <?php foreach ($this->alunos as $aluno): ?>
@@ -54,6 +57,7 @@
                         <td><?php echo $aluno->getNomeAluno() ?></td>
                         <td><?php echo $aluno->getEmail() ?></td>
                         <td><?php echo $aluno->getCpf() ?></td>
+                        <td><?php echo ($turmas[$this->id_turma][Application_Model_Aluno::$index_pagamento_turma] instanceof Application_Model_Pagamento) ? $turmas[$this->id_turma][Application_Model_Aluno::$index_pagamento_turma]->getSituacao() : '' ?></td>
                         <td>
                             <?php foreach ($turmas[$this->id_turma][Application_Model_Aluno::$index_notas_turma] as $nota): ?>
                                 <?php if ($nota instanceof Application_Model_Nota): ?>
@@ -62,8 +66,8 @@
                             <?php endforeach; ?>
                             <?php echo $aluno->getNotaAcumulada($this->id_turma) ?>
                         </td>
-                        <td><?php echo ($turmas[$this->id_turma][Application_Model_Aluno::$index_pagamento_turma] instanceof Application_Model_Pagamento) ? $turmas[$this->id_turma][Application_Model_Aluno::$index_pagamento_turma]->getSituacao() : '' ?></td>
                         <td><?php echo $aluno->getPorcentagemFaltas($turmas[$this->id_turma][Application_Model_Aluno::$index_turma]->getIdTurma(), $this->total_aulas, true) ?></td>
+                        <td><?php echo $array_aprovacao[$turmas[$this->id_turma][Application_Model_Aluno::$index_aprovacao_turma]]?></td>
                     </tr>
                 <?php endif ?>
             <?php endforeach; ?>
