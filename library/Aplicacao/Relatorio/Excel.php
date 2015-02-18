@@ -798,6 +798,8 @@ class Aplicacao_Relatorio_Excel {
                 file_put_contents('logo.png', $image);
 
                 $mapper_turma = new Application_Model_Mappers_Turma();
+                $mapper_frequencia = new Application_Model_Mappers_Frequencia();
+
                 $filter = new Aplicacao_Filtros_StringSimpleFilter();
 
                 $data = new DateTime();
@@ -836,9 +838,12 @@ class Aplicacao_Relatorio_Excel {
 
                 foreach ($alunos_turmas as $id_turma => $alunos_turma) {
                     $turma = 'Sem Turma Definida';
+                    $datas_lancamento_turma = array();
 
-                    if (!empty($id_turma))
+                    if (!empty($id_turma)) {
                         $turma = $mapper_turma->buscaTurmaByID($id_turma);
+                        $datas_lancamento_turma = $mapper_frequencia->getDatasLancamentosByPeriodo(null, $id_turma);
+                    }
 
                     $new_sheet = $excel->createSheet($indice_sheet);
 
@@ -885,8 +890,6 @@ class Aplicacao_Relatorio_Excel {
                     } else
                         $new_sheet->setTitle($turma);
 
-
-
                     if (!empty($array_datas_cell)) {
                         foreach ($array_datas_cell as $timestamp => $letra)
                             $new_sheet->setCellValue($letra . '5', strftime("%d/%b", $timestamp)); //$data_letiva->format('d/M'));
@@ -926,12 +929,13 @@ class Aplicacao_Relatorio_Excel {
                             $faltas = $faltas[base64_encode($id_turma)];
 
                             foreach ($array_datas_cell as $timestamp => $cell) {
-                                if ($timestamp < $timestamp_atual) {
+                                if ($timestamp < $timestamp_atual && isset($datas_lancamento_turma[$id_turma][date('Y-m-d', $timestamp)])) {
                                     if (isset($faltas[$timestamp]))
                                         $new_sheet->setCellValue($cell . $i, 'A');
                                     else
                                         $new_sheet->setCellValue($cell . $i, 'P');
-                                } else
+                                } 
+                                else
                                     $new_sheet->setCellValue($cell . $i, '-');
                             }
                         }

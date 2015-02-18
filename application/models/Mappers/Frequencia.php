@@ -111,30 +111,30 @@ class Application_Model_Mappers_Frequencia {
      * @param Application_Model_Turma $turma
      * 
      */
-    public function getDatasLancamentosByPeriodo($periodo, $turma = null) {
+    public function getDatasLancamentosByPeriodo($periodo = null, $turma = null) {
         try {
-            if ($periodo instanceof Application_Model_Periodo) {
-                $db_datas_lancamentos = new Application_Model_DbTable_DatasLancamentosFrequenciaTurmas();
+            $db_datas_lancamentos = new Application_Model_DbTable_DatasLancamentosFrequenciaTurmas();
 
-                $select = $db_datas_lancamentos->select()
-                        ->setIntegrityCheck(false)
-                        ->from('datas_lancamentos_frequencias_turmas')
-                        ->joinInner('datas_funcionamento', 'datas_lancamentos_frequencias_turmas.data_funcionamento = datas_funcionamento.data_funcionamento')
+            $select = $db_datas_lancamentos->select()
+                    ->setIntegrityCheck(false)
+                    ->from('datas_lancamentos_frequencias_turmas');
+
+            if ($periodo instanceof Application_Model_Periodo)
+                $select->joinInner('datas_funcionamento', 'datas_lancamentos_frequencias_turmas.data_funcionamento = datas_funcionamento.data_funcionamento')
                         ->where('datas_funcionamento.id_periodo = ?', $periodo->getIdPeriodo());
 
-                if (!empty($turma))
-                    $select->where('datas_lancamentos_frequencias_turmas.id_turma = ?', (int) $turma);
+            if (!empty($turma))
+                $select->where('datas_lancamentos_frequencias_turmas.id_turma = ?', (int) $turma);
 
-                $datas_lancamentos = $db_datas_lancamentos->fetchAll($select);
+            $datas_lancamentos = $db_datas_lancamentos->fetchAll($select);
 
-                if (!empty($datas_lancamentos)) {
-                    $array_datas = array();
+            if (!empty($datas_lancamentos)) {
+                $array_datas = array();
 
-                    foreach ($datas_lancamentos as $data)
-                        $array_datas[$data->id_turma][$data->data_funcionamento] = $data->data_funcionamento;
+                foreach ($datas_lancamentos as $data)
+                    $array_datas[$data->id_turma][$data->data_funcionamento] = $data->data_funcionamento;
 
-                    return $array_datas;
-                }
+                return $array_datas;
             }
             return null;
         } catch (Exception $ex) {

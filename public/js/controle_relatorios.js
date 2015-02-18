@@ -38,14 +38,13 @@ var controle_relatorios = (function() {
     };
 
     
-    relatorio.getPorcetagem = function() {
+    relatorio.getPorcentagem = function() {
         $.ajax({
             type: "POST",
             url: relatorio.url_ajax_relatorio,
             dataType: "JSON",
-            async: false
+            async: true
         }).success(function(data) {
-            //console.log(data);
             if (data == 'Relatório Finalizado') {
                 clearInterval(relatorio.controle);
                 relatorio.porcentagem.progressbar("destroy");
