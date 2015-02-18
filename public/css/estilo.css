@@ -614,3 +614,11 @@ table label.error{
 .alterar_turma{
     margin-bottom: 1em;
 }
+
+#container_recibo{
+    display:none;
+}
+
+#container_tipo_isencao_pendencia{
+    display: none;
+}

@@ -98,6 +98,19 @@ $url = new Zend_View_Helper_Url();
         <tr>
             <td><?= $this->element->pagamento_turma ?></td>
         </tr>
+        
+        <tr>
+            <td><?= $this->element->condicao_matricula ?></td>
+        </tr>
+        
+        <tr id='container_tipo_isencao_pendencia'>
+            <td><?= $this->element->tipo_isencao_pendencia ?></td>
+        </tr>
+        
+        <tr id='container_recibo'>
+            <td><?= $this->element->num_recibo ?></td>
+        </tr>
+        
         <tr>
             <td><?= $this->element->alimento ?></td>
             <td style="vertical-align: middle">
@@ -112,9 +125,7 @@ $url = new Zend_View_Helper_Url();
         </tr> 
     </table>
 
-    <div id="container_alimentos">
-
-    </div>
+    <div id="container_alimentos"></div>
 
     <table class="form-dados">
         <tr>

@@ -27,7 +27,7 @@ class Application_Form_FormAluno extends Zend_Form {
         $sexo->setLabel('Sexo:')
                 ->addFilter('StripTags')
                 ->addFilter('StringTrim')
-                ->setRequired(false)
+                ->setRequired(true)
                 ->setMultiOptions(array(
                     '' => 'Selecione',
                     'Masculino' => 'Masculino',
@@ -38,12 +38,13 @@ class Application_Form_FormAluno extends Zend_Form {
                     'Label',
                     'Errors'
         ));
-        
+
         $quantidade_turmas = new Zend_Form_Element_Select('quantidade_turmas');
         $quantidade_turmas->setLabel('Quantidade de Turmas:')
                 ->addFilter('StripTags')
                 ->addFilter('StringTrim')
-                ->setRequired(false)
+                ->setRequired(true)
+                ->addValidator('NotEmpty')
                 ->setMultiOptions(array(
                     '1' => '1',
                     '2' => '2'
@@ -53,7 +54,58 @@ class Application_Form_FormAluno extends Zend_Form {
                     'Label',
                     'Errors'
         ));
-        
+
+        $recibo = new Zend_Form_Element_Text('num_recibo');
+        $recibo->setLabel('Número do Recibo:')
+                ->addFilter('StripTags')
+                ->addFilter('StringTrim')
+                ->setAttrib('disabled', 'disabled')
+                ->setDecorators(array(
+                    'ViewHelper',
+                    'Label',
+                    'Errors'
+        ));
+
+
+        $condicao_matricula = new Zend_Form_Element_Select('condicao_matricula');
+        $condicao_matricula->setLabel('Condição de Matrícula:')
+                ->addFilter('StripTags')
+                ->addFilter('StringTrim')
+                ->setRequired(true)
+                ->addValidator('NotEmpty')
+                ->setMultiOptions(array(
+                    '' => 'Selecione',
+                    Application_Model_Pagamento::$pagamento_normal => 'Pagamento Normal',
+                    Application_Model_Pagamento::$pagamento_isento_parcial => 'Isenção Parcial',
+                    Application_Model_Pagamento::$pagamento_isento_total => 'Isenção Total',
+                    Application_Model_Pagamento::$pagamento_pendente_parcial => 'Pendente Parcial',
+                    Application_Model_Pagamento::$pagamento_pendente_total => 'Pendente Total'
+                ))
+                ->setDecorators(array(
+                    'ViewHelper',
+                    'Label',
+                    'Errors'
+        ));
+
+        $tipo_isencao_pendencia = new Zend_Form_Element_Select('tipo_isencao_pendencia');
+        $tipo_isencao_pendencia->setLabel('Tipo:')
+                ->addFilter('StripTags')
+                ->addFilter('StringTrim')
+                ->setRequired(false)
+                ->setAttrib('disabled', 'disabled')
+                ->setMultiOptions(array(
+                    '' => 'Selecione',
+                    Application_Model_Pagamento::$isencao_pendencia_alimento => 'Alimento',
+                    Application_Model_Pagamento::$isencao_pendencia_pagamento => 'Pagamento',
+                    Application_Model_Pagamento::$isencao_pendencia_alimento_pagamento => 'Alimento e Pagamento'
+                ))
+                ->setDecorators(array(
+                    'ViewHelper',
+                    'Label',
+                    'Errors'
+        ));
+
+
         $tel_fixo = new Zend_Form_Element_Text('telefone');
         $tel_fixo->setLabel('Telefone Fixo:')
                 ->setAttrib('class', 'telefone')
@@ -436,6 +488,9 @@ class Application_Form_FormAluno extends Zend_Form {
             $escolaridade,
             $estado,
             $rg,
+            $condicao_matricula,
+            $tipo_isencao_pendencia,
+            $recibo,
             $incluir_alimento,
             $incluir_turma,
             $is_responsavel,

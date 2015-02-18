@@ -4,9 +4,21 @@ class Application_Model_Pagamento {
 
     public static $pagamento_liberado = 1;
     public static $pagamento_pendente = 0;
+    
+    public static $pagamento_normal = 1;
+    public static $pagamento_isento_parcial = 2;
+    public static $pagamento_isento_total = 3;
+    public static $pagamento_pendente_total = 4;
+    public static $pagamento_pendente_parcial = 5;
+    
+    public static $isencao_pendencia_alimento = 1;
+    public static $isencao_pendencia_pagamento = 2;
+    public static $isencao_pendencia_alimento_pagamento = 3;
+    
     public static $strings_status_pagamento = array(0 => 'Pendente', 1 => 'Liberado');
     public static $index_alimento = 1;
     public static $index_quantidade_alimento = 2;
+    
     private $id_pagamento;
     private $situacao;
     private $valor;
