@@ -99,7 +99,8 @@ if ($this->aluno instanceof Application_Model_Aluno):
                 if ($calendario->getPeriodoCalendario()->isPeriodoAtual()) {
                     $array_turmas_periodo_atual['atual'] = $aux;
                     $array_turmas_periodo_atual['periodo'] = $calendario->getPeriodoCalendario()->getIdPeriodo();
-                } else
+                }
+                else
                     $array_turmas_periodo_antigo[$calendario->getPeriodoCalendario()->getIdPeriodo()] = $aux;
             }
         }

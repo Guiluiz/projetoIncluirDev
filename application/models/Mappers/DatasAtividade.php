@@ -110,13 +110,13 @@ class Application_Model_Mappers_DatasAtividade {
         }
     }
 
-    public function getCalendarios() {
+    public function getCalendarios($periodos = null) {
         try {
             $this->db_datas_atividades = new Application_Model_DbTable_DatasAtividade();
             $datas = $this->db_datas_atividades->fetchAll($this->db_datas_atividades->select()
-                    ->from('datas_funcionamento')
-                    ->setIntegrityCheck(false)
-                    ->joinInner('periodo', 'datas_funcionamento.id_periodo = periodo.id_periodo', array('nome_periodo', 'is_atual')));
+                            ->from('datas_funcionamento')
+                            ->setIntegrityCheck(false)
+                            ->joinInner('periodo', 'datas_funcionamento.id_periodo = periodo.id_periodo', array('nome_periodo', 'is_atual')));
 
             $array_calendarios = array();
 
@@ -126,12 +126,23 @@ class Application_Model_Mappers_DatasAtividade {
                         $array_calendarios[$data->id_periodo] = new Application_Model_DatasAtividade(new Application_Model_Periodo($data->id_periodo, $data->is_atual, $data->nome_periodo));
 
                     $array_calendarios[$data->id_periodo]->addData($data->data_funcionamento);
-                };
+                }
             }
+
+            if (!empty($periodos)) {
+                foreach ($periodos as $periodo) {
+                    if ($periodo instanceof Application_Model_Periodo) {
+                        if (!isset($array_calendarios[$periodo->getIdPeriodo()]))
+                            $array_calendarios[$periodo->getIdPeriodo()] = new Application_Model_DatasAtividade($periodo);
+                    }
+                }
+            }
+
             return $array_calendarios;
         } catch (Zend_Exception $ex) {
             echo $ex->getMessage();
             return null;
         }
     }
+
 }
