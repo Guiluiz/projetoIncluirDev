@@ -166,13 +166,13 @@ var controle_aluno = (function() {
             });
         }
     };
-    
+
     /**
      * Retorna o nome da turma, sem o horário
      * @param bool campo_turma Indica a busca será feita no select de turmas do aluno, ou o select de turmas da disciplina selecionada 
      * @returns string
      */
-    
+
     aluno.getNomeTurma = function(campo_turma) {
         var turma_horario;
 
@@ -185,7 +185,7 @@ var controle_aluno = (function() {
 
         return turma_horario.substring(0, --pos);
     };
-    
+
     /**
      * Retorna o identificador do container de alimentos da turma selecionada
      * @returns {String}
@@ -202,7 +202,7 @@ var controle_aluno = (function() {
         return '.pagamento_' + helpers.retira_acentos(helpers.trim(aluno.getNomeTurma())).toLowerCase();
     };
 
-    
+
     /**
      * Retorna o nome da turma do aluno junto com a disciplina  
      * @param {type} not_filter Indica se o retorno vai ser fitrado ou não (filtrado é utilizado como indicador dos pagamentos e alimentos da turma)
@@ -225,7 +225,7 @@ var controle_aluno = (function() {
     aluno.getIdDisciplina = function() {
         return aluno.campo_disciplina.find('option:selected').val();
     };
-    
+
     /**
      * Retorna a quantidade de turmas em que o aluno pode ser matriculado 
      * @returns {Number}
@@ -239,10 +239,10 @@ var controle_aluno = (function() {
      * @param {type} id_turma
      * @returns {undefined}
      */
-    aluno.addHorarioTurma = function(id_turma) {
+    aluno.addHorarioTurma = function() {
         aluno.horarios_turmas_incluidas.push(
                 {
-                    id: id_turma,
+                    id: aluno.getIdTurma(),
                     horario_inicio: aluno.getHoraInicial(),
                     horario_fim: aluno.getHoraFinal(),
                     data_inicio: aluno.getDataInicial(),
@@ -250,7 +250,7 @@ var controle_aluno = (function() {
                 }
         );
     };
-    
+
     /**
      * Remove o horário da turma do aluno, utilizado quando o aluno é retirado de uma turma
      * @param {type} id_turma
@@ -363,7 +363,12 @@ var controle_aluno = (function() {
         exibeMensagem('Nenhuma turma foi selecionada ou ela já foi incluída.', 'Inclusão de Turma');
         return false;
     };
-
+    
+    /**
+     * Verifica se a turma a ser inserida/alterada é válida
+     * @param {type} linha_turma_alterada Indica a linha da tabela que contém as informações da turma a ser alterada. Em caso de cadastro o parâmetro é nulo
+     * @returns {undefined}
+     */
     aluno.verificaLiberacaoTurma = function(linha_turma_alterada) {
         if (!aluno.trava_busca_liberacao) {
             aluno.trava_busca_liberacao = true;
@@ -377,6 +382,17 @@ var controle_aluno = (function() {
                         id_turma: aluno.getIdTurma(),
                         id_disciplina: aluno.getIdDisciplina(),
                         id_aluno: $('#id_aluno').val()
+                    },
+                    beforeSend: function() {
+                        jQuery('#mensagem-ajax').dialog({
+                            dialogClass: "no-close",
+                            closeOnEscape: false,
+                            modal: true,
+                            title: 'Busca de Alunos'
+                        });
+                    },
+                    complete: function() {
+                        jQuery('#mensagem-ajax').dialog('destroy');
                     },
                     success: function(liberacao) {
                         var tipo_liberacao = '';
@@ -447,8 +463,12 @@ var controle_aluno = (function() {
 
     aluno.alteraTurma = function(linha_turma) {
         if (linha_turma != undefined) {
-            var id_nova_turma = aluno.getIdTurma(), id_turma_antiga = linha_turma.children('input').val();
+            var id_nova_turma = aluno.getIdTurma();
+            var id_turma_antiga = linha_turma.children('input').val();
             var aux_class = linha_turma.attr('class'); // a linha correspondente a turma armazena o id para retirar os pagamentos/alimentos da turma
+
+            aluno.removeHorarioTurma(id_turma_antiga);
+            aluno.addHorarioTurma();
 
             $('#alimentos_' + aux_class).attr('id', aluno.getIdAlimentosTurma());
             $('.pagamento_' + aux_class).attr('class', aluno.getClassPagamentoTurma());

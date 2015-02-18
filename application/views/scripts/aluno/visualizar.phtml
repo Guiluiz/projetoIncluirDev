@@ -1,6 +1,6 @@
 <?php
 if ($this->aluno instanceof Application_Model_Aluno):
-    $array_aprovacao = array(1 => 'Sim', 0 => 'Não', null => '-');
+    $array_aprovacao = array(1 => 'Aprovado', 0 => 'Reprovado', null => '-');
     ?>
     <h2>Informações Gerais do Aluno</h2>
 
@@ -82,45 +82,115 @@ if ($this->aluno instanceof Application_Model_Aluno):
 
     </table>
 
-    <h2>Turmas</h2>
+    <?php
+    if ($this->aluno->hasTurmas() && !empty($this->calendarios)):
+        $array_turmas_periodo_atual = array();
+        $array_turmas_periodo_antigo = array();
 
-    <table class="form_incrementa visualizacao" style="width: 80%;">
-        <?php if ($this->aluno->hasTurmas()): ?>
-            <tr>
-                <th style="width: 16.6%">Turma</th>
-                <th style="width: 16.6%">Situação</th>
-                <th style="width: 5%">Valor Pago</th>
-                <th style="width: 27%">Notas</th>
-                <th style="width: 16.6%">Frequência</th>
-                <th style="width: 16.6%">Resultado Final</th>
+        foreach ($this->calendarios as $calendario) {
+            if ($calendario instanceof Application_Model_DatasAtividade) {
+                $aux = array();
 
-            </tr>
-            <?php
-            foreach ($this->aluno->getCompleteTurmas() as $id_turma => $turma):
-                $calendario = isset($this->calendarios[$turma[Application_Model_Aluno::$index_turma]->getPeriodo()->getIdPeriodo()]) ? $this->calendarios[$turma[Application_Model_Aluno::$index_turma]->getPeriodo()->getIdPeriodo()] : 0;
-                $total_aulas = ($calendario instanceof Application_Model_DatasAtividade) ? $calendario->getQuantidadeAulas() : 0;
-                ?>
+                foreach ($this->aluno->getCompleteTurmas() as $id_turma => $turma) {
+                    if ($calendario->getPeriodoCalendario()->getIdPeriodo() == $turma[Application_Model_Aluno::$index_turma]->getPeriodo()->getIdPeriodo())
+                        $aux[$id_turma] = $turma;
+                }
+
+                if ($calendario->getPeriodoCalendario()->isPeriodoAtual()) {
+                    $array_turmas_periodo_atual['atual'] = $aux;
+                    $array_turmas_periodo_atual['periodo'] = $calendario->getPeriodoCalendario()->getIdPeriodo();
+                } else
+                    $array_turmas_periodo_antigo[$calendario->getPeriodoCalendario()->getIdPeriodo()] = $aux;
+            }
+        }
+        ?>
+
+        <h2>Turmas do Período Atual</h2>
+
+        <?php if (!empty($array_turmas_periodo_atual['atual'])): ?>
+            <table class="form_incrementa visualizacao" style="width: 80%;">
                 <tr>
-                    <td><?php echo $turma[Application_Model_Aluno::$index_turma]->getCompleteNomeTurma() ?></td>
-                    <td><?php echo $turma[Application_Model_Aluno::$index_pagamento_turma]->getSituacao() ?></td>
-                    <td><?php echo $turma[Application_Model_Aluno::$index_pagamento_turma]->getValorPagamento() ?></td>
-                    <td>
-                        <?php foreach ($turma[Application_Model_Aluno::$index_notas_turma] as $nota): ?>
-                            <?php if ($nota instanceof Application_Model_Nota): ?>
-                                <?php echo $nota->toString() ?><br>
-                            <?php endif ?>
-                        <?php endforeach; ?>
-                        <?php echo $this->aluno->getNotaAcumulada($id_turma) ?>
-                    </td>
-
-                    <td><?php echo $this->aluno->getPorcentagemFaltas($turma[Application_Model_Aluno::$index_turma]->getIdTurma(), $total_aulas, true) ?></td>
-                    <td><?php echo $array_aprovacao[$turma[Application_Model_Aluno::$index_aprovacao_turma]] ?></td>
-
+                    <th style="width: 16.6%">Turma</th>
+                    <th style="width: 16.6%">Situação</th>
+                    <th style="width: 5%">Valor Pago</th>
+                    <th style="width: 27%">Notas</th>
+                    <th style="width: 16.6%">Frequência</th>
+                    <th style="width: 16.6%">Resultado Final</th>
                 </tr>
-            <?php endforeach; ?>
+
+                <?php
+                foreach ($array_turmas_periodo_atual['atual'] as $id_turma => $turma):
+                    $total_aulas = $this->calendarios[$array_turmas_periodo_atual['periodo']]->getQuantidadeAulas();
+                    ?>
+                    <tr>
+                        <td><?php echo $turma[Application_Model_Aluno::$index_turma]->getCompleteNomeTurma() ?></td>
+                        <td><?php echo $turma[Application_Model_Aluno::$index_pagamento_turma]->getSituacao() ?></td>
+                        <td><?php echo $turma[Application_Model_Aluno::$index_pagamento_turma]->getValorPagamento() ?></td>
+                        <td>
+                            <?php foreach ($turma[Application_Model_Aluno::$index_notas_turma] as $nota): ?>
+                                <?php if ($nota instanceof Application_Model_Nota): ?>
+                                    <?php echo $nota->toString() ?><br>
+                                <?php endif ?>
+                            <?php endforeach; ?>
+                            <?php echo $this->aluno->getNotaAcumulada($id_turma) ?>
+                        </td>
+
+                        <td><?php echo $this->aluno->getPorcentagemFaltas($turma[Application_Model_Aluno::$index_turma]->getIdTurma(), $total_aulas, true) ?></td>
+                        <td><?php echo $array_aprovacao[$turma[Application_Model_Aluno::$index_aprovacao_turma]] ?></td>
+                    </tr>
+                    <?php
+                endforeach;
+                ?>
+            </table>
+
+        <?php else:
+            ?>
+            <p>O aluno não foi cadastrado em nenhuma turma do período atual.</p>
         <?php endif; ?>
 
-    </table>
+        <h2>Histórico</h2>
+
+        <?php foreach ($array_turmas_periodo_antigo as $id_periodo => $turmas_periodos): ?>
+            <p><b>Período: <?php echo $this->calendarios[$id_periodo]->getPeriodoCalendario()->getNomePeriodo() ?></b></p>
+
+            <?php if (!empty($turmas_periodos)): ?>
+                <table class="form_incrementa visualizacao" style="width: 80%;">
+                    <tr>
+                        <th style="width: 16.6%">Turma</th>
+                        <th style="width: 16.6%">Situação</th>
+                        <th style="width: 5%">Valor Pago</th>
+                        <th style="width: 27%">Notas</th>
+                        <th style="width: 16.6%">Frequência</th>
+                        <th style="width: 16.6%">Resultado Final</th>
+                    </tr>
+                    <?php foreach ($turmas_periodos as $id_turma => $turma): ?>
+                        <?php $total_aulas = $this->calendarios[$id_periodo]->getQuantidadeAulas();
+                        ?>
+                        <tr>
+                            <td><?php echo $turma[Application_Model_Aluno::$index_turma]->getCompleteNomeTurma() ?></td>
+                            <td><?php echo $turma[Application_Model_Aluno::$index_pagamento_turma]->getSituacao() ?></td>
+                            <td><?php echo $turma[Application_Model_Aluno::$index_pagamento_turma]->getValorPagamento() ?></td>
+                            <td>
+                                <?php foreach ($turma[Application_Model_Aluno::$index_notas_turma] as $nota): ?>
+                                    <?php if ($nota instanceof Application_Model_Nota): ?>
+                                        <?php echo $nota->toString() ?><br>
+                                    <?php endif ?>
+                                <?php endforeach; ?>
+                                <?php echo $this->aluno->getNotaAcumulada($id_turma) ?>
+                            </td>
+                            <td><?php echo $this->aluno->getPorcentagemFaltas($turma[Application_Model_Aluno::$index_turma]->getIdTurma(), $total_aulas, true) ?></td>
+                            <td><?php echo $array_aprovacao[$turma[Application_Model_Aluno::$index_aprovacao_turma]] ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
+            <?php else:
+                ?>
+                <p>Nâo há nenhuma do aluno no período indicado.</p>
+            <?php
+            endif;
+        endforeach;
+    endif;
+    ?>
 
     <table class="form-dados visualizacao" style="width: 60%;">
         <tr>
