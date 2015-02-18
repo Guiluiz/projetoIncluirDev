@@ -8,6 +8,9 @@ var controle_relatorios = (function() {
         url_ajax_relatorio: '',
         campo_periodo: $('#periodo'),
         campo_turmas: $('#turmas'),
+        radio_todas_turmas:$('input:radio[name="todas_turmas"]'),
+        radio_checked_todas_turmas:$('input:radio[name="todas_turmas"]:checked'),
+        container_turmas: $('.linha'),
         porcentagem: $("#porcentagem"),
         container_porcentagem: $("#container-porcentagem"),
         bt_enviar: $('#enviar'),
@@ -17,8 +20,24 @@ var controle_relatorios = (function() {
     relatorio.setValues = function(url_ajax_relatorio, url_ajax_turma) {
         relatorio.url_ajax_relatorio = url_ajax_relatorio;
         relatorio.url_ajax_turma = url_ajax_turma;
+        relatorio.ini();
+    };
+    
+    relatorio.ini = function() {
+        relatorio.iniPorcentagem();
+        relatorio.buscaTurmasByPeriodo();
+        helpers.mostraEscondeRadioSelect(relatorio.radio_checked_todas_turmas, relatorio.container_turmas, 'nao', true);
+        
+        relatorio.radio_todas_turmas.click(function() {
+            helpers.mostraEscondeRadioSelect($(this), relatorio.container_turmas, 'nao', true);
+        });
+
+        relatorio.campo_periodo.change(function() {
+            relatorio.buscaTurmasByPeriodo();
+        });
     };
 
+    
     relatorio.getPorcetagem = function() {
         $.ajax({
             type: "POST",
@@ -70,33 +89,13 @@ var controle_relatorios = (function() {
     };
 
     relatorio.buscaTurmasByPeriodo = function() {
-        var periodo = $('#periodo').find('option:selected').val();
-
+        var periodo = relatorio.campo_periodo.find('option:selected').val();
+        
         if (periodo != undefined && periodo.length > 0)
-            helpers.buscaTurmasByDisciplina(relatorio.url_ajax_turma, null, relatorio.campo_periodo, periodo);
+            helpers.buscaTurmasByDisciplina(relatorio.url_ajax_turma, null, relatorio.campo_turmas, periodo);
     };
 
-    relatorio.ini = function() {
-        relatorio.iniPorcentagem();
-        relatorio.buscaTurmasByPeriodo();
-
-        if ($('input:radio[name="todas_turmas"]:checked').val() == 'sim')
-            $('.linha').hide().find('select').attr('disabled', 'disabled').val('');
-        else
-            $('.linha').show().find('select').removeAttr('disabled');
-
-        $('input:radio[name="todas_turmas"]').click(function() {
-            if ($('input:radio[name="todas_turmas"]:checked').val() == 'sim')
-                $('.linha').fadeOut('slow').find('select').attr('disabled', 'disabled').val('');
-            else
-                $('.linha').fadeIn('slow').find('select').removeAttr('disabled');
-        });
-
-        $('#periodo').change(function() {
-            relatorio.buscaTurmasByPeriodo();
-        });
-    };
-
+    
     return {ini: relatorio.setValues};
 })();
 

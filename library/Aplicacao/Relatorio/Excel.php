@@ -747,10 +747,11 @@ class Aplicacao_Relatorio_Excel {
                     if ($turma instanceof Application_Model_Turma) {
                         $new_sheet->setTitle($filter->filter($turma->getNomeTurma()));
 
-                        $new_sheet->setCellValue('C2', "Turma: " . $turma->toString());
-                        $new_sheet->setCellValue('C3', "Horário: " . $turma->horarioTurmaToString());
+                        $new_sheet->setCellValue('C1', "Turma: " . $turma->toString());
+                        $new_sheet->setCellValue('C2', "Horário: " . $turma->horarioTurmaToString());
+                        $new_sheet->setCellValue('C3', "Professor(es): " . $turma->getNomesProfessores());
 
-                        $new_sheet->getStyle('C2:C3')->getFont()
+                        $new_sheet->getStyle('C1:C3')->getFont()
                                 ->setSize(10);
                     } else
                         $new_sheet->setTitle($turma);

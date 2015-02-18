@@ -47,13 +47,12 @@ var helpers = (function() {
 
     auxiliares.buscaTurmasByDisciplina = function(url, campo_disciplina, campo_turma, periodo, opcao_default) {
         var opcao = $(campo_disciplina).val();
-
         var parametros_requisicao = null;
         var mensagem = "";
 
-        if (periodo != undefined && opcao != undefined && opcao.length > 0) {
+        if (periodo != undefined) {
             parametros_requisicao = {
-                id_disciplina: opcao,
+                id_disciplina: null,
                 id_periodo: periodo
             };
             mensagem = 'Não há nenhuma turma cadastrada para o período escolhido.';

@@ -140,6 +140,18 @@ class Application_Model_Turma {
             return $this->disciplina->getNomeDisciplina() . ' - ' . $this->nome;
     }
 
+    public function getNomesProfessores() {
+        if (!empty($this->professores)) {
+            $nomes = '';
+
+            foreach ($this->professores as $professor) {
+                if ($professor instanceof Application_Model_Professor) 
+                    $nomes .= $professor->getNomeVoluntario() . ', ';
+            }
+            return substr($nomes, 0, -2);
+        }
+    }
+
     public function horarioTurmaToString() {
         if (!empty($this->horario_inicio) && !empty($this->horario_termino))
             return 'De ' . $this->getHorarioInicio() . ' a ' . $this->getHorarioFim();

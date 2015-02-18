@@ -134,7 +134,7 @@ class TurmaController extends Zend_Controller_Action {
                 }
 
                 $turma = $mapper_turma->buscaTurmaByID($id_turma, $periodo_atual->getIdPeriodo(), true);
-
+                
                 if ($turma instanceof Application_Model_Turma) {
                     $mapper_cursos = new Application_Model_Mappers_Curso();
                     $mapper_voluntarios = new Application_Model_Mappers_Voluntario();

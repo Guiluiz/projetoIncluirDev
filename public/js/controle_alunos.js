@@ -167,6 +167,12 @@ var controle_aluno = (function() {
         }
     };
     
+    /**
+     * Retorna o nome da turma, sem o horário
+     * @param bool campo_turma Indica a busca será feita no select de turmas do aluno, ou o select de turmas da disciplina selecionada 
+     * @returns string
+     */
+    
     aluno.getNomeTurma = function(campo_turma) {
         var turma_horario;
 
@@ -196,13 +202,22 @@ var controle_aluno = (function() {
         return '.pagamento_' + helpers.retira_acentos(helpers.trim(aluno.getNomeTurma())).toLowerCase();
     };
 
-
+    
+    /**
+     * Retorna o nome da turma do aluno junto com a disciplina  
+     * @param {type} not_filter Indica se o retorno vai ser fitrado ou não (filtrado é utilizado como indicador dos pagamentos e alimentos da turma)
+     * @returns {String}
+     */
     aluno.getNameTurmaAluno = function(not_filter) {
         if (not_filter == undefined)
             return helpers.retira_acentos(helpers.trim(aluno.campo_disciplina.find('option:selected').html() + ' - ' + aluno.getNomeTurma(true))).toLowerCase();
         return aluno.campo_disciplina.find('option:selected').html() + ' - ' + aluno.campo_turma.find('option:selected').html();
     };
 
+    /**
+     * retorna o id da turma indicada no campo de turmas da disciplina selecionada
+     * @returns {unresolved}
+     */
     aluno.getIdTurma = function() {
         return aluno.campo_turma.find('option:selected').val();
     };
@@ -210,11 +225,20 @@ var controle_aluno = (function() {
     aluno.getIdDisciplina = function() {
         return aluno.campo_disciplina.find('option:selected').val();
     };
-
+    
+    /**
+     * Retorna a quantidade de turmas em que o aluno pode ser matriculado 
+     * @returns {Number}
+     */
     aluno.getQuantidadeTurmas = function() {
         return helpers.parseNumero(aluno.campo_quantidade_turmas.val());
     };
 
+    /**
+     * Adiciona o horário da turma do aluno, utilizado para fazer verificação se há aulas que interferem em seus horários
+     * @param {type} id_turma
+     * @returns {undefined}
+     */
     aluno.addHorarioTurma = function(id_turma) {
         aluno.horarios_turmas_incluidas.push(
                 {
@@ -226,7 +250,12 @@ var controle_aluno = (function() {
                 }
         );
     };
-
+    
+    /**
+     * Remove o horário da turma do aluno, utilizado quando o aluno é retirado de uma turma
+     * @param {type} id_turma
+     * @returns {Boolean}
+     */
     aluno.removeHorarioTurma = function(id_turma) {
         for (var i in aluno.horarios_turmas_incluidas) {
             if (aluno.horarios_turmas_incluidas[i].id_turma == id_turma) {

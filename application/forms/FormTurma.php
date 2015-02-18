@@ -60,10 +60,6 @@ class Application_Form_FormTurma extends Zend_Form {
         $sala->setLabel('Sala:')
                 ->addFilter('StripTags')
                 ->addFilter('StringTrim')
-                ->setAttrib('class', 'obrigatorio')
-                ->setRequired(true)
-                ->addValidator('NotEmpty')
-                ->setRegisterInArrayValidator(false)
                 ->setDecorators(array(
                     'ViewHelper',
                     'Label',
