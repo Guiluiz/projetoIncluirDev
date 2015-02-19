@@ -64,11 +64,12 @@ class Application_Model_Mappers_Aluno {
                         $this->db_aluno = new Application_Model_DbTable_Aluno();
 
                     $this->db_aluno->update($aluno->parseArray(), $this->db_aluno->getAdapter()->quoteInto('id_aluno = ?', $aluno->getIdAluno()));
+                    
                     $this->removePagamentos($aluno->getIdAluno());
-
+                    $this->removeTurmaAluno($aluno->getIdAluno());
+                    
                     $db_turmas_aluno = new Application_Model_DbTable_TurmaAlunos();
-                    $db_turmas_aluno->delete($db_turmas_aluno->getAdapter()->quoteInto('id_aluno = ?', $aluno->getIdAluno()));
-
+                    
                     if ($aluno->hasTurmas()) {
                         $db_pagamento = new Application_Model_DbTable_Pagamento();
                         $db_pagamento_alimentos = new Application_Model_DbTable_PagamentoAlimentos();
@@ -158,6 +159,39 @@ class Application_Model_Mappers_Aluno {
         }
     }
 
+    private function removeTurmaAluno($id_aluno, $tudo = false) {
+        try {
+            $db_turma_alunos = new Application_Model_DbTable_TurmaAlunos();
+            $select = $db_turma_alunos->select()
+                    ->setIntegrityCheck(false)
+                    ->from('turma_alunos', array('id_turma_aluno'))
+                    ->joinInner('turma', 'turma.id_turma = turma_alunos.id_turma')
+                    ->where('id_aluno = ?', $id_aluno);
+
+            if (!$tudo) {
+                $select->joinInner('periodo', 'turma.id_periodo = periodo.id_periodo', array())
+                        ->where('periodo.is_atual = ?', true);
+            }
+
+            $turma_alunos = $db_turma_alunos->fetchAll($select)->toArray();
+
+            if (!empty($turma_alunos)) {
+                $where = "( ";
+
+                foreach ($turma_alunos as $turma_aluno)
+                    $where .= $db_turma_alunos->getAdapter()->quoteInto('id_turma_aluno = ?', (int) $turma_aluno['id_turma_aluno']) . " OR ";
+
+                $where = substr($where, 0, -4) . ")";
+
+                $db_turma_alunos->delete($where);
+            }
+            return true;
+        } catch (Zend_Exception $e) {
+            throw new Zend_Exception('Houve problemas');
+        }
+    }
+
+    
     /**
      * Método auxiliar para atualizar status de pagamentos de alunos. Utilizado somente quando há necessidade 
      * @param Application_Model_Periodo $periodo

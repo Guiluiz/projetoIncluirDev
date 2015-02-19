@@ -57,16 +57,10 @@ var controle_relatorios = (function() {
 
     relatorio.iniPorcentagem = function() {
         relatorio.bt_enviar.click(function() {
-            //switch (tipo) {
-            //  case 1://alunos por turma
             if ($('input:radio[name="todas_turmas"]:checked').val() == 'nao' && $('.linha').find('option:selected').length == 0) {
                 exibeMensagem('É necessário incluir ao menos uma turma.', 'Relatório');
                 return false;
             }
-            //    break;
-            //default:
-            //  return false;
-            //}
 
             relatorio.container_porcentagem.dialog({
                 dialogClass: "no-close",
@@ -93,7 +87,6 @@ var controle_relatorios = (function() {
         if (periodo != undefined && periodo.length > 0)
             helpers.buscaTurmasByDisciplina(relatorio.url_ajax_turma, null, relatorio.campo_turmas, periodo);
     };
-
     
     return {ini: relatorio.setValues};
 })();
