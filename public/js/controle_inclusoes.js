@@ -1502,7 +1502,7 @@ var controle = {
     retira_acentos: function(palavra) {
         var com_acento = 'áàãâäéèêëíìîïóòõôöúùûüçÁÀÃÂÄÉÈÊËÍÌÎÏÓÒÕÖÔÚÙÛÜÇ';
         var sem_acento = 'aaaaaeeeeiiiiooooouuuucAAAAAEEEEIIIIOOOOOUUUUC';
-        var invalids = '\\\'\"#¨~^´`,/[]{}+=()@!$%*|&.';
+        var invalids = '\\\'\"#¨~^´`,/[]{}+=()@!$%*|&.-';
 
         var nova = '';
 
