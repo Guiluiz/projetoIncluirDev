@@ -1048,7 +1048,7 @@ class Application_Model_Mappers_Aluno {
             return false;
         }
     }
-    
+
     /**
      * Verifica se o aluno já foi aprovado em turmas de pré requisitos da disciplina em que ele está sendo inserido
      * @param type $id_aluno
@@ -1083,16 +1083,17 @@ class Application_Model_Mappers_Aluno {
                     $aprovado = null;
 
                     foreach ($turmas_aluno as $turma) {
-                        if ((int) $turma->aprovado)
-                            return true;
+                        if (is_null($turma->aprovado)) {
+                            if ((int) $turma->aprovado)
+                                return true;
 
-                        else {
-                            $aprovado['tipo'] = 'reprovado';
-                            $aprovado['periodo'] = $turma->nome_periodo;
-                            $aprovado['nome_turma'] = $turmas_pre_requisito[$turma->id_turma]->getCompleteNomeTurma();
+                            else {
+                                $aprovado['tipo'] = 'reprovado';
+                                $aprovado['periodo'] = $turma->nome_periodo;
+                                $aprovado['nome_turma'] = $turmas_pre_requisito[$turma->id_turma]->getCompleteNomeTurma();
+                            }
                         }
                     }
-
                     return $aprovado;
                 }
                 return null;

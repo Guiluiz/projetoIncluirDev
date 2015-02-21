@@ -527,7 +527,7 @@ var controle = {
                             delete liberacao.tipo;
 
                             if (tipo == 'sem_pre_requisito') {
-                                for (var i = 0; i < liberacao.length; i++)
+                                for (var i in liberacao)
                                     pre_requisitos += liberacao[i].nome_pre_requisito + ' ';
                             }
                             else
