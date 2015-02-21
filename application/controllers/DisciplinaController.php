@@ -30,7 +30,7 @@ class DisciplinaController extends Zend_Controller_Action {
                 if (isset($dados['id_curso']))
                     $dados['id_curso'] = (int) base64_decode($dados['id_curso']);
 
-                $paginator = $mapper_disciplina->buscaDisciplinas($form_consulta->getValues(), true);
+                $paginator = $mapper_disciplina->buscaDisciplinas($dados, true);
                 $paginator->setItemCountPerPage(10);
                 $paginator->setCurrentPageNumber($pagina);
 
