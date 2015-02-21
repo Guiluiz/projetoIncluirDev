@@ -13,10 +13,10 @@ class TurmaController extends Zend_Controller_Action {
         $mapper_disciplina = new Application_Model_Mappers_Disciplina();
 
         $periodo = new Application_Model_Mappers_Periodo();
-        
+
         $form_consulta->initializePeriodo($periodo->getPeriodos());
         $form_consulta->initializeDisciplinas($mapper_disciplina->buscaDisciplinas());
-        
+
         $this->view->form = $form_consulta;
         $this->view->inativo = ($periodo->verificaFimPeriodo()) ? true : null;
 
@@ -134,7 +134,7 @@ class TurmaController extends Zend_Controller_Action {
                 }
 
                 $turma = $mapper_turma->buscaTurmaByID($id_turma, $periodo_atual->getIdPeriodo(), true);
-                
+
                 if ($turma instanceof Application_Model_Turma) {
                     $mapper_cursos = new Application_Model_Mappers_Curso();
                     $mapper_voluntarios = new Application_Model_Mappers_Voluntario();
@@ -271,35 +271,44 @@ class TurmaController extends Zend_Controller_Action {
             $this->_helper->viewRenderer->setNoRender(true);
 
             if ($this->_request->isPost()) {
-                $id_turma = $this->getRequest()->getParam('id_turma');
+                //$id_turma = $this->getRequest()->getParam('id_turma');
                 $id_disciplina = (int) base64_decode($this->getRequest()->getParam('id_disciplina'));
-                $id_aluno = $this->getRequest()->getParam('id_aluno');
+                $id_aluno = (int) base64_decode($this->getRequest()->getParam('id_aluno'));
 
                 $mapper_disciplina = new Application_Model_Mappers_Disciplina();
                 $pre_requisitos = $mapper_disciplina->getPreRequisitos($id_disciplina);
 
-//                if (empty($id_aluno)) {
                 $array_pre_requisitos = array();
+                $array_ids = array();
 
                 if (!empty($pre_requisitos)) {
                     $i = 0;
+                    $array_pre_requisitos['tipo'] = 'sem_pre_requisito';
+
                     foreach ($pre_requisitos as $pre_requisito) {
+                        $array_ids[$i] = $pre_requisito->getIdDisciplina();
                         $array_pre_requisitos[$i]['id_pre_requisito'] = $pre_requisito->getIdDisciplina(true);
                         $array_pre_requisitos[$i]['nome_pre_requisito'] = $pre_requisito->getNomeDisciplina();
                         $i++;
                     }
+                    if (!empty($id_aluno)) {
+                        $mapper_turmas = new Application_Model_Mappers_Turma();
+                        $mapper_alunos = new Application_Model_Mappers_Aluno();
+
+                        $turmas = $mapper_turmas->getTurmasByDisciplinas($array_ids);
+
+                        if (!empty($turmas)) {
+                            $is_reprovado = $mapper_alunos->verificaPreRequisitosAluno($id_aluno, $turmas);
+
+                            if (!is_null($is_reprovado)) {
+                                echo json_encode($is_reprovado);
+                                return;
+                            }
+                        }
+                    }
                 }
                 echo json_encode($array_pre_requisitos);
                 return;
-                //              }
-                /*            else{
-                  $mapper_aluno = new Application_Model_Mappers_Aluno();
-                  $array_pre_requisitos = array();
-
-                  if(!empty($pre_requisitos))
-                  var_dump($mapper_aluno->isAprovado($id_aluno, $pre_requisitos));
-                  }
-                 */
             }
             echo json_encode(null);
         } catch (Zend_Exception $e) {

@@ -520,11 +520,18 @@ var controle = {
                     },
                     success: function(liberacao) {
                         var tipo_liberacao = '';
-                        console.log(liberacao);
-                        if (liberacao.length > 0) {
-                            var pre_requisitos = '';
-                            for (var i = 0; i < liberacao.length; i++)
-                                pre_requisitos += liberacao[i].nome_pre_requisito + ' ';
+
+                        if (liberacao.tipo != undefined) {
+                            var pre_requisitos = '', tipo = liberacao.tipo;
+
+                            delete liberacao.tipo;
+
+                            if (tipo == 'sem_pre_requisito') {
+                                for (var i = 0; i < liberacao.length; i++)
+                                    pre_requisitos += liberacao[i].nome_pre_requisito + ' ';
+                            }
+                            else
+                                pre_requisitos = 'O aluno foi reprovado na turma <b>' + liberacao.nome_turma + '</b> no período <b>' + liberacao.periodo + '</b>';
 
                             $('form').append('<div id="liberacao_msg"></div>');
 
@@ -824,10 +831,10 @@ var controle = {
     iniPeriodoCalendario: function(url_img, min_date, max_date) {
         var data_inicio = $('#data_inicio');
         var data_termino = $('#data_fim');
-        
+
         if (data_termino.length == 0)
             data_termino = $('#data_termino');
-        
+
         $(data_inicio).datepicker({
             buttonText: "Clique para selecionar a data inicial",
             showOn: "button",
@@ -1502,7 +1509,7 @@ var controle = {
     retira_acentos: function(palavra) {
         var com_acento = 'áàãâäéèêëíìîïóòõôöúùûüçÁÀÃÂÄÉÈÊËÍÌÎÏÓÒÕÖÔÚÙÛÜÇ';
         var sem_acento = 'aaaaaeeeeiiiiooooouuuucAAAAAEEEEIIIIOOOOOUUUUC';
-        var invalids = '\\\'\"#¨~^´`,/[]{}+=()@!$%*|&.';
+        var invalids = '\\\'\"#¨~^´`,/[]{}+=()@!$%*|&.-';
 
         var nova = '';
 

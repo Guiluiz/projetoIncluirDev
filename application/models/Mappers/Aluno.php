@@ -64,12 +64,12 @@ class Application_Model_Mappers_Aluno {
                         $this->db_aluno = new Application_Model_DbTable_Aluno();
 
                     $this->db_aluno->update($aluno->parseArray(), $this->db_aluno->getAdapter()->quoteInto('id_aluno = ?', $aluno->getIdAluno()));
-                    
+
                     $this->removePagamentos($aluno->getIdAluno());
                     $this->removeTurmaAluno($aluno->getIdAluno());
-                    
+
                     $db_turmas_aluno = new Application_Model_DbTable_TurmaAlunos();
-                    
+
                     if ($aluno->hasTurmas()) {
                         $db_pagamento = new Application_Model_DbTable_Pagamento();
                         $db_pagamento_alimentos = new Application_Model_DbTable_PagamentoAlimentos();
@@ -191,7 +191,6 @@ class Application_Model_Mappers_Aluno {
         }
     }
 
-    
     /**
      * Método auxiliar para atualizar status de pagamentos de alunos. Utilizado somente quando há necessidade 
      * @param Application_Model_Periodo $periodo
@@ -1001,8 +1000,7 @@ class Application_Model_Mappers_Aluno {
                             $turmas_aluno = $aluno->getCompleteTurmas();
 
                             foreach ($turmas_aluno as $id_turma => $turma) {
-                                if ($aluno->getNotaAcumulada($id_turma, false, true) >= $periodo_atual->getMinPtsAprovacao() 
-                                        && $aluno->getPorcentagemFaltas($id_turma, $calendario_atual->getQuantidadeAulas())*100 >= $periodo_atual->getFrequenciaLiberacao())
+                                if ($aluno->getNotaAcumulada($id_turma, false, true) >= $periodo_atual->getMinPtsAprovacao() && $aluno->getPorcentagemFaltas($id_turma, $calendario_atual->getQuantidadeAulas()) * 100 >= $periodo_atual->getFrequenciaLiberacao())
                                     $db_turmas_alunos->update(array('aprovado' => true), $db_turmas_alunos->getAdapter()->quoteInto('id_turma = ? AND ', $id_turma) .
                                             $db_turmas_alunos->getAdapter()->quoteInto('id_aluno = ?', $aluno->getIdAluno())
                                     );
@@ -1048,6 +1046,60 @@ class Application_Model_Mappers_Aluno {
             return false;
         } catch (Exception $ex) {
             return false;
+        }
+    }
+    
+    /**
+     * Verifica se o aluno já foi aprovado em turmas de pré requisitos da disciplina em que ele está sendo inserido
+     * @param type $id_aluno
+     * @param type $turmas_pre_requisito
+     * @return boolean|null
+     * @throws Exception
+     */
+    public function verificaPreRequisitosAluno($id_aluno, $turmas_pre_requisito) {
+        try {
+            if (!empty($id_aluno) && !empty($turmas_pre_requisito) && is_array($turmas_pre_requisito)) {
+                $db_turma_aluno = new Application_Model_DbTable_TurmaAlunos();
+                $where = '( ';
+                $select = $db_turma_aluno->select()
+                        ->setIntegrityCheck(false)
+                        ->from('turma_alunos')
+                        ->joinInner('turma', 'turma_alunos.id_turma = turma.id_turma', array())
+                        ->joinInner('periodo', 'turma.id_periodo = periodo.id_periodo', array('nome_periodo'))
+                        ->where('turma_alunos.id_aluno = ?', (int) $id_aluno)
+                        ->order('periodo.id_periodo ASC');
+
+                foreach ($turmas_pre_requisito as $turma) {
+                    if ($turma instanceof Application_Model_Turma)
+                        $where .= $db_turma_aluno->getAdapter()->quoteInto('turma_alunos.id_turma = ?', $turma->getIdTurma()) . " OR ";
+                    else
+                        break;
+                }
+
+                $where = substr($where, 0, -4) . ")";
+                $turmas_aluno = $db_turma_aluno->fetchAll($select->where($where));
+
+                if ($turmas_aluno->count() > 0) {
+                    $aprovado = null;
+
+                    foreach ($turmas_aluno as $turma) {
+                        if ((int) $turma->aprovado)
+                            return true;
+
+                        else {
+                            $aprovado['tipo'] = 'reprovado';
+                            $aprovado['periodo'] = $turma->nome_periodo;
+                            $aprovado['nome_turma'] = $turmas_pre_requisito[$turma->id_turma]->getCompleteNomeTurma();
+                        }
+                    }
+
+                    return $aprovado;
+                }
+                return null;
+            }
+            throw new Exception('Houve problemas ao verificar os pré requisitos do aluno');
+        } catch (Exception $ex) {
+            throw $ex;
         }
     }
 

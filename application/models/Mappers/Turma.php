@@ -401,4 +401,45 @@ class Application_Model_Mappers_Turma {
         }
     }
 
+    /**
+     * Retorna as turmas das disciplinas indicadas por parâmetro
+     * @param type $array_ids
+     * @return \Application_Model_Turma|null
+     */
+    public function getTurmasByDisciplinas($array_ids, $inclui_turmas_periodo_atual = false) {
+        try {
+            if (!empty($array_ids) && is_array($array_ids)) {
+                $this->db_turma = new Application_Model_DbTable_Turma();
+                $select = $this->db_turma->select()
+                        ->setIntegrityCheck(false)
+                        ->from('turma', array('id_turma', 'nome_turma', 'id_disciplina', 'id_periodo'))
+                        ->joinInner('periodo', 'turma.id_periodo = periodo.id_periodo', array('nome_periodo'))
+                        ->joinInner('disciplina', 'turma.id_disciplina = disciplina.id_disciplina', array('nome_disciplina', 'id_curso'))
+                        ->joinInner('curso', 'disciplina.id_curso = curso.id_curso', array('nome_curso'));
+
+                if (!$inclui_turmas_periodo_atual)
+                    $select->where('periodo.is_atual = ?', false);
+
+                $where = "( ";
+
+                foreach ($array_ids as $id)
+                    $where .= $this->db_turma->getAdapter()->quoteInto('turma.id_disciplina = ?', (int) $id) . " OR ";
+
+                $where = substr($where, 0, -4) . ")";
+                $turmas = $this->db_turma->fetchAll($select->where($where));
+
+                if (!empty($turmas)) {
+                    $array_turmas = array();
+                    foreach ($turmas as $turma)
+                        $array_turmas[$turma->id_turma] = new Application_Model_Turma($turma->id_turma, $turma->nome_turma, null, null, null, null, new Application_Model_Disciplina($turma->id_disciplina, $turma->nome_disciplina, null, new Application_Model_Curso($turma->id_curso, $turma->nome_curso)), null, new Application_Model_Periodo($turma->id_periodo));
+                    return $array_turmas;
+                }
+            }
+            return null;
+        } catch (Zend_Exception $e) {
+            echo $e->getMessage();
+            return null;
+        }
+    }
+
 }
