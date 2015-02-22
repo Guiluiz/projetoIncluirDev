@@ -3,7 +3,7 @@
 class Application_Model_Mappers_Alimento {
 
     private $db_alimento;
-    
+
     /**
      * Inclui um alimento no BD
      * @param Application_Model_Alimento $alimento
@@ -84,7 +84,7 @@ class Application_Model_Mappers_Alimento {
     public function buscaAlimentos($filtros_busca = null, $paginator = null) {
         try {
             $this->db_alimento = new Application_Model_DbTable_Alimento();
-            $select = $this->db_alimento->select();
+            $select = $this->db_alimento->select()->order('nome_alimento ASC');
 
             if (!empty($filtros_busca['nome_alimento']))
                 $select->where('nome_alimento LIKE ?', '%' . $filtros_busca['nome_alimento'] . '%');

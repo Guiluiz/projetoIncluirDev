@@ -17,7 +17,7 @@ class Application_Model_Alimento {
     }
     
     public function getNomeAlimento(){
-        return $this->nome_alimento;
+        return mb_convert_case($this->nome_alimento, MB_CASE_TITLE, 'UTF-8');
     }
     
     public function parseArray($isView = null){

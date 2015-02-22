@@ -110,7 +110,8 @@ class Application_Model_Mappers_Disciplina {
             $select = $this->db_disciplina->select()
                     ->setIntegrityCheck(false)
                     ->from('disciplina', array('id_disciplina', 'nome_disciplina'))
-                    ->joinInner('curso', 'curso.id_curso = disciplina.id_curso', array('nome_curso'));
+                    ->joinInner('curso', 'curso.id_curso = disciplina.id_curso', array('nome_curso'))
+                    ->order('disciplina.nome_disciplina ASC');
 
             if (!empty($exclude))
                 $select->where('disciplina.id_disciplina <> ?', $exclude);

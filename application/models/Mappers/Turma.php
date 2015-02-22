@@ -157,7 +157,8 @@ class Application_Model_Mappers_Turma {
             $select = $this->db_turma->select()
                     ->setIntegrityCheck(false)
                     ->from('turma', array('id_turma', 'data_inicio', 'data_fim', 'horario_inicio', 'horario_fim', 'nome_turma', 'id_disciplina', 'status', 'id_periodo'))
-                    ->joinInner('disciplina', 'disciplina.id_disciplina = turma.id_disciplina', array('nome_disciplina'));
+                    ->joinInner('disciplina', 'disciplina.id_disciplina = turma.id_disciplina', array('nome_disciplina'))
+                    ->order('turma.nome_turma ASC');
 
             if (!empty($filtros_busca['nome_turma']))
                 $select->where('turma.nome_turma LIKE ?', '%' . $filtros_busca['nome_turma'] . '%');

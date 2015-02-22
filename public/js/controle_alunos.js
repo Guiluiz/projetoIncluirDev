@@ -167,8 +167,8 @@ var controle_aluno = (function() {
                 if (quantidade_pagamentos > 0)
                     quantidade_pagamentos--; // exclui a linha de cabeçalho
 
-                if (turmas_escolhidas != quantidade_pagamentos || quantidade_pagamentos == 0) {
-                    exibeMensagem('Você deve incluir ao menos uma turma e registrar o pagamento dela.', 'Cadastro de Aluno');
+                if (turmas_escolhidas != quantidade_pagamentos) {
+                    exibeMensagem('Se inseriu uma turma você deve registrar o pagamento dela.', 'Cadastro de Aluno');
                     return false;
                 }
                 return true;

@@ -91,7 +91,9 @@ class Application_Model_Mappers_Curso {
     public function buscaCursos($filtros_busca = null, $paginator = null) {
         try {
             $this->db_curso = new Application_Model_DbTable_Curso();
-            $select = $this->db_curso->select()->from('curso', array('id_curso', 'nome_curso'));
+            $select = $this->db_curso->select()
+                    ->from('curso', array('id_curso', 'nome_curso'))
+                    ->order('nome_curso ASC');
 
             if (!empty($filtros_busca['nome_curso']))
                 $select->where('nome_curso LIKE ?', '%' . $filtros_busca['nome_curso'] . '%');
