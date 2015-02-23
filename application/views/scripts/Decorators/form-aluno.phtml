@@ -72,7 +72,7 @@ $url = new Zend_View_Helper_Url();
     <div class="obs">
         <p>Só é permitida a alteração das turmas do período atual.</p>
     </div>
-    
+
     <table class="form-dados" id="busca_turmas">
         <tr colspan="2" class="quantidade_turmas">
             <td><?= $this->element->quantidade_turmas ?></td>
@@ -92,58 +92,74 @@ $url = new Zend_View_Helper_Url();
 
     <table class="form_incrementa" id="turmas_aluno" cellpadding="0" cellspacing="0"></table>
 
-    <h2>Pagamentos das Turmas</h2>
+    <div id="container_turmas_escolhidas">
+        <h2>Gerenciamento das Turmas Escolhidas</h2>
 
-    <table class="form-dados">
-        <tr>
-            <td><?= $this->element->pagamento_turma ?></td>
-        </tr>
-        
-        <tr>
-            <td><?= $this->element->condicao_matricula ?></td>
-        </tr>
-        
-        <tr id='container_tipo_isencao_pendencia'>
-            <td><?= $this->element->tipo_isencao_pendencia ?></td>
-        </tr>
-        
-        <tr id='container_recibo'>
-            <td><?= $this->element->num_recibo ?></td>
-        </tr>
-        
-        <tr>
-            <td><?= $this->element->alimento ?></td>
-            <td style="vertical-align: middle">
-                <a target="_blank" href="<?php echo $url->url(array('controller' => 'alimento', 'action' => 'cadastrar')) ?>" id="add-alimento">Adicionar Tipo de Alimento</a>
-                <div id="atualizar_alimentos">Atualizar</div>
-                <div id="loading-alimentos" class="loading"></div>
-            </td>
-        </tr>
-        <tr>
-            <td><?= $this->element->quantidade_alimento ?></td>
-            <td><?= $this->element->incluir_alimento ?></td>
-        </tr> 
-    </table>
+        <table class="form-dados">
+            <tr>
+                <td><?= $this->element->pagamento_turma ?></td>
+            </tr>
 
-    <div id="container_alimentos"></div>
+            <tr>
+                <td><?= $this->element->condicao_matricula ?></td>
+            </tr>
 
-    <table class="form-dados">
-        <tr>
-            <td><?= $this->element->valor_pago ?></td>
-            <td><?= $this->element->registrar_pagamento ?></td>
-        </tr>    
-    </table>
+            <tr id='container_tipo_isencao_pendencia'>
+                <td><?= $this->element->tipo_isencao_pendencia ?></td>
+            </tr>
+        </table>
+    </div>
 
-    <h2>Pagamentos Registrados</h2>
+    <div id="container_alimentos">
+        <h2>Alimentos</h2>
 
-    <table id="table_pagamentos_turmas" class="escondido form_incrementa" cellpadding="0" cellspacing="0"></table>
+        <table class="form-dados">    
+            <tr>
+                <td><?= $this->element->alimento ?></td>
+                <td style="vertical-align: middle">
+                    <a target="_blank" href="<?php echo $url->url(array('controller' => 'alimento', 'action' => 'cadastrar')) ?>" id="add-alimento">Adicionar Tipo de Alimento</a>
+                    <div id="atualizar_alimentos">Atualizar</div>
+                    <div id="loading-alimentos" class="loading"></div>
+                </td>
+            </tr>
 
+            <tr>
+                <td><?= $this->element->quantidade_alimento ?></td>
+                <td><?= $this->element->incluir_alimento ?></td>
+            </tr> 
+        </table>
+
+        <div id="container_alimentos_turmas"></div>
+    </div>
+
+    <div id="container_pagamentos">
+        <h2>Pagamentos</h2>
+
+        <table class="form-dados">
+            <tr id='container_recibo'>
+                <td><?= $this->element->num_recibo ?></td>
+            </tr>
+
+            <tr>
+                <td><?= $this->element->valor_pago ?></td>
+                <td><?= $this->element->registrar_pagamento ?></td>
+            </tr>    
+        </table>
+    </div>
+
+    <div id="container_pagamentos_registrados">
+        <h2>Pagamentos Registrados</h2>
+
+        <table id="table_pagamentos_turmas" class="escondido form_incrementa" cellpadding="0" cellspacing="0"></table>
+    </div>
+    
     <table class="submit">
         <tr>
             <td><?= $this->element->enviar ?></td>
             <td><?= $this->element->cancelar ?></td>
         </tr>
     </table>
+
 
     <?= $this->element->cidade_escolhida ?>
     <?= $this->element->estado_escolhido ?>

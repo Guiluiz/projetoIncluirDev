@@ -69,6 +69,7 @@ class Application_Form_FormAluno extends Zend_Form {
 
         $condicao_matricula = new Zend_Form_Element_Select('condicao_matricula');
         $condicao_matricula->setLabel('Condição de Matrícula:')
+                ->setAttrib('disabled', 'disabled')
                 ->addFilter('StripTags')
                 ->addFilter('StringTrim')
                 ->setRequired(true)
@@ -371,7 +372,7 @@ class Application_Form_FormAluno extends Zend_Form {
 
 
         $pagamento_turma = new Zend_Form_Element_Select('pagamento_turma');
-        $pagamento_turma->setLabel('Turma:')
+        $pagamento_turma->setLabel('Turmas do Aluno:')
                 ->addFilter('StripTags')
                 ->setRegisterInArrayValidator(false)
                 ->addFilter('StringTrim')
@@ -385,6 +386,7 @@ class Application_Form_FormAluno extends Zend_Form {
 
         $alimento = new Zend_Form_Element_Select('alimento');
         $alimento->setLabel('Tipo de Alimento:')
+                ->setAttrib('disabled', 'disabled')
                 ->addFilter('StripTags')
                 ->addFilter('StringTrim')
                 ->setRegisterInArrayValidator(false)
@@ -396,6 +398,7 @@ class Application_Form_FormAluno extends Zend_Form {
 
         $quantidade_alimento = new Zend_Form_Element_Text('quantidade_alimento');
         $quantidade_alimento->setLabel('Quantidade(kg):')
+                ->setAttrib('disabled', 'disabled')
                 ->addFilter('StripTags')
                 ->setAttrib('class', 'kg')
                 ->addFilter('StringTrim')
@@ -407,6 +410,7 @@ class Application_Form_FormAluno extends Zend_Form {
 
         $incluir_alimento = new Zend_Form_Element_Button('incluir_alimento');
         $incluir_alimento->setLabel('Incluir Alimento')
+                ->setAttrib('disabled', 'disabled')
                 ->setDecorators(array(
                     'ViewHelper',
                     'Errors'
@@ -414,9 +418,10 @@ class Application_Form_FormAluno extends Zend_Form {
 
         $valor_pago = new Zend_Form_Element_Text('valor_pago');
         $valor_pago->setLabel('Valor Pago(R$):')
+                ->setAttrib('disabled', 'disabled')
                 ->addFilter('StripTags')
                 ->addFilter('StringTrim')
-                ->setValue('00,00')
+                //->setValue('00,00')
                 ->setAttrib('class', 'dinheiro')
                 ->setRequired(true)
                 ->addValidator('NotEmpty')
@@ -428,6 +433,7 @@ class Application_Form_FormAluno extends Zend_Form {
 
         $registrar_pagamento = new Zend_Form_Element_Button('registrar_pagamento');
         $registrar_pagamento->setLabel('Registrar Pagamento dessa Turma')
+                ->setAttrib('disabled', 'disabled')
                 ->setDecorators(array(
                     'ViewHelper',
                     'Errors'

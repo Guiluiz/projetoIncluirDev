@@ -44,7 +44,7 @@ var form = {
                 }
 
                 else if ($(this).hasClass('dinheiro'))
-                    $(this).mask('99?,99');
+                    $(this).mask('99?,99', {placeholder:"00,00"});
 
                 else if ($(this).hasClass('carga_horaria'))
                     $(this).mask('9 HORA(S)');
