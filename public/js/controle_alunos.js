@@ -10,13 +10,17 @@ var controle_aluno = (function() {
 
         container_opcoes_turmas_aluno: $('#container_turmas_escolhidas'),
         container_pagamentos_registrados: $('#container_pagamentos_registrados'),
-        container_alimento: $('#container_alimentos'),
-        container_pagamento: $('#container_pagamentos'),
+        container_alimento: $('#container_alimentos'), // container dos campos de alimento e da tabela de alimentos inseridos
+        container_pagamento: $('#container_pagamentos'), // container dos campos de pagamento 
+
+        // necessário para esconder a tabela de gerenciamento após o registro de pagamento
+        table_gerenciamento_alimentos: $('#table_gerenciamento_alimentos'),
         btn_incluir_turma: $('#incluir_turma'),
         btn_incluir_pagamento: $('#registrar_pagamento'),
         btn_incluir_alimento: $('#incluir_alimento'),
         btn_atualizar_alimentos: $('#atualizar_alimentos'),
         btn_enviar: $('#enviar'),
+        
         campo_quantidade_turmas: $('#quantidade_turmas'),
         campo_nome_aluno: $('#nome_aluno'),
         campo_curso: $('#curso'),
@@ -41,6 +45,9 @@ var controle_aluno = (function() {
         container_btn_incluir_turma: $('.incluir_turma'),
         container_campos_escolha_turma: $('#busca_turmas'),
         container_campo_isencao_pendencia: $('#container_tipo_isencao_pendencia'),
+        container_campo_condicao_matricula: $('#container_condicao_matricula'),
+        
+        // mesmo tendo o container é necessário manipular os campos separados pois no caso de total, somente alguns ficam dos campos ficam escondidos
         container_recibo: $('#container_recibo'),
         container_botao_pagamento: $('#container_btn_registro_pagamento'),
         container_valor_pagamento: $('#container_valor_pago'),
@@ -668,23 +675,35 @@ var controle_aluno = (function() {
 
     aluno.incrementaPagamentoTurma = function() {
         var tipo = aluno.getCondicaoMatricula();
+        var flag = false;
+
         switch (tipo) {
             case '1': // normal
-                aluno.incluiPagamentoNormal();
+                flag = aluno.incluiPagamentoNormal();
                 break;
 
             case '2':// isento parcial
             case '5':// pendente parcial
-                aluno.incluiPagamentoIsentoPendente(tipo);
+                flag = aluno.incluiPagamentoIsentoPendente(tipo);
                 break;
 
             case '3': // isento total
             case '4': //pendente total
-                aluno.incluiPagamentoIsentoPendenteTotal(tipo);
+                flag = aluno.incluiPagamentoIsentoPendenteTotal(tipo);
                 break;
 
             default:
                 exibeMensagem('Para confirmar o pagamento você deve definir a condição da matrícula do aluno', 'Inclusão de Turma');
+        }
+
+        if (flag) {
+            aluno.container_campo_isencao_pendencia.hide().find('select').attr('disabled', 'disabled');
+            aluno.container_campo_condicao_matricula.hide().find('select').attr('disabled', 'disabled');
+
+            aluno.table_gerenciamento_alimentos.hide().find('select,input,button').attr('disabled', 'disabled');
+            aluno.container_pagamento.hide();
+
+            aluno.container_pagamentos_registrados.show();
         }
     };
 
@@ -723,13 +742,14 @@ var controle_aluno = (function() {
 
                     if (aluno.container_pagamentos_aluno.children().length == 0) {
                         aluno.container_pagamentos_aluno.show();
-                        html = '<tr><th>Disciplina - Turma</th><th>Nº Recibo</th><th>Total Pago(R$)</th><th>Total de Alimentos(kg)</th><th>Situação</th><th>Opções</th></tr>';
+                        html = '<tr><th>Disciplina - Turma</th><th>Nº Recibo</th><th>Total Pago(R$)</th><th>Total de Alimentos(kg)</th><th>Condição</th><th>Situação</th><th>Opções</th></tr>';
                     }
 
-                    html += '<tr class="' + aluno.getClassPagamentoTurma().replace('.', '') + '"><input type="hidden" name="pagamento_turmas[' + id_turma + ']" value="' + valor_pago + '"/><td>' + $(option).html() + '</td><td>' + num_recibo + '</td><td class="valor_pago">' + valor_pago + '</td><td class="quant_alimento">' + total_alimentos + '</td><td class="situacao"><input type="hidden" name="situacao_turmas[' + id_turma + ']" value="Liberado"/>Liberado</td><td><div class="excluir_pagamento" >Excluir</div></td></tr>';
+                    html += '<tr class="' + aluno.getClassPagamentoTurma().replace('.', '') + '"><input type="hidden" name="pagamento_turmas[' + id_turma + ']" value="' + valor_pago + '"/><td>' + $(option).text() + '</td><td>' + num_recibo + '</td><td class="valor_pago">' + valor_pago + '</td><td class="quant_alimento">' + total_alimentos + '</td><td class="condicao"><input type="hidden" name="condicao_turmas[' + id_turma + ']" value="' + aluno.select_condicao_matricula.find('option:selected').val() + '"/>' + aluno.select_condicao_matricula.find('option:selected').text() + '</td><td class="situacao"><input type="hidden" name="situacao_turmas[' + id_turma + ']" value="Liberado"/>Liberado</td><td><div class="excluir_pagamento" >Excluir</div></td></tr>';
                     aluno.container_pagamentos_aluno.append(html);
                     aluno.eventOpcaoExcluirPagamento();
-                    aluno.container_pagamentos_aluno.show();
+
+                    return true;
                 }
                 else
                     exibeMensagem('Condição de pagamento incompatível', 'Inclusão de Pagamento de Turmas');
@@ -739,6 +759,8 @@ var controle_aluno = (function() {
         }
         else
             exibeMensagem('Inclua primeiro a turma', 'Registro de Pagamento');
+
+        return false;
     };
 
 
@@ -768,13 +790,14 @@ var controle_aluno = (function() {
 
                     if (aluno.container_pagamentos_aluno.children().length == 0) {
                         aluno.container_pagamentos_aluno.show();
-                        html = '<tr><th>Disciplina - Turma</th><th>Nº Recibo</th><th>Total Pago(R$)</th><th>Total de Alimentos(kg)</th><th>Situação</th><th>Opções</th></tr>';
+                        html = '<tr><th>Disciplina - Turma</th><th>Nº Recibo</th><th>Total Pago(R$)</th><th>Total de Alimentos(kg)</th><th>Condição</th><th>Situação</th><th>Opções</th></tr>';
                     }
 
-                    html += '<tr class="' + aluno.getClassPagamentoTurma().replace('.', '') + '"><input type="hidden" name="pagamento_turmas[' + id_turma + ']" value="' + valor_pago + '"/><td>' + $(option).html() + '</td><td>' + num_recibo + '</td><td class="valor_pago">' + valor_pago + '</td><td class="quant_alimento">' + total_alimentos + '</td><td class="situacao"><input type="hidden" name="situacao_turmas[' + id_turma + ']" value="' + situacao + '"/>' + situacao + '</td><td><div class="excluir_pagamento" >Excluir</div></td></tr>';
+                    html += '<tr class="' + aluno.getClassPagamentoTurma().replace('.', '') + '"><input type="hidden" name="pagamento_turmas[' + id_turma + ']" value="' + valor_pago + '"/><td>' + $(option).text() + '</td><td>' + num_recibo + '</td><td class="valor_pago">' + valor_pago + '</td><td class="quant_alimento">' + total_alimentos + '</td><td class="condicao"><input type="hidden" name="condicao_turmas[' + id_turma + ']" value="' + aluno.select_condicao_matricula.find('option:selected').val() + '"/>' + aluno.select_condicao_matricula.find('option:selected').text() + " - " + aluno.select_tipo_isencao_pendencia.find('option:selected').text() + '</td><td class="situacao"><input type="hidden" name="situacao_turmas[' + id_turma + ']" value="' + situacao + '"/>' + situacao + '</td><td><div class="excluir_pagamento" >Excluir</div></td></tr>';
                     aluno.container_pagamentos_aluno.append(html);
                     aluno.eventOpcaoExcluirPagamento();
-                    aluno.container_pagamentos_aluno.show();
+
+                    return true;
                 }
                 else
                     exibeMensagem('Condição de pagamento incompatível', 'Inclusão de Pagamento de Turmas');
@@ -784,6 +807,8 @@ var controle_aluno = (function() {
         }
         else
             exibeMensagem('Inclua primeiro a turma', 'Registro de Pagamento');
+
+        return false;
     };
 
     aluno.incluiPagamentoIsentoPendenteTotal = function(tipo) {
@@ -799,17 +824,19 @@ var controle_aluno = (function() {
 
             if (aluno.container_pagamentos_aluno.children().length == 0) {
                 aluno.container_pagamentos_aluno.show();
-                html = '<tr><th>Disciplina - Turma</th><th>Nº Recibo</th><th>Total Pago(R$)</th><th>Total de Alimentos(kg)</th><th>Situação</th><th>Opções</th></tr>';
+                html = '<tr><th>Disciplina - Turma</th><th>Nº Recibo</th><th>Total Pago(R$)</th><th>Total de Alimentos(kg)</th><th>Condição</th><th>Situação</th><th>Opções</th></tr>';
             }
 
-            html += '<tr class="' + aluno.getClassPagamentoTurma().replace('.', '') + '"><input type="hidden" name="pagamento_turmas[' + id_turma + ']" value="' + 0 + '"/><td></td><td>' + $(option).html() + '</td><td class="valor_pago">0</td><td class="quant_alimento">0</td><td class="situacao"><input type="hidden" name="situacao_turmas[' + id_turma + ']" value="' + situacao + '"/>' + situacao + '</td><td><div class="excluir_pagamento" >Excluir</div></td></tr>';
+            html += '<tr class="' + aluno.getClassPagamentoTurma().replace('.', '') + '"><input type="hidden" name="pagamento_turmas[' + id_turma + ']" value="' + 0 + '"/><td>' + $(option).text() + '</td><td></td><td class="valor_pago">0</td><td class="quant_alimento">0</td><td class="condicao"><input type="hidden" name="condicao_turmas[' + id_turma + ']" value="' + aluno.select_condicao_matricula.find('option:selected').val() + '"/>' + aluno.select_condicao_matricula.find('option:selected').text() + " - " + aluno.select_tipo_isencao_pendencia.find('option:selected').text() + '</td><td class="situacao"><input type="hidden" name="situacao_turmas[' + id_turma + ']" value="' + situacao + '"/>' + situacao + '</td><td><div class="excluir_pagamento" >Excluir</div></td></tr>';
             aluno.container_pagamentos_aluno.append(html);
             aluno.eventOpcaoExcluirPagamento();
-            aluno.container_pagamentos_aluno.show();
+
+            return true;
         }
         else
             exibeMensagem('Ou pagamento dessa turma já foi inserido, ou existem ,informações não preenchidas. Se quiser fazer alguma alteração, exclua esse pagamento, faça as alterações e registre-o novamente.', 'Inclusão de Pagamento');
 
+        return false;
     };
 
     aluno.eventAlterarTurmaAluno = function() {
