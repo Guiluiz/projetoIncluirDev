@@ -7,10 +7,9 @@ var controle_aluno = (function() {
         container_turmas_aluno: $('#turmas_aluno'), // container das turmas escolhidas para o aluno
         container_pagamentos_aluno: $('#table_pagamentos_turmas'), // container dos pagamentos registrados
         container_alimentos_turmas: $('#container_alimentos_turmas'), //container das tabelas de alimentos das turmas selecionadas
-        
+
         container_opcoes_turmas_aluno: $('#container_turmas_escolhidas'),
         container_pagamentos_registrados: $('#container_pagamentos_registrados'),
-        
         container_alimento: $('#container_alimentos'),
         container_pagamento: $('#container_pagamentos'),
         btn_incluir_turma: $('#incluir_turma'),
@@ -43,6 +42,8 @@ var controle_aluno = (function() {
         container_campos_escolha_turma: $('#busca_turmas'),
         container_campo_isencao_pendencia: $('#container_tipo_isencao_pendencia'),
         container_recibo: $('#container_recibo'),
+        container_botao_pagamento: $('#container_btn_registro_pagamento'),
+        container_valor_pagamento: $('#container_valor_pago'),
         class_container_alimentos_pagamento: '.ali_pag', // classe para as tabelas que armazenam os alimentos de um pagamento da turma
         url_ajax_verifica_aluno: '', // verifica a existência de alunos com nome próximo no bd
         url_img: '',
@@ -133,6 +134,10 @@ var controle_aluno = (function() {
 
             aluno.select_condicao_matricula.change(function() {
                 aluno.gerenciaCamposCondicaoMatricula();
+            });
+
+            aluno.select_tipo_isencao_pendencia.change(function() {
+                aluno.gerenciaTipoIsencaoPendencia();
             });
 
             aluno.btn_incluir_turma.click(function() {
@@ -256,21 +261,23 @@ var controle_aluno = (function() {
 
     aluno.gerenciaCamposCondicaoMatricula = function() {
         if (!aluno.verificaExistenciaPagamento()) { // procura se já tem um pagamento registrado para a turma, se houver a remoção não é realizada
-            
+
             $(aluno.getClassPagamentoTurma()).remove();
             $(aluno.getIdAlimentosTurma()).remove();
-            
+
             switch (aluno.getCondicaoMatricula()) {
                 case '1': // normal
                     aluno.container_alimento.find('input,select,button').removeAttr('disabled');
                     aluno.container_pagamento.find('input,select,button').removeAttr('disabled');
 
                     aluno.container_campo_isencao_pendencia.hide().find('select').attr('disabled', 'disabled');
+
                     aluno.container_recibo.show();
+                    aluno.container_valor_pagamento.show();
+                    aluno.container_botao_pagamento.show();
 
                     aluno.container_alimento.show();
                     aluno.container_pagamento.show();
-
                     break;
 
                 case '2':
@@ -278,19 +285,44 @@ var controle_aluno = (function() {
                     aluno.container_alimento.hide().find('input,select,button').attr('disabled', 'disabled');
                     aluno.container_pagamento.hide().find('input,select,button').attr('disabled', 'disabled');
 
-                    aluno.container_campo_isencao_pendencia.find('select').show();
+                    aluno.container_campo_isencao_pendencia.find('select').removeAttr('disabled');
                     aluno.container_campo_isencao_pendencia.show();
                     break;
 
                 case '3':
                 case '4': // isento total e pendente total
                     aluno.container_alimento.hide().find('input,select,button').attr('disabled', 'disabled');
-                    aluno.container_pagamento.hide().find('input,select,button').attr('disabled', 'disabled');
+                    aluno.container_campo_isencao_pendencia.hide().find('select').attr('disabled', 'disabled');
+
+                    aluno.container_botao_pagamento.find('button').removeAttr('disabled');
+                    aluno.container_botao_pagamento.show();
+
+                    aluno.container_valor_pagamento.hide().find('input').attr('disabled', 'disabled');
+                    aluno.container_recibo.hide().find('select').attr('disabled', 'disabled');
+
+                    aluno.container_pagamento.show();
                     break;
             }
         }
         else
             exibeMensagem('Um pagamento já foi registrado para essa turma. Caso queira fazer alguma alteração, exclua o pagamento primeiro.');
+    };
+
+    aluno.gerenciaTipoIsencaoPendencia = function() {
+        if (!aluno.verificaExistenciaPagamento()) { // procura se já tem um pagamento registrado para a turma, se houver a remoção não é realizada
+            aluno.container_alimento.find('input,select,button').removeAttr('disabled');
+            aluno.container_pagamento.find('input,select,button').removeAttr('disabled');
+
+            aluno.container_recibo.show();
+            aluno.container_valor_pagamento.show();
+            aluno.container_botao_pagamento.show();
+
+            aluno.container_alimento.show();
+            aluno.container_pagamento.show();
+        }
+        else
+            exibeMensagem('Um pagamento já foi registrado para essa turma. Caso queira fazer alguma alteração, exclua o pagamento primeiro.');
+
     };
 
     /**
@@ -433,14 +465,14 @@ var controle_aluno = (function() {
         exibeMensagem('Nenhuma turma foi selecionada ou ela já foi incluída.', 'Inclusão de Turma');
         return false;
     };
-    
-    aluno.verificaExistenciaPagamento = function(){
+
+    aluno.verificaExistenciaPagamento = function() {
         if (aluno.container_pagamentos_aluno.find('tr').hasClass(aluno.getClassPagamentoTurma().replace('.', ''))) // procura se já tem um pagamento registrado para a turma, se houver a remoção não é realizada
             return true;
-            
-        return false;    
+
+        return false;
     };
-    
+
     /**
      * Verifica se a turma a ser inserida/alterada é válida
      * @param {type} linha_turma_alterada Indica a linha da tabela que contém as informações da turma a ser alterada. Em caso de cadastro o parâmetro é nulo
@@ -585,6 +617,10 @@ var controle_aluno = (function() {
             aluno.container_turmas_aluno.append(html);
             aluno.eventAlterarTurmaAluno();
             aluno.eventExcluirTurmaAluno();
+
+            aluno.container_opcoes_turmas_aluno.find('select').removeAttr('disabled');
+            aluno.container_opcoes_turmas_aluno.show();
+
         }
         else
             exibeMensagem('O limite de turmas especificado é: <b>' + aluno.getQuantidadeTurmas() + '</b>', 'Inclusão de Turmas');
@@ -601,7 +637,7 @@ var controle_aluno = (function() {
             var tipo_alimento_option = aluno.campo_tipo_alimento.find('option:selected');
             var quantidade = helpers.parseNumero(aluno.campo_quantidade_alimento.val());
 
-            $(aluno.class_container_alimentos_pagamento).hide();
+            //$(aluno.class_container_alimentos_pagamento).hide();
 
             if (aluno.campo_tipo_alimento.children().length > 0
                     && quantidade > 0
@@ -631,25 +667,20 @@ var controle_aluno = (function() {
     };
 
     aluno.incrementaPagamentoTurma = function() {
-        switch (aluno.getCondicaoMatricula()) {
+        var tipo = aluno.getCondicaoMatricula();
+        switch (tipo) {
             case '1': // normal
                 aluno.incluiPagamentoNormal();
                 break;
 
-            case '2': // isento parcial
-                aluno.incluiPagamentoIsento();
+            case '2':// isento parcial
+            case '5':// pendente parcial
+                aluno.incluiPagamentoIsentoPendente(tipo);
                 break;
 
             case '3': // isento total
-                aluno.incluiPagamentoIsentoTotal();
-                break;
-
             case '4': //pendente total
-                aluno.incluiPagamentoPendenteTotal();
-                break;
-
-            case '5': // pendente parcial
-                aluno.incluiPagamentoPendente();
+                aluno.incluiPagamentoIsentoPendenteTotal(tipo);
                 break;
 
             default:
@@ -657,30 +688,33 @@ var controle_aluno = (function() {
         }
     };
 
+    aluno.getTotalAlimentos = function() {
+        var total_alimentos = 0.0;
+        $(aluno.getIdAlimentosTurma()).find('.quantidade_alimento_turma').each(function() {
+            var quantidade_alimento = helpers.parseNumero($(this).html());
+
+            if (quantidade_alimento != -1)
+                total_alimentos += quantidade_alimento;
+            else
+                total_alimentos = quantidade_alimento;
+        });
+
+        return total_alimentos;
+    };
+
     aluno.incluiPagamentoNormal = function() {
         var option = aluno.select_turma_pagamento.find('option:selected');
 
         if ($(option).length > 0) {
             var id_turma = $(option).val();
-            var pagamento_class = aluno.getClassPagamentoTurma();//controle.retira_acentos(controle.trim($(option).html())).toLowerCase();
             var valor_pago = helpers.parseNumero(aluno.campo_valor_pagamento.val());
-            var total_alimentos = 0.0;
+            var total_alimentos = aluno.getTotalAlimentos();
             var num_recibo = aluno.getRecibo();
-
-            //soma quantidades de alimentos
-            $(aluno.getIdAlimentosTurma()).find('.quantidade_alimento_turma').each(function() {
-                var quantidade_alimento = helpers.parseNumero($(this).html());
-
-                if (quantidade_alimento != -1)
-                    total_alimentos += quantidade_alimento;
-                else
-                    total_alimentos = quantidade_alimento;
-            });
 
             if (aluno.select_turma_pagamento.children().length > 0
                     && total_alimentos != -1
                     && valor_pago != -1
-                    && !aluno.container_pagamentos_aluno.find('tr').hasClass(pagamento_class.replace('.', ''))
+                    && !aluno.verificaExistenciaPagamento()
                     && $(option).val() != ""
                     && num_recibo.length > 0) {
 
@@ -692,9 +726,10 @@ var controle_aluno = (function() {
                         html = '<tr><th>Disciplina - Turma</th><th>Nº Recibo</th><th>Total Pago(R$)</th><th>Total de Alimentos(kg)</th><th>Situação</th><th>Opções</th></tr>';
                     }
 
-                    html += '<tr class="' + pagamento_class.replace('.', '') + '"><input type="hidden" name="pagamento_turmas[' + id_turma + ']" value="' + valor_pago + '"/><td>' + num_recibo + '</td><td>' + $(option).html() + '</td><td class="valor_pago">' + valor_pago + '</td><td class="quant_alimento">' + total_alimentos + '</td><td class="situacao"><input type="hidden" name="situacao_turmas[' + id_turma + ']" value="Liberado"/>Liberado</td><td><div class="excluir_pagamento" >Excluir</div></td></tr>';
+                    html += '<tr class="' + aluno.getClassPagamentoTurma().replace('.', '') + '"><input type="hidden" name="pagamento_turmas[' + id_turma + ']" value="' + valor_pago + '"/><td>' + $(option).html() + '</td><td>' + num_recibo + '</td><td class="valor_pago">' + valor_pago + '</td><td class="quant_alimento">' + total_alimentos + '</td><td class="situacao"><input type="hidden" name="situacao_turmas[' + id_turma + ']" value="Liberado"/>Liberado</td><td><div class="excluir_pagamento" >Excluir</div></td></tr>';
                     aluno.container_pagamentos_aluno.append(html);
                     aluno.eventOpcaoExcluirPagamento();
+                    aluno.container_pagamentos_aluno.show();
                 }
                 else
                     exibeMensagem('Condição de pagamento incompatível', 'Inclusão de Pagamento de Turmas');
@@ -706,48 +741,40 @@ var controle_aluno = (function() {
             exibeMensagem('Inclua primeiro a turma', 'Registro de Pagamento');
     };
 
-    aluno.incluiPagamentoPendente = function() {
+
+    aluno.incluiPagamentoIsentoPendente = function(tipo) {
         var option = aluno.select_turma_pagamento.find('option:selected');
 
         if ($(option).length > 0) {
             var id_turma = $(option).val();
-            var pagamento_class = aluno.getClassPagamentoTurma();//controle.retira_acentos(controle.trim($(option).html())).toLowerCase();
             var valor_pago = helpers.parseNumero(aluno.campo_valor_pagamento.val());
-            var total_alimentos = 0.0;
+            var total_alimentos = aluno.getTotalAlimentos();
             var num_recibo = aluno.getRecibo();
-            var tipo_pendencia = aluno.getTipoIsencaoPendencia();
-
-            //soma quantidades de alimentos
-            $(aluno.getIdAlimentosTurma()).find('.quantidade_alimento_turma').each(function() {
-                var quantidade_alimento = helpers.parseNumero($(this).html());
-
-                if (quantidade_alimento != -1)
-                    total_alimentos += quantidade_alimento;
-                else
-                    total_alimentos = quantidade_alimento;
-            });
+            var tipo_isencao = aluno.getTipoIsencaoPendencia();
 
             if (aluno.select_turma_pagamento.children().length > 0
                     && total_alimentos != -1
                     && valor_pago != -1
-                    && !aluno.container_pagamentos_aluno.find('tr').hasClass(pagamento_class.replace('.', ''))
+                    && !aluno.verificaExistenciaPagamento()
                     && $(option).val() != ""
                     && num_recibo.length > 0) {
 
-                if ((tipo_pendencia == '1' && total_alimentos < aluno.qt_min_alimentos && valor_pago >= aluno.valor_min_pagamento)
-                        || (tipo_pendencia == '2' && total_alimentos >= aluno.qt_min_alimentos && valor_pago < aluno.valor_min_pagamento)
-                        || (tipo_pendencia == '3' && total_alimentos < aluno.qt_min_alimentos && valor_pago < aluno.valor_min_pagamento)) {
+                if ((tipo_isencao == '1' && total_alimentos < aluno.qt_min_alimentos && valor_pago >= aluno.valor_min_pagamento)
+                        || (tipo_isencao == '2' && total_alimentos >= aluno.qt_min_alimentos && valor_pago < aluno.valor_min_pagamento)
+                        || (tipo_isencao == '3' && total_alimentos < aluno.qt_min_alimentos && valor_pago < aluno.valor_min_pagamento)) {
 
                     var html = '';
+                    var situacao = (tipo == 2) ? 'Liberado' : 'Pendente';
 
                     if (aluno.container_pagamentos_aluno.children().length == 0) {
                         aluno.container_pagamentos_aluno.show();
                         html = '<tr><th>Disciplina - Turma</th><th>Nº Recibo</th><th>Total Pago(R$)</th><th>Total de Alimentos(kg)</th><th>Situação</th><th>Opções</th></tr>';
                     }
 
-                    html += '<tr class="' + pagamento_class.replace('.', '') + '"><input type="hidden" name="pagamento_turmas[' + id_turma + ']" value="' + valor_pago + '"/><td>' + num_recibo + '</td><td>' + $(option).html() + '</td><td class="valor_pago">' + valor_pago + '</td><td class="quant_alimento">' + total_alimentos + '</td><td class="situacao"><input type="hidden" name="situacao_turmas[' + id_turma + ']" value="' + situacao + '"/>' + situacao + '</td><td><div class="excluir_pagamento" >Excluir</div></td></tr>';
+                    html += '<tr class="' + aluno.getClassPagamentoTurma().replace('.', '') + '"><input type="hidden" name="pagamento_turmas[' + id_turma + ']" value="' + valor_pago + '"/><td>' + $(option).html() + '</td><td>' + num_recibo + '</td><td class="valor_pago">' + valor_pago + '</td><td class="quant_alimento">' + total_alimentos + '</td><td class="situacao"><input type="hidden" name="situacao_turmas[' + id_turma + ']" value="' + situacao + '"/>' + situacao + '</td><td><div class="excluir_pagamento" >Excluir</div></td></tr>';
                     aluno.container_pagamentos_aluno.append(html);
                     aluno.eventOpcaoExcluirPagamento();
+                    aluno.container_pagamentos_aluno.show();
                 }
                 else
                     exibeMensagem('Condição de pagamento incompatível', 'Inclusão de Pagamento de Turmas');
@@ -759,15 +786,29 @@ var controle_aluno = (function() {
             exibeMensagem('Inclua primeiro a turma', 'Registro de Pagamento');
     };
 
-    aluno.incluiPagamentoPendenteTotal = function() {
+    aluno.incluiPagamentoIsentoPendenteTotal = function(tipo) {
+        var option = aluno.select_turma_pagamento.find('option:selected');
 
-    };
+        if ($(option).length > 0
+                && aluno.select_turma_pagamento.children().length > 0
+                && !aluno.verificaExistenciaPagamento()) {
 
-    aluno.incluiPagamentoIsento = function() {
+            var html = '';
+            var id_turma = $(option).val();
+            var situacao = (tipo == 3) ? 'Liberado' : 'Pendente';
 
-    };
+            if (aluno.container_pagamentos_aluno.children().length == 0) {
+                aluno.container_pagamentos_aluno.show();
+                html = '<tr><th>Disciplina - Turma</th><th>Nº Recibo</th><th>Total Pago(R$)</th><th>Total de Alimentos(kg)</th><th>Situação</th><th>Opções</th></tr>';
+            }
 
-    aluno.incluiPagamentoIsentoTotal = function() {
+            html += '<tr class="' + aluno.getClassPagamentoTurma().replace('.', '') + '"><input type="hidden" name="pagamento_turmas[' + id_turma + ']" value="' + 0 + '"/><td></td><td>' + $(option).html() + '</td><td class="valor_pago">0</td><td class="quant_alimento">0</td><td class="situacao"><input type="hidden" name="situacao_turmas[' + id_turma + ']" value="' + situacao + '"/>' + situacao + '</td><td><div class="excluir_pagamento" >Excluir</div></td></tr>';
+            aluno.container_pagamentos_aluno.append(html);
+            aluno.eventOpcaoExcluirPagamento();
+            aluno.container_pagamentos_aluno.show();
+        }
+        else
+            exibeMensagem('Ou pagamento dessa turma já foi inserido, ou existem ,informações não preenchidas. Se quiser fazer alguma alteração, exclua esse pagamento, faça as alterações e registre-o novamente.', 'Inclusão de Pagamento');
 
     };
 

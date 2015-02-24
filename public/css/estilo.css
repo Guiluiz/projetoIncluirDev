@@ -615,6 +615,6 @@ table label.error{
     margin-bottom: 1em;
 }
 
-#container_recibo, #container_turmas_escolhidas, #container_pagamentos_registrados, #container_alimentos, #container_pagamentos, #container_tipo_isencao_pendencia{
+#container_recibo, #container_btn_registro_pagamento, #container_turmas_escolhidas, #container_pagamentos_registrados, #container_alimentos, #container_pagamentos, #container_tipo_isencao_pendencia{
     display: none;
 }

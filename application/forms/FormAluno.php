@@ -373,6 +373,7 @@ class Application_Form_FormAluno extends Zend_Form {
 
         $pagamento_turma = new Zend_Form_Element_Select('pagamento_turma');
         $pagamento_turma->setLabel('Turmas do Aluno:')
+                ->setAttrib('disabled', 'disabled')
                 ->addFilter('StripTags')
                 ->setRegisterInArrayValidator(false)
                 ->addFilter('StringTrim')
