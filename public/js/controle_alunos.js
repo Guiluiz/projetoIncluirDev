@@ -385,7 +385,7 @@ var controle_aluno = (function () {
     aluno.addHorarioTurma = function () {
         aluno.horarios_turmas_incluidas.push(
                 {
-                    id: aluno.getIdTurma(),
+                    id_turma: aluno.getIdTurma(),
                     horario_inicio: aluno.getHoraInicial(),
                     horario_fim: aluno.getHoraFinal(),
                     data_inicio: aluno.getDataInicial(),
@@ -425,45 +425,49 @@ var controle_aluno = (function () {
         return helpers.parseDate(aluno.campo_turma.find('option:selected').attr('data_fim'));
     };
 
-    aluno.verificaHorariosTurma = function () {
+    aluno.verificaHorariosTurma = function (exclude) {
         var horario_inicio = aluno.getHoraInicial(),
                 horario_fim = aluno.getHoraFinal();
 
-        if (aluno.verificaInterfenciaPeriodosTurma()) {
+        if (aluno.verificaInterfenciaPeriodosTurma(exclude)) {
             for (var i in aluno.horarios_turmas_incluidas) {
-                if (// verifica se os horários das turmas interferem uns nos outros
-                        (Date.compare(aluno.horarios_turmas_incluidas[i].horario_inicio, horario_inicio) >= 0 &&
-                                Date.compare(aluno.horarios_turmas_incluidas[i].horario_fim, horario_fim) <= 0) ||
-                        (Date.compare(aluno.horarios_turmas_incluidas[i].horario_inicio, horario_inicio) >= 0 &&
-                                Date.compare(aluno.horarios_turmas_incluidas[i].horario_fim, horario_inicio) < 0) ||
-                        (Date.compare(aluno.horarios_turmas_incluidas[i].horario_inicio, horario_fim) > 0 &&
-                                Date.compare(aluno.horarios_turmas_incluidas[i].horario_fim, horario_fim) <= 0) ||
-                        (Date.compare(aluno.horarios_turmas_incluidas[i].horario_inicio, horario_inicio) <= 0 &&
-                                Date.compare(aluno.horarios_turmas_incluidas[i].horario_fim, horario_fim) >= 0)) {
+                if (aluno.horarios_turmas_incluidas[i].id_turma != exclude) {
+                    if (// verifica se os horários das turmas interferem uns nos outros
+                            (Date.compare(aluno.horarios_turmas_incluidas[i].horario_inicio, horario_inicio) >= 0 &&
+                                    Date.compare(aluno.horarios_turmas_incluidas[i].horario_fim, horario_fim) <= 0) ||
+                            (Date.compare(aluno.horarios_turmas_incluidas[i].horario_inicio, horario_inicio) >= 0 &&
+                                    Date.compare(aluno.horarios_turmas_incluidas[i].horario_fim, horario_inicio) < 0) ||
+                            (Date.compare(aluno.horarios_turmas_incluidas[i].horario_inicio, horario_fim) > 0 &&
+                                    Date.compare(aluno.horarios_turmas_incluidas[i].horario_fim, horario_fim) <= 0) ||
+                            (Date.compare(aluno.horarios_turmas_incluidas[i].horario_inicio, horario_inicio) <= 0 &&
+                                    Date.compare(aluno.horarios_turmas_incluidas[i].horario_fim, horario_fim) >= 0)) {
 
-                    return false;
+                        return false;
+                    }
                 }
             }
         }
         return true;
     };
 
-    aluno.verificaInterfenciaPeriodosTurma = function () {
+    aluno.verificaInterfenciaPeriodosTurma = function (exclude) {
         var data_inicio = aluno.getDataInicial(),
                 data_fim = aluno.getDataFinal();
 
         for (var i in aluno.horarios_turmas_incluidas) {
-            if (// verifica se os períodos das turmas interferem uns nos outros
-                    (Date.compare(aluno.horarios_turmas_incluidas[i].data_inicio, data_inicio) >= 0 &&
-                            Date.compare(aluno.horarios_turmas_incluidas[i].data_fim, data_fim) <= 0) ||
-                    (Date.compare(aluno.horarios_turmas_incluidas[i].data_inicio, data_inicio) >= 0 &&
-                            Date.compare(aluno.horarios_turmas_incluidas[i].data_fim, data_inicio) < 0) ||
-                    (Date.compare(aluno.horarios_turmas_incluidas[i].data_inicio, data_fim) > 0 &&
-                            Date.compare(aluno.horarios_turmas_incluidas[i].data_fim, data_fim) <= 0) ||
-                    (Date.compare(aluno.horarios_turmas_incluidas[i].data_inicio, data_inicio) <= 0 &&
-                            Date.compare(aluno.horarios_turmas_incluidas[i].data_fim, data_fim) >= 0)) {
+            if (aluno.horarios_turmas_incluidas[i].id_turma != exclude) {
+                if (// verifica se os períodos das turmas interferem uns nos outros
+                        (Date.compare(aluno.horarios_turmas_incluidas[i].data_inicio, data_inicio) >= 0 &&
+                                Date.compare(aluno.horarios_turmas_incluidas[i].data_fim, data_fim) <= 0) ||
+                        (Date.compare(aluno.horarios_turmas_incluidas[i].data_inicio, data_inicio) >= 0 &&
+                                Date.compare(aluno.horarios_turmas_incluidas[i].data_fim, data_inicio) < 0) ||
+                        (Date.compare(aluno.horarios_turmas_incluidas[i].data_inicio, data_fim) > 0 &&
+                                Date.compare(aluno.horarios_turmas_incluidas[i].data_fim, data_fim) <= 0) ||
+                        (Date.compare(aluno.horarios_turmas_incluidas[i].data_inicio, data_inicio) <= 0 &&
+                                Date.compare(aluno.horarios_turmas_incluidas[i].data_fim, data_fim) >= 0)) {
 
-                return true;
+                    return true;
+                }
             }
         }
         return false;
@@ -594,7 +598,7 @@ var controle_aluno = (function () {
                                 close: function () {
                                     if (tipo_liberacao.length > 0 && tipo_liberacao != 'cancelado') {
                                         aluno.liberacao_turma = tipo_liberacao;
-                                        
+
                                         if (linha_turma_alterada == undefined)
                                             aluno.incrementaTurma();
                                         else
@@ -623,41 +627,58 @@ var controle_aluno = (function () {
         }
     };
 
+
+    /**
+     * Faz a alteração da turma, mantendo os pagamentos e alimentos inseridos para a turma
+     * @param {type} linha_turma
+     * @returns {undefined}
+     */
     aluno.alteraTurma = function (linha_turma) {
         if (linha_turma != undefined) {
-            var id_nova_turma = aluno.getIdTurma();
             var id_turma_antiga = linha_turma.children('input').val();
-            var aux_class = linha_turma.attr('class'); // a linha correspondente a turma armazena o id para retirar os pagamentos/alimentos da turma
-            var linha_pagamento = $('.pagamento_' + aux_class);
+            
+            if (!aluno.verificaHorariosTurma(id_turma_antiga))
+                exibeMensagem('Já existe uma turma do aluno que interfere no horário dessa turma. Por favor, escolha outra.', 'Alteração de Turma');
 
-            linha_turma.replaceWith('<tr class="' + aluno.getNameTurmaAluno() + '"><input type="hidden" name="turmas[]" value="' + id_nova_turma + '"/><td>' + aluno.campo_curso.find('option:selected').html() + '</td><td>' + aluno.campo_disciplina.find('option:selected').html() + '</td><td>' + aluno.campo_turma.find('option:selected').html() + '</td><td><input type="hidden" name="liberacao[' + id_nova_turma + ']" value="' + aluno.liberacao_turma + '"/>' + aluno.liberacao_turma + '</td><td><div class="alterar_turma">Alterar</div><div class="excluir_turma" >Excluir</div></td></tr>');
-            aluno.select_turma_pagamento.find('option[value="' + id_turma_antiga + '"]').replaceWith('<option value="' + id_nova_turma + '">' + aluno.getNameTurmaAluno(true) + '</option>');
+            else {
+                var id_nova_turma = aluno.getIdTurma();
+                var aux_class = linha_turma.attr('class'); // a linha correspondente a turma armazena o id para retirar os pagamentos/alimentos da turma
+                var linha_pagamento = $('.pagamento_' + aux_class);
 
-            aluno.removeHorarioTurma(id_turma_antiga);
-            aluno.removeCondicaoTurma(id_turma_antiga);
+                linha_turma.replaceWith('<tr class="' + aluno.getNameTurmaAluno() + '"><input type="hidden" name="turmas[]" value="' + id_nova_turma + '"/><td>' + aluno.campo_curso.find('option:selected').html() + '</td><td>' + aluno.campo_disciplina.find('option:selected').html() + '</td><td>' + aluno.campo_turma.find('option:selected').html() + '</td><td><input type="hidden" name="liberacao[' + id_nova_turma + ']" value="' + aluno.liberacao_turma + '"/>' + aluno.liberacao_turma + '</td><td><div class="alterar_turma">Alterar</div><div class="excluir_turma" >Excluir</div></td></tr>');
+                aluno.select_turma_pagamento.find('option[value="' + id_turma_antiga + '"]').replaceWith('<option value="' + id_nova_turma + '">' + aluno.getNameTurmaAluno(true) + '</option>');
 
-            aluno.addHorarioTurma();
-            aluno.incrementaCondicaoTurmas();
+                aluno.removeHorarioTurma(id_turma_antiga);
+                aluno.removeCondicaoTurma(id_turma_antiga);
 
-            $('#alimentos_' + aux_class).attr('id', aluno.getIdAlimentosTurma()); // altera os alimentos para a nova turma especificada
+                aluno.addHorarioTurma();
+                aluno.incrementaCondicaoTurmas();
 
-            linha_pagamento.find('.nome_turma').text(aluno.getNameTurmaAluno(true)); // altera os nomes e os campos que armazenam dados da turma para a nova especificada
-            linha_pagamento.attr('class', aluno.getClassPagamentoTurma().replace('.', '')).find('input').each(function () {
-                $(this).attr('name', 'pagamento_turmas[' + id_nova_turma + ']');
-            });
+                $('#alimentos_' + aux_class).attr('id', aluno.getIdAlimentosTurma()); // altera os alimentos para a nova turma especificada
 
-            aluno.container_campos_escolha_turma.dialog("destroy");
-            aluno.container_campo_quantidade_turmas.show();
-            aluno.container_btn_incluir_turma.show();
+                linha_pagamento.find('.nome_turma').text(aluno.getNameTurmaAluno(true)); // altera os nomes e os campos que armazenam dados da turma para a nova especificada
+                linha_pagamento.attr('class', aluno.getClassPagamentoTurma().replace('.', '')).find('input').each(function () {
+                    $(this).attr('name', 'pagamento_turmas[' + id_nova_turma + ']');
+                });
 
-            aluno.eventAlterarTurmaAluno();
-            aluno.eventAlterarTurmaAluno();
+                aluno.container_campos_escolha_turma.dialog("destroy");
+                aluno.container_campo_quantidade_turmas.show();
+                aluno.container_btn_incluir_turma.show();
+
+                aluno.eventAlterarTurmaAluno();
+                aluno.eventExcluirTurmaAluno();
+            }
         }
     };
 
+    /**
+     * Acrescenta uma nova turma para o aluno
+     * @returns {undefined}
+     */
+
     aluno.incrementaTurma = function () {
         if (!aluno.verificaHorariosTurma())
-            exibeMensagem('Já existe uma turma do aluno que interefere no horário dessa turma. Por favor, escolha outra.', 'Inclusão de Turma');
+            exibeMensagem('Já existe uma turma do aluno que interfere no horário dessa turma. Por favor, escolha outra.', 'Inclusão de Turma');
 
         else if ((aluno.container_turmas_aluno.find('tr').length - 1) < aluno.getQuantidadeTurmas()) { //exclui a linha de cabeçalho na verificação de turmas inseridas
             var id_turma = aluno.getIdTurma();
@@ -977,8 +998,12 @@ var controle_aluno = (function () {
                 if ($(table).find('tr').length > 2) // se tiver somente uma turma, remove somente a linha, caso contrário, pra n ficar feio, remove a tabela toda
                     $(this).parents('tr').remove();
 
-                else
+                else {
                     $(table).html('').hide();
+                    aluno.container_pagamentos_registrados.hide();
+                    aluno.container_turmas_aluno.hide();
+                    aluno.container_opcoes_turmas_aluno.hide().find('select,input,button').attr('disabled'); // se o usuário removeu todas as turmas, não é necessário exibir os campos
+                }
             }
         });
     };
