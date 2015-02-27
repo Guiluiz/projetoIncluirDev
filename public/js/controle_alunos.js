@@ -1036,6 +1036,7 @@ var controle_aluno = (function () {
 
 
                 aluno.container_campo_isencao_pendencia.find('select').removeAttr('disabled').val(condicao_matricula);
+                aluno.container_campo_condicao_matricula.find('select').removeAttr('disabled').show();
                 aluno.container_campo_condicao_matricula.show();
 
                 aluno.gerenciaCamposCondicaoMatricula(); // chama a função que exibe os campos de acordo com a condição de matrícula definida
