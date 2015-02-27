@@ -594,16 +594,20 @@ var controle_aluno = (function () {
                                 close: function () {
                                     if (tipo_liberacao.length > 0 && tipo_liberacao != 'cancelado') {
                                         aluno.liberacao_turma = tipo_liberacao;
-                                        aluno.incrementaTurma();
+                                        
+                                        if (linha_turma_alterada == undefined)
+                                            aluno.incrementaTurma();
+                                        else
+                                            aluno.alteraTurma(linha_turma_alterada);
+
                                     }
                                 }
                             }).html('Aluno não possui pré-requisitos (<b>' + pre_requisitos + '</b>) para cursar essa disciplina. Favor Selecionar uma das opções abaixo.');
                         }
                         else {
                             aluno.liberacao_turma = tipo_liberacao;
-                            if (linha_turma_alterada == undefined) {
+                            if (linha_turma_alterada == undefined)
                                 aluno.incrementaTurma();
-                            }
                             else
                                 aluno.alteraTurma(linha_turma_alterada);
                         }
