@@ -165,31 +165,7 @@ var controle_aluno = (function () {
             aluno.select_turma_pagamento.focus(function () {
                 aluno.turma_atual = $(this).find('option:selected').val();
             }).change(function () {
-                $(aluno.class_container_alimentos_pagamento).hide(); // esconde todas para mostrar somente a desejada
-
-                if (!aluno.verificaExistenciaPagamento()) {
-                    var confirma = confirm('Caso troque a turma sem registrar o pagamento, todas as modificações serão canceladas. Deseja continuar?');
-
-                    if (confirma) {
-                        $(aluno.getIdAlimentosTurma()).remove();
-                        aluno.select_condicao_matricula.val('');
-                    }
-                    else {
-                        $(this).val(aluno.turma_atual);
-                        $(aluno.getIdAlimentosTurma()).show();
-                        return;
-                    }
-                }
-
-                else {
-                    $(aluno.getIdAlimentosTurma()).show();
-                    aluno.select_condicao_matricula.val($(aluno.getClassPagamentoTurma()).find('.condicao').children('input').val());
-                }
-                aluno.campo_tipo_alimento.val('');
-                aluno.campo_quantidade_alimento.val('');
-                aluno.campo_num_recibo.val('');
-                aluno.campo_valor_pagamento.val('00,00');
-                aluno.gerenciaCamposCondicaoMatricula();
+                aluno.gerenciaMudancaTurmaAluno();
             });
 
             aluno.campo_tipo_alimento.change(function () {
@@ -290,7 +266,6 @@ var controle_aluno = (function () {
 
     aluno.gerenciaCamposCondicaoMatricula = function (remover_conteudo) {
         if (!aluno.verificaExistenciaPagamento()) { // procura se já tem um pagamento registrado para a turma, se houver a remoção não é realizada
-
             if (remover_conteudo != undefined) {
                 $(aluno.getClassPagamentoTurma()).remove();
                 $(aluno.getIdAlimentosTurma()).remove();
@@ -366,6 +341,34 @@ var controle_aluno = (function () {
             exibeMensagem('Um pagamento já foi registrado para essa turma. Caso queira fazer alguma alteração, exclua o pagamento primeiro.');
 
     };
+
+    aluno.gerenciaMudancaTurmaAluno = function () {
+        $(aluno.class_container_alimentos_pagamento).hide(); // esconde todas para mostrar somente a desejada
+
+        if (!aluno.verificaExistenciaPagamento()) {
+            var confirma = confirm('Caso troque a turma sem registrar o pagamento, todas as modificações serão canceladas. Deseja continuar?');
+
+            if (confirma) {
+                $(aluno.getIdAlimentosTurma()).remove();
+                aluno.select_condicao_matricula.val('');
+            }
+            else {
+                aluno.select_turma_pagamento.val(aluno.turma_atual);
+                $(aluno.getIdAlimentosTurma()).show();
+                return;
+            }
+        }
+
+        else {
+            $(aluno.getIdAlimentosTurma()).show();
+            aluno.select_condicao_matricula.val($(aluno.getClassPagamentoTurma()).find('.condicao').children('input').val());
+        }
+        aluno.campo_tipo_alimento.val('');
+        aluno.campo_quantidade_alimento.val('');
+        aluno.campo_num_recibo.val('');
+        aluno.campo_valor_pagamento.val('00,00');
+        aluno.gerenciaCamposCondicaoMatricula();
+    }
 
     /**
      * Retorna a quantidade de turmas em que o aluno pode ser matriculado 
@@ -547,7 +550,7 @@ var controle_aluno = (function () {
                     },
                     success: function (liberacao) {
                         var tipo_liberacao = '';
-
+                        
                         if (liberacao.tipo != undefined) {
                             var pre_requisitos = '', tipo = liberacao.tipo;
 
@@ -593,7 +596,6 @@ var controle_aluno = (function () {
                                     if (tipo_liberacao.length > 0 && tipo_liberacao != 'cancelado') {
                                         aluno.liberacao_turma = tipo_liberacao;
                                         aluno.incrementaTurma();
-                                        aluno.incrementaSelectTurmasAluno();
                                     }
                                 }
                             }).html('Aluno não possui pré-requisitos (<b>' + pre_requisitos + '</b>) para cursar essa disciplina. Favor Selecionar uma das opções abaixo.');
@@ -640,6 +642,7 @@ var controle_aluno = (function () {
     };
 
     aluno.incrementaTurma = function () {
+        console.log('')
         if (!aluno.verificaHorariosTurma())
             exibeMensagem('Já existe uma turma do aluno que interefere no horário dessa turma. Por favor, escolha outra.', 'Inclusão de Turma');
 
