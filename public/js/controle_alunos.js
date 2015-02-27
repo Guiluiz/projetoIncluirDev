@@ -2,7 +2,7 @@
  * Controle do gerenciamento de Alunos
  * @returns {undefined}
  */
-var controle_aluno = (function() {
+var controle_aluno = (function () {
     var aluno = {
         container_turmas_aluno: $('#turmas_aluno'), // container das turmas escolhidas para o aluno
         container_pagamentos_aluno: $('#table_pagamentos_turmas'), // container dos pagamentos registrados
@@ -20,7 +20,6 @@ var controle_aluno = (function() {
         btn_incluir_alimento: $('#incluir_alimento'),
         btn_atualizar_alimentos: $('#atualizar_alimentos'),
         btn_enviar: $('#enviar'),
-        
         campo_quantidade_turmas: $('#quantidade_turmas'),
         campo_nome_aluno: $('#nome_aluno'),
         campo_curso: $('#curso'),
@@ -46,7 +45,6 @@ var controle_aluno = (function() {
         container_campos_escolha_turma: $('#busca_turmas'),
         container_campo_isencao_pendencia: $('#container_tipo_isencao_pendencia'),
         container_campo_condicao_matricula: $('#container_condicao_matricula'),
-        
         // mesmo tendo o container é necessário manipular os campos separados pois no caso de total, somente alguns ficam dos campos ficam escondidos
         container_recibo: $('#container_recibo'),
         container_botao_pagamento: $('#container_btn_registro_pagamento'),
@@ -64,10 +62,11 @@ var controle_aluno = (function() {
         valor_min_pagamento: '', // valor mínimo para pagamento ser válido
         trava_busca_liberacao: false,
         liberacao_turma: null,
-        horarios_turmas_incluidas: new Array() // utilizado para verificar se há inconsistências de horários nas turmas que serão escolhidas pelo usuário
+        horarios_turmas_incluidas: new Array(), // utilizado para verificar se há inconsistências de horários nas turmas que serão escolhidas pelo usuário
+        turma_atual: null // turma que está sendo modificada no momento
     };
 
-    aluno.setValues = function(url_verifica_aluno, url_img, url_ajax_alimentos, url_ajax_disciplina, url_ajax_turma, url_quantidade, url_verificacao_liberacao, action, qt_alimentos, valor_min) {
+    aluno.setValues = function (url_verifica_aluno, url_img, url_ajax_alimentos, url_ajax_disciplina, url_ajax_turma, url_quantidade, url_verificacao_liberacao, action, qt_alimentos, valor_min) {
         aluno.url_ajax_verifica_aluno = url_verifica_aluno;
         aluno.url_img = url_img;
         aluno.url_ajax_alimentos = url_ajax_alimentos;
@@ -81,7 +80,7 @@ var controle_aluno = (function() {
         aluno.ini();
     };
 
-    aluno.ini = function() {
+    aluno.ini = function () {
         aluno.campo_curso.val('');
 
         // em caso de alterção de aluno, ou correção no cadastro após enviar a requisição, o servidor exibe os dados 
@@ -118,68 +117,90 @@ var controle_aluno = (function() {
             aluno.campo_nome_aluno.autocomplete({
                 source: aluno.url_ajax_verifica_aluno,
                 minLength: 1
-            }).data("ui-autocomplete")._renderItem = function(ul, item) {
+            }).data("ui-autocomplete")._renderItem = function (ul, item) {
                 var $a = $("<a href='" + item.url + "'></a>").text(item.label);
                 return $("<li></li>").append($a).append(item.desc).appendTo(ul);
             };
 
-            aluno.campo_curso.change(function() {
+            aluno.campo_curso.change(function () {
                 aluno.container_quantidade_alunos_turma.html('');
                 aluno.campo_turma.html('');
                 helpers.buscaDisciplinasByCurso(aluno.url_ajax_disciplina, $(this), aluno.campo_disciplina);
             });
 
-            aluno.campo_disciplina.change(function() {
+            aluno.campo_disciplina.change(function () {
                 aluno.container_quantidade_alunos_turma.html('');
                 helpers.buscaTurmasByDisciplina(aluno.url_ajax_turma, $(this), aluno.campo_turma, null, true);
             });
 
-            aluno.campo_turma.change(function() {
+            aluno.campo_turma.change(function () {
                 aluno.container_quantidade_alunos_turma.html('');
                 aluno.getQuantidadeAlunos();
             });
 
-            aluno.select_condicao_matricula.change(function() {
-                aluno.gerenciaCamposCondicaoMatricula();
+            aluno.select_condicao_matricula.change(function () {
+                aluno.gerenciaCamposCondicaoMatricula(true);
             });
 
-            aluno.select_tipo_isencao_pendencia.change(function() {
+            aluno.select_tipo_isencao_pendencia.change(function () {
                 aluno.gerenciaTipoIsencaoPendencia();
             });
 
-            aluno.btn_incluir_turma.click(function() {
+            aluno.btn_incluir_turma.click(function () {
                 aluno.verificaLiberacaoTurma();
             });
 
-            aluno.btn_incluir_alimento.click(function() {
+            aluno.btn_incluir_alimento.click(function () {
                 aluno.incrementaAlimentoTurma();
             });
 
-            aluno.btn_incluir_pagamento.click(function() {
+            aluno.btn_incluir_pagamento.click(function () {
                 aluno.incrementaPagamentoTurma();
             });
 
-            aluno.btn_atualizar_alimentos.click(function() {
+            aluno.btn_atualizar_alimentos.click(function () {
                 aluno.buscaAlimentos();
             });
 
-            aluno.select_turma_pagamento.change(function() {
+            aluno.select_turma_pagamento.focus(function () {
+                aluno.turma_atual = $(this).find('option:selected').val();
+            }).change(function () {
                 $(aluno.class_container_alimentos_pagamento).hide(); // esconde todas para mostrar somente a desejada
+
+                if (!aluno.verificaExistenciaPagamento()) {
+                    var confirma = confirm('Caso troque a turma sem registrar o pagamento, todas as modificações serão canceladas. Deseja continuar?');
+
+                    if (confirma) {
+                        $(aluno.getIdAlimentosTurma()).remove();
+                        aluno.select_condicao_matricula.val('');
+                    }
+                    else {
+                        $(this).val(aluno.turma_atual);
+                        $(aluno.getIdAlimentosTurma()).show();
+                        return;
+                    }
+                }
+
+                else {
+                    $(aluno.getIdAlimentosTurma()).show();
+                    aluno.select_condicao_matricula.val($(aluno.getClassPagamentoTurma()).find('.condicao').children('input').val());
+                }
                 aluno.campo_tipo_alimento.val('');
                 aluno.campo_quantidade_alimento.val('');
+                aluno.campo_num_recibo.val('');
                 aluno.campo_valor_pagamento.val('00,00');
-                $(aluno.getIdAlimentosTurma()).show();
+                aluno.gerenciaCamposCondicaoMatricula();
             });
 
-            aluno.campo_tipo_alimento.change(function() {
+            aluno.campo_tipo_alimento.change(function () {
                 aluno.campo_quantidade_alimento.val('');
             });
 
-            aluno.check_is_responsavel.click(function() {
+            aluno.check_is_responsavel.click(function () {
                 helpers.mostraEscondeCheck($(this), $(this).parents('td').next().children('div'), true);
             });
 
-            aluno.btn_enviar.click(function() {
+            aluno.btn_enviar.click(function () {
                 var quantidade_pagamentos = aluno.container_pagamentos_aluno.find('tr').length;
                 var turmas_escolhidas = aluno.select_turma_pagamento.find('option').length;
 
@@ -201,7 +222,7 @@ var controle_aluno = (function() {
      * @returns string
      */
 
-    aluno.getNomeTurma = function(campo_turma) {
+    aluno.getNomeTurma = function (campo_turma) {
         var turma_horario;
 
         if (campo_turma == undefined)
@@ -218,7 +239,7 @@ var controle_aluno = (function() {
      * Retorna o identificador do container de alimentos da turma selecionada
      * @returns {String}
      */
-    aluno.getIdAlimentosTurma = function() {
+    aluno.getIdAlimentosTurma = function () {
         return '#alimentos_' + helpers.retira_acentos(helpers.trim(aluno.getNomeTurma())).toLowerCase();
     };
 
@@ -226,7 +247,7 @@ var controle_aluno = (function() {
      * Retorna o identificador do pagamento da turma selecionada 
      * @returns {String}
      */
-    aluno.getClassPagamentoTurma = function() {
+    aluno.getClassPagamentoTurma = function () {
         return '.pagamento_' + helpers.retira_acentos(helpers.trim(aluno.getNomeTurma())).toLowerCase();
     };
 
@@ -236,9 +257,10 @@ var controle_aluno = (function() {
      * @param {type} not_filter Indica se o retorno vai ser fitrado ou não (filtrado é utilizado como indicador dos pagamentos e alimentos da turma)
      * @returns {String}
      */
-    aluno.getNameTurmaAluno = function(not_filter) {
+    aluno.getNameTurmaAluno = function (not_filter) {
         if (not_filter == undefined)
             return helpers.retira_acentos(helpers.trim(aluno.campo_disciplina.find('option:selected').html() + ' - ' + aluno.getNomeTurma(true))).toLowerCase();
+
         return aluno.campo_disciplina.find('option:selected').html() + ' - ' + aluno.campo_turma.find('option:selected').html();
     };
 
@@ -246,36 +268,41 @@ var controle_aluno = (function() {
      * retorna o id da turma indicada no campo de turmas da disciplina selecionada
      * @returns {unresolved}
      */
-    aluno.getIdTurma = function() {
+    aluno.getIdTurma = function () {
         return aluno.campo_turma.find('option:selected').val();
     };
 
-    aluno.getIdDisciplina = function() {
+    aluno.getIdDisciplina = function () {
         return aluno.campo_disciplina.find('option:selected').val();
     };
 
-    aluno.getCondicaoMatricula = function() {
+    aluno.getCondicaoMatricula = function () {
         return aluno.select_condicao_matricula.find('option:selected').val();
     };
 
-    aluno.getRecibo = function() {
+    aluno.getRecibo = function () {
         return aluno.campo_num_recibo.val();
     };
 
-    aluno.getTipoIsencaoPendencia = function() {
+    aluno.getTipoIsencaoPendencia = function () {
         return aluno.select_tipo_isencao_pendencia.find('option:selected').val();
     };
 
-    aluno.gerenciaCamposCondicaoMatricula = function() {
+    aluno.gerenciaCamposCondicaoMatricula = function (remover_conteudo) {
         if (!aluno.verificaExistenciaPagamento()) { // procura se já tem um pagamento registrado para a turma, se houver a remoção não é realizada
 
-            $(aluno.getClassPagamentoTurma()).remove();
-            $(aluno.getIdAlimentosTurma()).remove();
+            if (remover_conteudo != undefined) {
+                $(aluno.getClassPagamentoTurma()).remove();
+                $(aluno.getIdAlimentosTurma()).remove();
+            }
 
             switch (aluno.getCondicaoMatricula()) {
                 case '1': // normal
                     aluno.container_alimento.find('input,select,button').removeAttr('disabled');
                     aluno.container_pagamento.find('input,select,button').removeAttr('disabled');
+
+                    aluno.table_gerenciamento_alimentos.show();
+                    aluno.container_pagamentos_aluno.show();
 
                     aluno.container_campo_isencao_pendencia.hide().find('select').attr('disabled', 'disabled');
 
@@ -309,13 +336,21 @@ var controle_aluno = (function() {
 
                     aluno.container_pagamento.show();
                     break;
+
+                default:
+                    aluno.container_campo_condicao_matricula.find('select').removeAttr('disabled');
+                    aluno.container_campo_condicao_matricula.show();
+                    aluno.container_pagamento.find('input,select,button').removeAttr('disabled');
+                    aluno.container_alimento.hide().find('input,select,button').attr('disabled', 'disabled');
+                    aluno.container_campo_isencao_pendencia.hide().find('select').attr('disabled', 'disabled');
+
             }
         }
         else
-            exibeMensagem('Um pagamento já foi registrado para essa turma. Caso queira fazer alguma alteração, exclua o pagamento primeiro.');
+            exibeMensagem('Um pagamento já foi registrado para essa turma. Caso queira fazer alguma alteração, exclua o pagamento primeiro.', 'Inclusão de Turmas');
     };
 
-    aluno.gerenciaTipoIsencaoPendencia = function() {
+    aluno.gerenciaTipoIsencaoPendencia = function () {
         if (!aluno.verificaExistenciaPagamento()) { // procura se já tem um pagamento registrado para a turma, se houver a remoção não é realizada
             aluno.container_alimento.find('input,select,button').removeAttr('disabled');
             aluno.container_pagamento.find('input,select,button').removeAttr('disabled');
@@ -336,7 +371,7 @@ var controle_aluno = (function() {
      * Retorna a quantidade de turmas em que o aluno pode ser matriculado 
      * @returns {Number}
      */
-    aluno.getQuantidadeTurmas = function() {
+    aluno.getQuantidadeTurmas = function () {
         return helpers.parseNumero(aluno.campo_quantidade_turmas.val());
     };
 
@@ -345,7 +380,7 @@ var controle_aluno = (function() {
      * @param {type} id_turma
      * @returns {undefined}
      */
-    aluno.addHorarioTurma = function() {
+    aluno.addHorarioTurma = function () {
         aluno.horarios_turmas_incluidas.push(
                 {
                     id: aluno.getIdTurma(),
@@ -362,7 +397,7 @@ var controle_aluno = (function() {
      * @param {type} id_turma
      * @returns {Boolean}
      */
-    aluno.removeHorarioTurma = function(id_turma) {
+    aluno.removeHorarioTurma = function (id_turma) {
         for (var i in aluno.horarios_turmas_incluidas) {
             if (aluno.horarios_turmas_incluidas[i].id_turma == id_turma) {
                 delete aluno.horarios_turmas_incluidas[i];
@@ -372,23 +407,23 @@ var controle_aluno = (function() {
         return false;
     };
 
-    aluno.getHoraInicial = function() {
+    aluno.getHoraInicial = function () {
         return Date.parse(aluno.campo_turma.find('option:selected').attr('hora_inicio'));
     };
 
-    aluno.getHoraFinal = function() {
+    aluno.getHoraFinal = function () {
         return Date.parse(aluno.campo_turma.find('option:selected').attr('hora_fim'));
     };
 
-    aluno.getDataInicial = function() {
+    aluno.getDataInicial = function () {
         return helpers.parseDate(aluno.campo_turma.find('option:selected').attr('data_inicio'));
     };
 
-    aluno.getDataFinal = function() {
+    aluno.getDataFinal = function () {
         return helpers.parseDate(aluno.campo_turma.find('option:selected').attr('data_fim'));
     };
 
-    aluno.verificaHorariosTurma = function() {
+    aluno.verificaHorariosTurma = function () {
         var horario_inicio = aluno.getHoraInicial(),
                 horario_fim = aluno.getHoraFinal();
 
@@ -411,7 +446,7 @@ var controle_aluno = (function() {
         return true;
     };
 
-    aluno.verificaInterfenciaPeriodosTurma = function() {
+    aluno.verificaInterfenciaPeriodosTurma = function () {
         var data_inicio = aluno.getDataInicial(),
                 data_fim = aluno.getDataFinal();
 
@@ -433,7 +468,7 @@ var controle_aluno = (function() {
     };
 
 
-    aluno.getQuantidadeAlunos = function() {
+    aluno.getQuantidadeAlunos = function () {
         var id_turma = aluno.getIdTurma();
 
         if (aluno.container_quantidade_alunos_turma.length > 0 && id_turma.length > 0) {
@@ -444,15 +479,15 @@ var controle_aluno = (function() {
                 data: {
                     id_turma: id_turma
                 },
-                success: function(data) {
+                success: function (data) {
                     if (data.length > 0) {
-                        $.each(data[0], function(key, value) {
+                        $.each(data[0], function (key, value) {
                             if (key.indexOf('count') >= 0)
                                 aluno.container_quantidade_alunos_turma.html('Alunos Cadastrados nessa Turma: <b>' + value + '</b>');
                         });
                     }
                 },
-                error: function(error) {
+                error: function (error) {
                     console.log(error);
                 }
             });
@@ -465,15 +500,15 @@ var controle_aluno = (function() {
      * Verifica se a turma selecionada já foi incluída para o aluno
      * @returns {Boolean}
      */
-    aluno.verificaTurmasAluno = function() {
-        if (aluno.campo_turma.children().length > 0 && !aluno.container_turmas_aluno.find('tr').hasClass(aluno.getNameTurmaAluno())) //&& $(option).val() != "")
+    aluno.verificaTurmasAluno = function () {
+        if (aluno.campo_turma.children().length > 0 && aluno.getIdTurma() != "" && !aluno.container_turmas_aluno.find('tr').hasClass(aluno.getNameTurmaAluno())) //&& $(option).val() != "")
             return true;
 
         exibeMensagem('Nenhuma turma foi selecionada ou ela já foi incluída.', 'Inclusão de Turma');
         return false;
     };
 
-    aluno.verificaExistenciaPagamento = function() {
+    aluno.verificaExistenciaPagamento = function () {
         if (aluno.container_pagamentos_aluno.find('tr').hasClass(aluno.getClassPagamentoTurma().replace('.', ''))) // procura se já tem um pagamento registrado para a turma, se houver a remoção não é realizada
             return true;
 
@@ -485,7 +520,7 @@ var controle_aluno = (function() {
      * @param {type} linha_turma_alterada Indica a linha da tabela que contém as informações da turma a ser alterada. Em caso de cadastro o parâmetro é nulo
      * @returns {undefined}
      */
-    aluno.verificaLiberacaoTurma = function(linha_turma_alterada) {
+    aluno.verificaLiberacaoTurma = function (linha_turma_alterada) {
         if (!aluno.trava_busca_liberacao) {
             aluno.trava_busca_liberacao = true;
 
@@ -499,7 +534,7 @@ var controle_aluno = (function() {
                         id_disciplina: aluno.getIdDisciplina(),
                         id_aluno: $('#id_aluno').val()
                     },
-                    beforeSend: function() {
+                    beforeSend: function () {
                         jQuery('#mensagem-ajax').dialog({
                             dialogClass: "no-close",
                             closeOnEscape: false,
@@ -507,10 +542,10 @@ var controle_aluno = (function() {
                             title: 'Busca de Alunos'
                         });
                     },
-                    complete: function() {
+                    complete: function () {
                         jQuery('#mensagem-ajax').dialog('destroy');
                     },
-                    success: function(liberacao) {
+                    success: function (liberacao) {
                         var tipo_liberacao = '';
 
                         if (liberacao.tipo != undefined) {
@@ -535,26 +570,26 @@ var controle_aluno = (function() {
                                 closeOnEscape: false,
                                 buttons: [{
                                         text: "Prova de Nivelamento",
-                                        click: function() {
+                                        click: function () {
                                             tipo_liberacao = 'Prova de Nivelamento';
                                             $(this).dialog("close");
                                         }
                                     },
                                     {
                                         text: "Liberação",
-                                        click: function() {
+                                        click: function () {
                                             tipo_liberacao = 'Liberado';
                                             $(this).dialog("close");
                                         }
                                     },
                                     {
                                         text: "Cancelar",
-                                        click: function() {
+                                        click: function () {
                                             $(this).dialog("close");
                                             tipo_liberacao = 'cancelado';
                                         }
                                     }],
-                                close: function() {
+                                close: function () {
                                     if (tipo_liberacao.length > 0 && tipo_liberacao != 'cancelado') {
                                         aluno.liberacao_turma = tipo_liberacao;
                                         aluno.incrementaTurma();
@@ -567,14 +602,13 @@ var controle_aluno = (function() {
                             aluno.liberacao_turma = tipo_liberacao;
                             if (linha_turma_alterada == undefined) {
                                 aluno.incrementaTurma();
-                                aluno.incrementaSelectTurmasAluno();
                             }
                             else
                                 aluno.alteraTurma(linha_turma_alterada);
                         }
                         aluno.trava_busca_liberacao = false;
                     },
-                    error: function(error) {
+                    error: function (error) {
                         console.log(error);
                     }
                 });
@@ -584,7 +618,7 @@ var controle_aluno = (function() {
         }
     };
 
-    aluno.alteraTurma = function(linha_turma) {
+    aluno.alteraTurma = function (linha_turma) {
         if (linha_turma != undefined) {
             var id_nova_turma = aluno.getIdTurma();
             var id_turma_antiga = linha_turma.children('input').val();
@@ -605,7 +639,7 @@ var controle_aluno = (function() {
         }
     };
 
-    aluno.incrementaTurma = function() {
+    aluno.incrementaTurma = function () {
         if (!aluno.verificaHorariosTurma())
             exibeMensagem('Já existe uma turma do aluno que interefere no horário dessa turma. Por favor, escolha outra.', 'Inclusão de Turma');
 
@@ -628,16 +662,17 @@ var controle_aluno = (function() {
             aluno.container_opcoes_turmas_aluno.find('select').removeAttr('disabled');
             aluno.container_opcoes_turmas_aluno.show();
 
+            aluno.incrementaSelectTurmasAluno();
         }
         else
             exibeMensagem('O limite de turmas especificado é: <b>' + aluno.getQuantidadeTurmas() + '</b>', 'Inclusão de Turmas');
     };
 
-    aluno.incrementaSelectTurmasAluno = function() {
+    aluno.incrementaSelectTurmasAluno = function () {
         aluno.select_turma_pagamento.append('<option value="' + aluno.getIdTurma() + '">' + aluno.getNameTurmaAluno(true) + '</option>');
     };
 
-    aluno.incrementaAlimentoTurma = function() {
+    aluno.incrementaAlimentoTurma = function () {
         if (aluno.select_turma_pagamento.children().length > 0) {
             var id_container = aluno.getIdAlimentosTurma();
             var container_alimentos_turma = $(id_container);
@@ -673,7 +708,7 @@ var controle_aluno = (function() {
             exibeMensagem('Nenhuma turma foi incluida.', 'Inclusão de Alimentos');
     };
 
-    aluno.incrementaPagamentoTurma = function() {
+    aluno.incrementaPagamentoTurma = function () {
         var tipo = aluno.getCondicaoMatricula();
         var flag = false;
 
@@ -697,6 +732,7 @@ var controle_aluno = (function() {
         }
 
         if (flag) {
+            // após incluir o pagamento, não há a necessidade de exibir os campos
             aluno.container_campo_isencao_pendencia.hide().find('select').attr('disabled', 'disabled');
             aluno.container_campo_condicao_matricula.hide().find('select').attr('disabled', 'disabled');
 
@@ -707,9 +743,9 @@ var controle_aluno = (function() {
         }
     };
 
-    aluno.getTotalAlimentos = function() {
+    aluno.getTotalAlimentos = function () {
         var total_alimentos = 0.0;
-        $(aluno.getIdAlimentosTurma()).find('.quantidade_alimento_turma').each(function() {
+        $(aluno.getIdAlimentosTurma()).find('.quantidade_alimento_turma').each(function () {
             var quantidade_alimento = helpers.parseNumero($(this).html());
 
             if (quantidade_alimento != -1)
@@ -721,7 +757,7 @@ var controle_aluno = (function() {
         return total_alimentos;
     };
 
-    aluno.incluiPagamentoNormal = function() {
+    aluno.incluiPagamentoNormal = function () {
         var option = aluno.select_turma_pagamento.find('option:selected');
 
         if ($(option).length > 0) {
@@ -764,7 +800,7 @@ var controle_aluno = (function() {
     };
 
 
-    aluno.incluiPagamentoIsentoPendente = function(tipo) {
+    aluno.incluiPagamentoIsentoPendente = function (tipo) {
         var option = aluno.select_turma_pagamento.find('option:selected');
 
         if ($(option).length > 0) {
@@ -811,7 +847,7 @@ var controle_aluno = (function() {
         return false;
     };
 
-    aluno.incluiPagamentoIsentoPendenteTotal = function(tipo) {
+    aluno.incluiPagamentoIsentoPendenteTotal = function (tipo) {
         var option = aluno.select_turma_pagamento.find('option:selected');
 
         if ($(option).length > 0
@@ -839,8 +875,8 @@ var controle_aluno = (function() {
         return false;
     };
 
-    aluno.eventAlterarTurmaAluno = function() {
-        aluno.container_turmas_aluno.find('.alterar_turma').click(function() {
+    aluno.eventAlterarTurmaAluno = function () {
+        aluno.container_turmas_aluno.find('.alterar_turma').click(function () {
             var linha_turma = $(this).parents('tr'); // a linha correspondente a turma armazena o id para retirar os pagamentos/alimentos da turma
 
             aluno.container_campo_quantidade_turmas.hide();
@@ -855,10 +891,10 @@ var controle_aluno = (function() {
                 closeOnEscape: false,
                 width: 600,
                 buttons: {
-                    Ok: function() {
+                    Ok: function () {
                         aluno.verificaLiberacaoTurma(linha_turma);
                     },
-                    Cancelar: function() {
+                    Cancelar: function () {
                         $(this).dialog("destroy");
                         aluno.container_campo_quantidade_turmas.show();
                         aluno.container_btn_incluir_turma.show();
@@ -868,8 +904,8 @@ var controle_aluno = (function() {
         });
     };
 
-    aluno.eventExcluirTurmaAluno = function() {
-        aluno.container_turmas_aluno.find('.excluir_turma').click(function() {
+    aluno.eventExcluirTurmaAluno = function () {
+        aluno.container_turmas_aluno.find('.excluir_turma').click(function () {
             var confirma_exclusao = confirm('Deseja realmente retirar o aluno dessa turma?');
 
             if (confirma_exclusao) {
@@ -879,7 +915,7 @@ var controle_aluno = (function() {
 
                 aluno.removeHorarioTurma(id_turma);
 
-                aluno.select_turma_pagamento.find('option').each(function() {
+                aluno.select_turma_pagamento.find('option').each(function () {
                     if ($(this).val() == id_turma)
                         $(this).remove();
                 });
@@ -899,8 +935,8 @@ var controle_aluno = (function() {
         });
     };
 
-    aluno.eventExcluirAlimento = function() {
-        $(aluno.getIdAlimentosTurma()).find('.excluir_alimento').click(function() {
+    aluno.eventExcluirAlimento = function () {
+        $(aluno.getIdAlimentosTurma()).find('.excluir_alimento').click(function () {
             var table = $(this).parents('table');
 
             if (!aluno.verificaExistenciaPagamento()) { // procura se já tem um pagamento registrado para a turma, se houver a remoção não é realizada
@@ -914,30 +950,39 @@ var controle_aluno = (function() {
         });
     };
 
-    aluno.eventOpcaoExcluirPagamento = function() {
-        $('.excluir_pagamento').click(function() {
+    aluno.eventOpcaoExcluirPagamento = function () {
+        $('.excluir_pagamento').click(function () {
             var table = $(this).parents('table');
+            var condicao_matricula = $(table).find('.condicao').children('input').val(); // é necessário pegar a condição da matricula para voltar com os campos certos
 
-            if ($(table).find('tr').length > 2)
-                $(this).parents('tr').remove();
-            else
-                $(table).html('').hide();
+            if (condicao_matricula != undefined) {
+                if ($(table).find('tr').length > 2)
+                    $(this).parents('tr').remove();
+                else
+                    $(table).html('').hide();
+
+
+                aluno.container_campo_isencao_pendencia.find('select').removeAttr('disabled').val(condicao_matricula);
+                aluno.container_campo_condicao_matricula.show();
+
+                aluno.gerenciaCamposCondicaoMatricula(); // chama a função que exibe os campos de acordo com a condição de matrícula definida
+            }
         });
     };
 
-    aluno.buscaAlimentos = function() {
+    aluno.buscaAlimentos = function () {
         if (aluno.campo_tipo_alimento.length > 0) {
             $.ajax({
                 type: "POST",
                 url: aluno.url_ajax_alimentos,
                 dataType: "JSON",
-                beforeSend: function() {
+                beforeSend: function () {
                     jQuery("#loading-alimentos").show();
                 },
-                complete: function() {
+                complete: function () {
                     jQuery("#loading-alimentos").hide();
                 },
-                success: function(alimentos) {
+                success: function (alimentos) {
                     var html = "";
 
                     if (alimentos != null) {
@@ -955,7 +1000,7 @@ var controle_aluno = (function() {
 
                     aluno.campo_tipo_alimento.html(html);
                 },
-                error: function(error) {
+                error: function (error) {
                     console.log(error);
                 }
             });
