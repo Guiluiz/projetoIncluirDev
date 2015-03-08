@@ -62,6 +62,10 @@ class AlunoController extends Zend_Controller_Action {
 
                 if ($form_cadastro->isValid($dados)) {
                     if ($this->validaDados($dados)) {
+                        echo '<pre>';
+                        var_dump($dados);
+                        echo '</pre>';
+                        
                         $aluno = new Application_Model_Aluno(null, $form_cadastro->getValue('nome_aluno'), $form_cadastro->getValue('cpf'), Application_Model_Aluno::$status_ativo, null, null, $form_cadastro->getValue('rg'), $form_cadastro->getValue('data_nascimento'), $form_cadastro->getValue('email'), $form_cadastro->getValue('escolaridade'), $form_cadastro->getValue('telefone'), $form_cadastro->getValue('celular'), $form_cadastro->getValue('endereco'), $form_cadastro->getValue('bairro'), $form_cadastro->getValue('numero'), $form_cadastro->getValue('complemento'), $form_cadastro->getValue('cep'), $form_cadastro->getValue('cidade'), $form_cadastro->getValue('estado'), $form_cadastro->getValue('data_registro'), $form_cadastro->getValue('is_cpf_responsavel'), $form_cadastro->getValue('nome_responsavel'));
 
                         foreach ($dados['turmas'] as $turma)
@@ -77,13 +81,15 @@ class AlunoController extends Zend_Controller_Action {
 
                             $aluno->addPagamento(new Application_Model_Turma(base64_decode($turma)), $obj_pagamento);
                         }
+                        
+                        //var_dump($aluno);
 
-                        $mapper_aluno = new Application_Model_Mappers_Aluno();
+                        /*$mapper_aluno = new Application_Model_Mappers_Aluno();
                         if ($mapper_aluno->addAluno($aluno)) {
                             $form_cadastro->reset();
                             $this->view->mensagem = "Aluno cadastrado com sucesso!";
                             return;
-                        }
+                        }*/
                     }
                     $this->view->mensagem = "O aluno não foi cadastrado.<br/>Por favor, verifique se há algum aluno cadastrado com o cpf especificado";
                 }
