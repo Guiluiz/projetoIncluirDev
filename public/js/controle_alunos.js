@@ -326,7 +326,7 @@ var controle_aluno = (function () {
     };
 
     aluno.gerenciaTipoIsencaoPendencia = function () {
-        if (!aluno.verificaExistenciaPagamento() && aluno.select_tipo_isencao_pendencia.val().length > 0) { // procura se já tem um pagamento registrado para a turma, se houver a remoção não é realizada
+        if (aluno.select_tipo_isencao_pendencia.val().length > 0) { // procura se já tem um pagamento registrado para a turma, se houver a remoção não é realizada
             aluno.container_alimento.find('input,select,button').removeAttr('disabled');
             aluno.container_pagamento.find('input,select,button').removeAttr('disabled');
 
@@ -339,8 +339,16 @@ var controle_aluno = (function () {
             aluno.container_alimento.show();
             aluno.container_pagamento.show();
         }
-        else
-            exibeMensagem('Um pagamento já foi registrado para essa turma. Caso queira fazer alguma alteração, exclua o pagamento primeiro.');
+        /*else{
+            aluno.container_alimento.find('input,select,button').attr('disabled','disabled');
+            aluno.container_pagamento.find('input,select,button').attr('disabled','disabled');
+            
+            aluno.container_alimento.hide();
+            aluno.container_pagamento.hide();
+            
+            aluno.table_gerenciamento_alimentos.hide();
+        }*/
+           
 
     };
 
@@ -991,7 +999,7 @@ var controle_aluno = (function () {
 
     aluno.eventExcluirTurmaAluno = function () {
         aluno.container_turmas_aluno.find('.excluir_turma').click(function () {
-            //console.log('rte');
+            console.log('rte');
             //var confirma_exclusao = confirm('Deseja realmente retirar o aluno dessa turma?');
 
             //if (confirma_exclusao) {
@@ -1043,7 +1051,6 @@ var controle_aluno = (function () {
 
     aluno.eventOpcaoExcluirPagamento = function () {
         $('.excluir_pagamento').click(function () {
-            console.log('asdas');
             var table = $(this).parents('table');
             var condicao_matricula = $(table).find('.condicao').children('input[name*="condicao_turmas"]').val(); // é necessário pegar a condição da matricula para voltar com os campos certos
             var tipo_isencao_pendencia = $(table).find('.condicao').children('input[name*="tipo_isencao_pendencia_turmas"]').val(); // é necessário pegar a o tipo de isencao/pendencia para voltar com os campos certos
