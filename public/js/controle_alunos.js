@@ -265,6 +265,11 @@ var controle_aluno = (function () {
     aluno.gerenciaCamposCondicaoMatricula = function (remover_conteudo) {
         if (!aluno.verificaExistenciaPagamento()) { // procura se já tem um pagamento registrado para a turma, se houver a remoção não é realizada
             aluno.incrementaCondicaoTurmas();
+            
+            aluno.campo_tipo_alimento.val('');
+            aluno.campo_quantidade_alimento.val('');
+            aluno.campo_num_recibo.val('');
+            aluno.campo_valor_pagamento.val('00,00');
 
             if (remover_conteudo != undefined) {
                 $(aluno.getClassPagamentoTurma()).remove();
@@ -359,12 +364,6 @@ var controle_aluno = (function () {
         }
         else {
             aluno.select_condicao_matricula.val(aluno.getCondicaoTurma(aluno.select_turma_pagamento.find('option:selected').val()));
-
-            aluno.campo_tipo_alimento.val('');
-            aluno.campo_quantidade_alimento.val('');
-            aluno.campo_num_recibo.val('');
-            aluno.campo_valor_pagamento.val('00,00');
-
             aluno.gerenciaCamposCondicaoMatricula();
         }
     };
