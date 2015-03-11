@@ -998,8 +998,8 @@ var controle_aluno = (function () {
     };
 
     aluno.eventExcluirTurmaAluno = function () {
-        aluno.container_turmas_aluno.find('.excluir_turma').click(function () {
-            console.log('rte');
+        aluno.container_turmas_aluno.find('.excluir_turma').click(function (evt) {
+            console.log(evt);
             //var confirma_exclusao = confirm('Deseja realmente retirar o aluno dessa turma?');
 
             //if (confirma_exclusao) {
@@ -1030,6 +1030,7 @@ var controle_aluno = (function () {
                 aluno.container_turmas_aluno.hide();
                 aluno.container_opcoes_turmas_aluno.hide().find('select,input,button').attr('disabled'); // se o usuário removeu todas as turmas, não é necessário exibir os campos
             }
+            evt.stopPropagation();
             //}
         });
     };
@@ -1052,10 +1053,13 @@ var controle_aluno = (function () {
     aluno.eventOpcaoExcluirPagamento = function () {
         $('.excluir_pagamento').click(function () {
             var table = $(this).parents('table');
+            var class_turma = $(this).parents('tr').attr('class').replace('pagamento_', ''); // necessario para descobrir a turma a qual o pagamento faz parte
+            var id_turma = $('.'+class_turma).children('input').val();
+           
             var condicao_matricula = $(table).find('.condicao').children('input[name*="condicao_turmas"]').val(); // é necessário pegar a condição da matricula para voltar com os campos certos
             var tipo_isencao_pendencia = $(table).find('.condicao').children('input[name*="tipo_isencao_pendencia_turmas"]').val(); // é necessário pegar a o tipo de isencao/pendencia para voltar com os campos certos
 
-            if (condicao_matricula != undefined) {
+            if (condicao_matricula != undefined && id_turma.length > 0) {
                 if ($(table).find('tr').length > 2)
                     $(this).parents('tr').remove();
                 else {
@@ -1063,10 +1067,13 @@ var controle_aluno = (function () {
                     $(table).html('').hide();
                 }
 
+                aluno.select_turma_pagamento.val(id_turma);
                 aluno.container_campo_isencao_pendencia.find('select').val(tipo_isencao_pendencia).removeAttr('disabled');
                 aluno.container_campo_condicao_matricula.find('select').val(condicao_matricula).removeAttr('disabled').show();
+                
                 aluno.container_campo_condicao_matricula.show();
                 
+                aluno.gerenciaMudancaTurmaAluno();
                 aluno.gerenciaCamposCondicaoMatricula(); // chama a função que exibe os campos de acordo com a condição de matrícula definida
                 aluno.gerenciaTipoIsencaoPendencia();
             }
