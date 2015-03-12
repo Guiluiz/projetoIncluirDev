@@ -25,6 +25,7 @@ class Application_Form_FormAluno extends Zend_Form {
 
         $sexo = new Zend_Form_Element_Select('sexo');
         $sexo->setLabel('Sexo:')
+                ->setAttrib('class', 'obrigatorio')
                 ->addFilter('StripTags')
                 ->addFilter('StringTrim')
                 ->setRequired(true)
@@ -529,7 +530,7 @@ class Application_Form_FormAluno extends Zend_Form {
 
         foreach ($turmas as $turma) {
             if (in_array($turma->getIdTurma(true), $turmas_alunos))
-                $array_aux[$turma->getIdTurma(true)] = $turma->getDisciplina()->getNomeDisciplina() . ' - ' . $turma->getNomeTurma();
+                $array_aux[$turma->getIdTurma(true)] = $turma->getDisciplina()->getNomeDisciplina() . ' - ' . $turma->getNomeTurma() . ' | ' . $turma->getHorarioInicio() . ' - ' . $turma->getHorarioFim();
         }
 
         $this->getElement('pagamento_turma')->setMultiOptions($array_aux);

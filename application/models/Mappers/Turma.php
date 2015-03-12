@@ -246,7 +246,7 @@ class Application_Model_Mappers_Turma {
                 $this->db_turma = new Application_Model_DbTable_Turma();
                 $select = $this->db_turma->select()
                         ->setIntegrityCheck(false)
-                        ->from('turma', array('id_turma', 'nome_turma', 'id_disciplina'))
+                        ->from('turma', array('id_turma', 'nome_turma', 'id_disciplina', 'id_periodo', 'horario_inicio', 'horario_fim'))
                         ->joinInner('disciplina', 'turma.id_disciplina = disciplina.id_disciplina', array('nome_disciplina', 'id_curso'))
                         ->joinInner('curso', 'disciplina.id_curso = curso.id_curso', array('nome_curso'));
 
@@ -261,7 +261,7 @@ class Application_Model_Mappers_Turma {
                 if (!empty($turmas)) {
                     $array_turmas = array();
                     foreach ($turmas as $turma)
-                        $array_turmas[$turma->id_turma] = new Application_Model_Turma($turma->id_turma, $turma->nome_turma, null, null, null, null, new Application_Model_Disciplina($turma->id_disciplina, $turma->nome_disciplina, null, new Application_Model_Curso($turma->id_curso, $turma->nome_curso)), null, new Application_Model_Periodo($turma->id_periodo));
+                        $array_turmas[$turma->id_turma] = new Application_Model_Turma($turma->id_turma, $turma->nome_turma, null, null, $turma->horario_inicio, $turma->horario_fim, new Application_Model_Disciplina($turma->id_disciplina, $turma->nome_disciplina, null, new Application_Model_Curso($turma->id_curso, $turma->nome_curso)), null, new Application_Model_Periodo($turma->id_periodo));
                     return $array_turmas;
                 }
             }

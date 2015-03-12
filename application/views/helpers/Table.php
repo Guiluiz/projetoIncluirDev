@@ -10,6 +10,25 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Abstract {
     public static $pagamento = 6;
     public $filtro_string;
 
+    /**
+     * Constrói tabela de acordo com os dados indicados
+     * @param array $values 
+     * 
+     * Contém informações que serão exibidas: 
+     * 
+     * Disciplinas de Pré Requisito: Utilizado no gerenciamento de disciplinas para manutenção de pré requisitos de uma determinada disciplina
+     * Disciplina: Utilizado no gerenciamento de professores/voluntários para indicação de disciplinas que o voluntário pode lecionar
+     * Professor: Utilizado no gerenciamento de turmas para indicação dos professores da turma
+     * Turma: Utilizado no gerenciamento de alunos para indicação das turmas do aluno
+     * Alimento: Utilizado no gerenciamento de alunos para indicação dos alimentos dos pagamentos do aluno
+     * Pagamento Utilizado no gerenciamento de alunos para indicação dos pagamentos registrados para as turmas do aluno
+     * 
+     * @param int $type Indica qual o tipo de tabela a ser construída
+     * @param type $is_excluir Indica se terá uma opção de exclusão nas linhas da tabela
+     * @param type $opcoes_aluno Indica valores auxiliares necessários para a construção da tabela (depende do tipo de tabela)
+     * @param type $opcoes_aluno_turma Indica valores auxiliares relacionados a turma (objetos de turma) (depende do tipo de tabela)
+     * @return string
+     */
     public function table($values, $type, $is_excluir = null, $opcoes_aluno = null, $opcoes_aluno_turma = null) {
         $this->filtro_string = new Aplicacao_Filtros_StringFilter();
 
@@ -19,6 +38,7 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Abstract {
             $opcao_excluir = ((empty($is_excluir)) ? '<td><div class="excluir_geral" >Excluir</div></td>' : '<td>-</td>');
 
             switch ($type) {
+                // constrói a tabela de pré requisitos da disciplina indicada
                 case Zend_View_Helper_Table::$pre_requisito:
                     $table .= '<table id="opcoes_escolhidas" class="escondido"><tr><th>Disciplina(Pré-Requisito)</th><th>Opções</th></tr>';
 
@@ -66,23 +86,24 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Abstract {
 
                 case Zend_View_Helper_Table::$pagamento:
                     $table .= '<table id="opcoes_escolhidas_pagamentos" class="escondido"><tr><th>Disciplina - Turma</th><th>Total Pago(R$)</th><th>Total de Alimentos(kg)</th><th>Situação</th><th>Opções</th></tr>';
-                    
+
                     $mapper_periodo = new Application_Model_Mappers_Periodo();
                     $periodo = $mapper_periodo->getPeriodoAtual();
-                    
+
                     foreach ($opcoes_aluno_turma as $turma) {
                         if ($turma instanceof Application_Model_Turma) {
+                            
                             if (isset($values[$turma->getIdTurma(true)])) {
                                 $valor_pago = $values[$turma->getIdTurma(true)];
-                                $soma = 0.0;
+                                $soma_alimentos = 0.0;
 
-                                if (isset($opcoes_aluno[$turma->getIdTurma(true)])) {
-                                    foreach ($opcoes_aluno[$turma->getIdTurma(true)] as $quantidade)
-                                        $soma += (float) $quantidade;
+                                if (isset($opcoes_aluno['alimentos'][$turma->getIdTurma(true)])) {
+                                    foreach ($opcoes_aluno['alimentos'][$turma->getIdTurma(true)] as $quantidade)
+                                        $soma_alimentos += (float) $quantidade;
                                 }
 
-                                $situacao = (($soma >= $periodo->getQuantidadeAlimentos() && $valor_pago >= $periodo->getValorLiberacao()) ? 'Liberado' : 'Pendente');
-                                $table .= '<tr class="pagamento_' . $this->removeInvalidCaracteres($this->filtro_string->filter($turma->getDisciplina()->getNomeDisciplina() . '_' . $turma->getNomeTurma())) . '"><input type="hidden" name="pagamento_turmas[' . $turma->getIdTurma(true) . ']" value="' . $valor_pago . '"/><td>' . $turma->getDisciplina()->getNomeDisciplina() . '-' . $turma->getNomeTurma() . '</td><td class="valor_pago">' . $valor_pago . '</td><td class="quant_alimento">' . $soma . '</td><td class="situacao"><input type="hidden" name="situacao_turmas[' . $turma->getIdTurma(true) . ']" value="' . $situacao . '"/>' . $situacao . '</td>' . $opcao_excluir . '</tr>';
+                                $situacao = (($soma_alimentos >= $periodo->getQuantidadeAlimentos() && $valor_pago >= $periodo->getValorLiberacao()) ? 'Liberado' : 'Pendente');
+                                $table .= '<tr class="pagamento_' . $this->removeInvalidCaracteres($this->filtro_string->filter($turma->getDisciplina()->getNomeDisciplina() . '_' . $turma->getNomeTurma())) . '"><input type="hidden" name="pagamento_turmas[' . $turma->getIdTurma(true) . ']" value="' . $valor_pago . '"/><td>' . $turma->getDisciplina()->getNomeDisciplina() . '-' . $turma->getNomeTurma() . '</td><td class="valor_pago">' . $valor_pago . '</td><td class="quant_alimento">' . $soma_alimentos . '</td><td class="situacao"><input type="hidden" name="situacao_turmas[' . $turma->getIdTurma(true) . ']" value="' . $situacao . '"/>' . $situacao . '</td>' . $opcao_excluir . '</tr>';
                             }
                         } else {
                             $valido = false;
@@ -99,7 +120,7 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Abstract {
                         if ($turma instanceof Application_Model_Turma) {
                             if (isset($values[$turma->getIdTurma(true)]) && $this->verificaAlimentos($values[$turma->getIdTurma(true)])) {
                                 $table .= '<table class="ali_pag form_incrementa" id="alimentos_' . $this->removeInvalidCaracteres($this->filtro_string->filter($turma->getDisciplina()->getNomeDisciplina() . '_' . $turma->getNomeTurma())) . '" cellpadding="0" cellspacing="0"><tr><th>Alimento</th><th>Quantidade(kg)</th><th>Opções</th></tr>';
-                                
+
                                 foreach ($values[$turma->getIdTurma(true)] as $id_alimento => $quantidade)
                                     $table .='<tr class="' . $id_alimento . '"><input type="hidden" name="alimentos[' . $turma->getIdTurma(true) . '][' . $id_alimento . ']" value="' . $quantidade . '"/><td>' . $opcoes_aluno[$id_alimento]->getNomeAlimento() . '</td><td class="quantidade_alimento_turma">' . $quantidade . '</td>' . $opcao_excluir . '</tr>';
 
@@ -115,13 +136,12 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Abstract {
                     break;
                 case Zend_View_Helper_Table::$turma:
                     $table .= '<table id="opcoes_escolhidas" class="escondido"><tr><th>Curso</th><th>Disciplina</th><th>Turma</th><th>Liberação de Requisitos</th><th>Opções</th></tr>';
-                    
+
                     foreach ($values as $turma) {
                         if ($turma instanceof Application_Model_Turma) {
-                            $aux = ((isset($opcoes_aluno[$turma->getIdTurma(true)])) ? $opcoes_aluno[$turma->getIdTurma(true)] : '');
-                            $table .= '<tr class="' . $this->removeInvalidCaracteres($this->filtro_string->filter($turma->getDisciplina()->getNomeDisciplina() . '_' . $turma->getNomeTurma())) . '"><input type="hidden" name="turmas[]" value="' . $turma->getIdTurma(true) . '"/><td>' . $turma->getDisciplina()->getCurso()->getNomeCurso() . '</td><td>' . $turma->getDisciplina()->getNomeDisciplina() . '</td><td>' . $turma->getNomeTurma() . '</td><td><input type="hidden" name="liberacao[' . $turma->getIdTurma(true) . ']" value="' . $aux . '"/>' . $aux . '</td>' . $opcao_excluir;
-                        } 
-                        else {
+                            $liberacao = ((isset($opcoes_aluno[$turma->getIdTurma(true)])) ? $opcoes_aluno[$turma->getIdTurma(true)] : '');
+                            $table .= '<tr class="' . $this->removeInvalidCaracteres($this->filtro_string->filter($turma->getDisciplina()->getNomeDisciplina() . '_' . $turma->getNomeTurma())) . '"><input type="hidden" name="turmas[]" value="' . $turma->getIdTurma(true) . '"/><td>' . $turma->getDisciplina()->getCurso()->getNomeCurso() . '</td><td>' . $turma->getDisciplina()->getNomeDisciplina() . '</td><td>' . $turma->getNomeTurma() . ' | ' . $turma->getHorarioInicio() . ' - ' . $turma->getHorarioFim() . '</td><td><input type="hidden" name="liberacao[' . $turma->getIdTurma(true) . ']" value="' . $liberacao . '"/>' . $liberacao . '</td>' . '<td><div class="alterar_turma">Alterar</div><div class="excluir_turma">Excluir</div></td></tr>';
+                        } else {
                             $valido = false;
                             break;
                         }

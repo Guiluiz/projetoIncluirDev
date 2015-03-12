@@ -825,7 +825,7 @@ var controle_aluno = (function() {
     };
 
     aluno.getTipoIsencaoPendenciaTurma = function(id_turma) {
-        console.log(aluno.turmas_condicoes);
+        //console.log(aluno.turmas_condicoes);
         for (var i in aluno.turmas_condicoes) {
             if (aluno.turmas_condicoes[i].turma == id_turma) {
                 return aluno.turmas_condicoes[i].tipo_isencao;
@@ -873,7 +873,7 @@ var controle_aluno = (function() {
                         html = '<tr><th>Disciplina - Turma</th><th>Nº Recibo</th><th>Total Pago(R$)</th><th>Total de Alimentos(kg)</th><th>Condição</th><th>Situação</th><th>Opções</th></tr>';
                     }
 
-                    html += '<tr class="' + aluno.getClassPagamentoTurma().replace('.', '') + '"><input type="hidden" name="pagamento_turmas[' + id_turma + ']" value="' + valor_pago + '"/><td class="nome_turma">' + $(option).text() + '</td><td>' + num_recibo + '</td><td class="valor_pago">' + valor_pago + '</td><td class="quant_alimento">' + total_alimentos + '</td><td class="condicao"><input type="hidden" name="condicao_turmas[' + id_turma + ']" value="' + aluno.select_condicao_matricula.find('option:selected').val() + '"/><input type="hidden" name="tipo_isencao_pendencia_turmas[' + id_turma + ']" value=""/>' + aluno.select_condicao_matricula.find('option:selected').text() + '</td><td class="situacao"><input type="hidden" name="situacao_turmas[' + id_turma + ']" value="Liberado"/>Liberado</td><td><div class="excluir_pagamento" >Excluir</div></td></tr>';
+                    html += '<tr class="' + aluno.getClassPagamentoTurma().replace('.', '') + '"><input type="hidden" name="pagamento_turmas[' + id_turma + ']" value="' + valor_pago + '"/><td class="nome_turma">' + $(option).text() + '</td><td><input type="hidden" name="recibos_turmas[' + id_turma + ']" value="' + num_recibo + '"/>' + num_recibo + '</td><td class="valor_pago">' + valor_pago + '</td><td class="quant_alimento">' + total_alimentos + '</td><td class="condicao"><input type="hidden" name="condicao_turmas[' + id_turma + ']" value="' + aluno.select_condicao_matricula.find('option:selected').val() + '"/><input type="hidden" name="tipo_isencao_pendencia_turmas[' + id_turma + ']" value=""/>' + aluno.select_condicao_matricula.find('option:selected').text() + '</td><td class="situacao"><input type="hidden" name="situacao_turmas[' + id_turma + ']" value="Liberado"/>Liberado</td><td><div class="excluir_pagamento" >Excluir</div></td></tr>';
                     aluno.container_pagamentos_aluno.append(html);
                     aluno.eventOpcaoExcluirPagamento();
 
@@ -923,7 +923,7 @@ var controle_aluno = (function() {
                         html = '<tr><th>Disciplina - Turma</th><th>Nº Recibo</th><th>Total Pago(R$)</th><th>Total de Alimentos(kg)</th><th>Condição</th><th>Situação</th><th>Opções</th></tr>';
                     }
 
-                    html += '<tr class="' + aluno.getClassPagamentoTurma().replace('.', '') + '"><input type="hidden" name="pagamento_turmas[' + id_turma + ']" value="' + valor_pago + '"/><td class="nome_turma">' + $(option).text() + '</td><td>' + num_recibo + '</td><td class="valor_pago">' + valor_pago + '</td><td class="quant_alimento">' + total_alimentos + '</td><td class="condicao"><input type="hidden" name="condicao_turmas[' + id_turma + ']" value="' + aluno.select_condicao_matricula.find('option:selected').val() + '"/><input type="hidden" name="tipo_isencao_pendencia_turmas[' + id_turma + ']" value="' + aluno.select_tipo_isencao_pendencia.find('option:selected').val() + '"/>' + aluno.select_condicao_matricula.find('option:selected').text() + " - " + aluno.select_tipo_isencao_pendencia.find('option:selected').text() + '</td><td class="situacao"><input type="hidden" name="situacao_turmas[' + id_turma + ']" value="' + situacao + '"/>' + situacao + '</td><td><div class="excluir_pagamento" >Excluir</div></td></tr>';
+                    html += '<tr class="' + aluno.getClassPagamentoTurma().replace('.', '') + '"><input type="hidden" name="pagamento_turmas[' + id_turma + ']" value="' + valor_pago + '"/><td class="nome_turma">' + $(option).text() + '</td><td><input type="hidden" name="recibos_turmas[' + id_turma + ']" value="' + num_recibo + '"/>' + num_recibo + '</td><td class="valor_pago">' + valor_pago + '</td><td class="quant_alimento">' + total_alimentos + '</td><td class="condicao"><input type="hidden" name="condicao_turmas[' + id_turma + ']" value="' + aluno.select_condicao_matricula.find('option:selected').val() + '"/><input type="hidden" name="tipo_isencao_pendencia_turmas[' + id_turma + ']" value="' + aluno.select_tipo_isencao_pendencia.find('option:selected').val() + '"/>' + aluno.select_condicao_matricula.find('option:selected').text() + " - " + aluno.select_tipo_isencao_pendencia.find('option:selected').text() + '</td><td class="situacao"><input type="hidden" name="situacao_turmas[' + id_turma + ']" value="' + situacao + '"/>' + situacao + '</td><td><div class="excluir_pagamento" >Excluir</div></td></tr>';
                     aluno.container_pagamentos_aluno.append(html);
                     aluno.eventOpcaoExcluirPagamento();
 
@@ -957,7 +957,7 @@ var controle_aluno = (function() {
                 html = '<tr><th>Disciplina - Turma</th><th>Nº Recibo</th><th>Total Pago(R$)</th><th>Total de Alimentos(kg)</th><th>Condição</th><th>Situação</th><th>Opções</th></tr>';
             }
 
-            html += '<tr class="' + aluno.getClassPagamentoTurma().replace('.', '') + '"><input type="hidden" name="pagamento_turmas[' + id_turma + ']" value="' + 0 + '"/><td class="nome_turma">' + $(option).text() + '</td><td></td><td class="valor_pago">0</td><td class="quant_alimento">0</td><td class="condicao"><input type="hidden" name="condicao_turmas[' + id_turma + ']" value="' + aluno.select_condicao_matricula.find('option:selected').val() + '"/><input type="hidden" name="tipo_isencao_pendencia_turmas[' + id_turma + ']" value=""/>' + aluno.select_condicao_matricula.find('option:selected').text() + " - " + aluno.select_tipo_isencao_pendencia.find('option:selected').text() + '</td><td class="situacao"><input type="hidden" name="situacao_turmas[' + id_turma + ']" value="' + situacao + '"/>' + situacao + '</td><td><div class="excluir_pagamento" >Excluir</div></td></tr>';
+            html += '<tr class="' + aluno.getClassPagamentoTurma().replace('.', '') + '"><input type="hidden" name="pagamento_turmas[' + id_turma + ']" value="' + 0 + '"/><td class="nome_turma">' + $(option).text() + '</td><td><input type="hidden" name="recibos_turmas[' + id_turma + ']" value=""/></td><td class="valor_pago">0</td><td class="quant_alimento">0</td><td class="condicao"><input type="hidden" name="condicao_turmas[' + id_turma + ']" value="' + aluno.select_condicao_matricula.find('option:selected').val() + '"/><input type="hidden" name="tipo_isencao_pendencia_turmas[' + id_turma + ']" value=""/>' + aluno.select_condicao_matricula.find('option:selected').text() + " - " + aluno.select_tipo_isencao_pendencia.find('option:selected').text() + '</td><td class="situacao"><input type="hidden" name="situacao_turmas[' + id_turma + ']" value="' + situacao + '"/>' + situacao + '</td><td><div class="excluir_pagamento" >Excluir</div></td></tr>';
             aluno.container_pagamentos_aluno.append(html);
             aluno.eventOpcaoExcluirPagamento();
 
@@ -1027,7 +1027,7 @@ var controle_aluno = (function() {
                     $(this).parents('tr').remove();
 
                 else {
-                    $(table).html('').hide(); // a tabela de turmas é limpa
+                    $(table).html('').hide(); // a tabela de turmas é limpa e como não há nenhuma turma os campos são desabilitados e limpos
                     aluno.container_alimento.hide().find('select,input,button').attr('disabled', 'disabled');
                     aluno.container_pagamentos_registrados.hide();
                     aluno.container_turmas_aluno.hide();

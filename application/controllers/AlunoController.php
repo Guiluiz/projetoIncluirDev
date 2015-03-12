@@ -56,63 +56,69 @@ class AlunoController extends Zend_Controller_Action {
 
             if ($this->getRequest()->isPost()) {
                 $dados = $this->getRequest()->getPost();
-                
+
+                echo '<pre>';
                 var_dump($dados);
-                
+                echo '</pre>';
+
                 if (isset($dados['cancelar']))
                     $this->_helper->redirector->goToRoute(array('controller' => 'aluno', 'action' => 'index'), null, true);
 
                 if ($form_cadastro->isValid($dados)) {
                     if ($this->validaDados($dados)) {
-                        echo '<pre>';
-                        var_dump($dados);
-                        echo '</pre>';
-                        
-                        $aluno = new Application_Model_Aluno(null, $form_cadastro->getValue('nome_aluno'), $form_cadastro->getValue('cpf'), Application_Model_Aluno::$status_ativo, null, null, $form_cadastro->getValue('rg'), $form_cadastro->getValue('data_nascimento'), $form_cadastro->getValue('email'), $form_cadastro->getValue('escolaridade'), $form_cadastro->getValue('telefone'), $form_cadastro->getValue('celular'), $form_cadastro->getValue('endereco'), $form_cadastro->getValue('bairro'), $form_cadastro->getValue('numero'), $form_cadastro->getValue('complemento'), $form_cadastro->getValue('cep'), $form_cadastro->getValue('cidade'), $form_cadastro->getValue('estado'), $form_cadastro->getValue('data_registro'), $form_cadastro->getValue('is_cpf_responsavel'), $form_cadastro->getValue('nome_responsavel'));
 
-                        foreach ($dados['turmas'] as $turma)
-                            $aluno->addTurma(new Application_Model_Turma((int) base64_decode($turma)), $dados['liberacao'][$turma]);
 
-                        foreach ($dados['pagamento_turmas'] as $turma => $pagamentos_turma) {
-                            $obj_pagamento = new Application_Model_Pagamento(null, $dados['situacao_turmas'][$turma], $pagamentos_turma);
+                        /* $aluno = new Application_Model_Aluno(null, $form_cadastro->getValue('nome_aluno'), $form_cadastro->getValue('cpf'), Application_Model_Aluno::$status_ativo, null, null, $form_cadastro->getValue('rg'), $form_cadastro->getValue('data_nascimento'), $form_cadastro->getValue('email'), $form_cadastro->getValue('escolaridade'), $form_cadastro->getValue('telefone'), $form_cadastro->getValue('celular'), $form_cadastro->getValue('endereco'), $form_cadastro->getValue('bairro'), $form_cadastro->getValue('numero'), $form_cadastro->getValue('complemento'), $form_cadastro->getValue('cep'), $form_cadastro->getValue('cidade'), $form_cadastro->getValue('estado'), $form_cadastro->getValue('data_registro'), $form_cadastro->getValue('is_cpf_responsavel'), $form_cadastro->getValue('nome_responsavel'));
 
-                            if (!empty($dados['alimentos'][$turma])) {
-                                foreach ($dados['alimentos'][$turma] as $tipo_alimento => $quantidade)
-                                    $obj_pagamento->addAlimento(new Application_Model_Alimento((int) base64_decode($tipo_alimento)), $quantidade);
-                            }
+                          foreach ($dados['turmas'] as $turma)
+                          $aluno->addTurma(new Application_Model_Turma((int) base64_decode($turma)), $dados['liberacao'][$turma]);
 
-                            $aluno->addPagamento(new Application_Model_Turma(base64_decode($turma)), $obj_pagamento);
-                        }
-                        
-                        //var_dump($aluno);
+                          foreach ($dados['pagamento_turmas'] as $turma => $pagamentos_turma) {
+                          $obj_pagamento = new Application_Model_Pagamento(null, $dados['situacao_turmas'][$turma], $pagamentos_turma);
 
-                        /*$mapper_aluno = new Application_Model_Mappers_Aluno();
-                        if ($mapper_aluno->addAluno($aluno)) {
-                            $form_cadastro->reset();
-                            $this->view->mensagem = "Aluno cadastrado com sucesso!";
-                            return;
-                        }*/
+                          if (!empty($dados['alimentos'][$turma])) {
+                          foreach ($dados['alimentos'][$turma] as $tipo_alimento => $quantidade)
+                          $obj_pagamento->addAlimento(new Application_Model_Alimento((int) base64_decode($tipo_alimento)), $quantidade);
+                          }
+
+                          $aluno->addPagamento(new Application_Model_Turma(base64_decode($turma)), $obj_pagamento);
+                          }
+
+                          //var_dump($aluno);
+
+                          /*$mapper_aluno = new Application_Model_Mappers_Aluno();
+                          if ($mapper_aluno->addAluno($aluno)) {
+                          $form_cadastro->reset();
+                          $this->view->mensagem = "Aluno cadastrado com sucesso!";
+                          return;
+                          } */
                     }
                     $this->view->mensagem = "O aluno não foi cadastrado.<br/>Por favor, verifique se há algum aluno cadastrado com o cpf especificado";
                 }
 
                 $form_cadastro->populate($dados);
+                
+                // necessário para exibir as turmas dos aluno no formato correto (tabelas)
                 if (!empty($dados['turmas'])) {
                     $turmas = $mapper_turma->buscaTurmasByID($dados['turmas']);
                     $form_cadastro->initializeTurmasAlunos($turmas, $dados['turmas']);
                     $this->view->turmas = $turmas;
+
+                    if (!empty($dados['liberacao']))
+                        $this->view->liberacao = $dados['liberacao'];
+
+                    if (!empty($dados['pagamento_turmas'])){
+                        $this->view->pagamentos = $dados['pagamento_turmas'];
+                        $this->view->condicoes_pagamentos_turmas = $dados['condicao_turmas'];
+                        $this->view->tipo_isencao_pendencia_turmas = $dados['tipo_isencao_pendencia_turmas'];
+                        $this->view->recibos_turmas = $dados['recibos_turmas'];
+                    }
+                    
+                    if (!empty($dados['alimentos']))
+                        $this->view->alimentos = $dados['alimentos'];
+
+                    $this->view->todos_alimentos = $alimentos;
                 }
-                if (!empty($dados['liberacao']))
-                    $this->view->liberacao = $dados['liberacao'];
-
-                if (!empty($dados['pagamento_turmas']))
-                    $this->view->pagamentos = $dados['pagamento_turmas'];
-
-                if (!empty($dados['alimentos']))
-                    $this->view->alimentos = $dados['alimentos'];
-
-                $this->view->todos_alimentos = $alimentos;
-
                 if (!empty($dados['cidade']) && !empty($dados['estado']))
                     $form_cadastro->setEstadoCidade($dados['cidade'], $dados['estado']);
             }
@@ -171,7 +177,7 @@ class AlunoController extends Zend_Controller_Action {
                             $this->view->mensagem = "O aluno não foi alterado.<br/>Por favor, verifique se as turmas foram inseridas";
                     }
                 }
-                
+
                 $periodo_atual = $periodo->getPeriodoAtual();
                 $aluno = $mapper_aluno->buscaAlunosByID($id_aluno, $periodo_atual->getIdPeriodo());
 
@@ -278,7 +284,7 @@ class AlunoController extends Zend_Controller_Action {
                     if (!empty($alunos)) {
                         $mapper_turma = new Application_Model_Mappers_Turma();
                         $turma = $mapper_turma->buscaTurmaByID($id_turma);
-                        
+
                         $i = 0;
                         $array_alunos = array('turma' => array(
                                 'nome_turma' => $turma->getCompleteNomeTurma(),
@@ -288,7 +294,7 @@ class AlunoController extends Zend_Controller_Action {
 
                         $mapper_calendario = new Application_Model_Mappers_DatasAtividade();
                         $datas_atividades = $mapper_calendario->getDatasByPeriodo($turma->getPeriodo());
-                        
+
                         $total_aulas = ($datas_atividades instanceof Application_Model_DatasAtividade) ? $datas_atividades->getQuantidadeAulas() : 0;
 
                         foreach ($alunos as $aluno) {
@@ -399,8 +405,8 @@ class AlunoController extends Zend_Controller_Action {
             if ($aluno instanceof Application_Model_Aluno) {
                 $mapper_calendario = new Application_Model_Mappers_DatasAtividade();
                 $mapper_periodo = new Application_Model_Mappers_Periodo();
-                
-                $this->view->calendarios =  $mapper_calendario->getCalendarios($mapper_periodo->getPeriodos());
+
+                $this->view->calendarios = $mapper_calendario->getCalendarios($mapper_periodo->getPeriodos());
                 $this->view->aluno = $aluno;
                 return;
             }
@@ -479,7 +485,7 @@ class AlunoController extends Zend_Controller_Action {
     public function ativarAlunoAction() {
         $periodo = new Application_Model_Mappers_Periodo();
         $this->view->title = "Projeto Incluir - Ativação de Aluno";
-        
+
         if (!$periodo->verificaFimPeriodo()) {
             $id_aluno = (int) base64_decode($this->getParam('aluno'));
 
@@ -514,4 +520,5 @@ class AlunoController extends Zend_Controller_Action {
             $this->_helper->redirector->goToRoute(array('controller' => 'error', 'action' => 'error'), null, true);
         }
     }
+
 }
