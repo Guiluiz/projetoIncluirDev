@@ -56,7 +56,9 @@ class AlunoController extends Zend_Controller_Action {
 
             if ($this->getRequest()->isPost()) {
                 $dados = $this->getRequest()->getPost();
-
+                
+                var_dump($dados);
+                
                 if (isset($dados['cancelar']))
                     $this->_helper->redirector->goToRoute(array('controller' => 'aluno', 'action' => 'index'), null, true);
 
