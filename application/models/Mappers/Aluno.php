@@ -158,7 +158,14 @@ class Application_Model_Mappers_Aluno {
             throw new Zend_Exception('Houve problemas');
         }
     }
-
+    
+    /**
+     * 
+     * @param type $id_aluno
+     * @param type $tudo
+     * @return boolean
+     * @throws Zend_Exception
+     */
     private function removeTurmaAluno($id_aluno, $tudo = false) {
         try {
             $db_turma_alunos = new Application_Model_DbTable_TurmaAlunos();

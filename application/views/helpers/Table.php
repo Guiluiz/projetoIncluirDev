@@ -191,7 +191,7 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Abstract {
                                 $table .= '<table class="ali_pag form_incrementa" id="alimentos_' . $this->removeInvalidCaracteres($this->filtro_string->filter($turma->getDisciplina()->getNomeDisciplina() . '_' . $turma->getNomeTurma())) . '" cellpadding="0" cellspacing="0"><tr><th>Alimento</th><th>Quantidade(kg)</th><th>Opções</th></tr>';
 
                                 foreach ($values[$turma->getIdTurma(true)] as $id_alimento => $quantidade)
-                                    $table .='<tr class="' . $id_alimento . '"><input type="hidden" name="alimentos[' . $turma->getIdTurma(true) . '][' . $id_alimento . ']" value="' . $quantidade . '"/><td>' . $opcoes_aluno[$id_alimento]->getNomeAlimento() . '</td><td class="quantidade_alimento_turma">' . $quantidade . '</td>' . $opcao_excluir . '</tr>';
+                                    $table .='<tr class="' . $id_alimento . '"><input type="hidden" name="alimentos[' . $turma->getIdTurma(true) . '][' . $id_alimento . ']" value="' . $quantidade . '"/><td>' . $opcoes_aluno[$id_alimento]->getNomeAlimento() . '</td><td class="quantidade_alimento_turma">' . $quantidade . '</td><td><div class="excluir_alimento">Excluir</div></td></tr>';
 
                                 $table .= '</table>';
                             }
@@ -221,7 +221,7 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Abstract {
                     $valido = false;
                     break;
             }
-
+            
             if ($valido)
                 return $table;
 

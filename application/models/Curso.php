@@ -2,7 +2,7 @@
 
 /**
  *  Classe para representar um curso do projeto
- *  @author Pablo Augusto 
+ *  @author Projeto Incluir 
  */
 
 class Application_Model_Curso {

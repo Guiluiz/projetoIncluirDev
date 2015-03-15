@@ -73,8 +73,6 @@ class Application_Form_FormAluno extends Zend_Form {
                 ->setAttrib('disabled', 'disabled')
                 ->addFilter('StripTags')
                 ->addFilter('StringTrim')
-                ->setRequired(true)
-                ->addValidator('NotEmpty')
                 ->setMultiOptions(array(
                     '' => 'Selecione',
                     Application_Model_Pagamento::$pagamento_normal => 'Pagamento Normal',
@@ -533,7 +531,7 @@ class Application_Form_FormAluno extends Zend_Form {
                 $array_aux[$turma->getIdTurma(true)] = $turma->getDisciplina()->getNomeDisciplina() . ' - ' . $turma->getNomeTurma() . ' | ' . $turma->getHorarioInicio() . ' - ' . $turma->getHorarioFim();
         }
 
-        $this->getElement('pagamento_turma')->setMultiOptions($array_aux);
+        $this->getElement('pagamento_turma')->setAttrib('disabled', null)->setMultiOptions($array_aux);
     }
 
     public function seTurmasAlunos($turmas_aluno) {

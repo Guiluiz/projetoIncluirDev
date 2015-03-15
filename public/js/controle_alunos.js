@@ -88,17 +88,30 @@ var controle_aluno = (function() {
         if (aluno.container_turmas_pre_definidas.length == 1) {
             aluno.container_turmas_aluno.append(aluno.container_turmas_pre_definidas.children()).show();
             aluno.eventExcluirTurmaAluno();
+
+            aluno.container_opcoes_turmas_aluno.show();
+            aluno.container_campo_condicao_matricula.hide(); // nesse caso pagamento já foi registrado, nâo é necessário exibir o campo de condição
         }
 
         if (aluno.container_alimentos_pre_definidos.length == 1) {
             aluno.container_alimentos_turmas.append(aluno.container_alimentos_pre_definidos.children()).show();
+            aluno.eventExcluirAlimento();
+
+            // exibe o container para mostrar os alimentos selecionados, contudo esconde os campos pois os pagamentos já foram registrados
+            aluno.container_alimento.show();
+            aluno.table_gerenciamento_alimentos.hide();
+            aluno.container_alimentos_turmas.show();
+
+            //Exibe a tabela de alimentos da turma indicada
             $(aluno.getIdAlimentosTurma()).show();
-            aluno.eventExcluirAlimento($(aluno.getIdAlimentosTurma()).show());
+
         }
 
         if (aluno.container_pagamentos_pre_definidos.length == 1) {
             aluno.container_pagamentos_aluno.append(aluno.container_pagamentos_pre_definidos.children()).show();
             aluno.eventOpcaoExcluirPagamento();
+
+            aluno.container_pagamentos_registrados.show();
         }
 
         if (aluno.action != 3) { //  se não for exclusão
@@ -191,7 +204,7 @@ var controle_aluno = (function() {
     };
 
     /**
-     * Retorna o nome da turma, sem o horário
+     * Retorna o nome da turma, sem o horário dela. Utilizado para saber nomes de tabelas de pagamentos e de alimentos de uma determinada turma
      * @param bool campo_turma Indica a busca será feita no select de turmas do aluno, ou o select de turmas da disciplina selecionada 
      * @returns string
      */
@@ -206,7 +219,7 @@ var controle_aluno = (function() {
 
         var pos = turma_horario.indexOf(' | ');
 
-        return turma_horario.substring(0, --pos);
+        return turma_horario.substring(0, pos);
     };
 
     /**
@@ -326,7 +339,7 @@ var controle_aluno = (function() {
     };
 
     aluno.gerenciaTipoIsencaoPendencia = function() {
-        if (aluno.select_tipo_isencao_pendencia.val().length > 0) { // procura se já tem um pagamento registrado para a turma, se houver a remoção não é realizada
+        if (aluno.select_tipo_isencao_pendencia.val().length > 0) {
             aluno.container_alimento.find('input,select,button').removeAttr('disabled');
             aluno.container_pagamento.find('input,select,button').removeAttr('disabled');
 
@@ -1001,7 +1014,7 @@ var controle_aluno = (function() {
     };
 
     aluno.eventExcluirTurmaAluno = function() {
-        aluno.container_turmas_aluno.find('.' + aluno.getNameTurmaAluno()).find('.excluir_turma').click(function(evt) {
+        aluno.container_turmas_aluno.find('.excluir_turma').click(function(evt) {
             var confirma_exclusao = confirm('Deseja realmente retirar o aluno dessa turma?');
 
             if (confirma_exclusao) {
@@ -1011,7 +1024,7 @@ var controle_aluno = (function() {
 
                 aluno.removeHorarioTurma(id_turma);
                 aluno.removeCondicaoTurma(id_turma);
-                
+
                 aluno.select_turma_pagamento.find('option').each(function() {
                     if ($(this).val() == id_turma)
                         $(this).remove();
@@ -1034,7 +1047,7 @@ var controle_aluno = (function() {
                     aluno.container_opcoes_turmas_aluno.hide().find('select,input,button').attr('disabled', 'disabled'); // se o usuário removeu todas as turmas, não é necessário exibir os campos
                     aluno.container_pagamento.hide().find('select,input,button').attr('disabled', 'disabled');
                 }
-                
+
                 aluno.select_condicao_matricula.val('');
                 aluno.campo_quantidade_alimento.val('');
                 aluno.campo_num_recibo.val('');
