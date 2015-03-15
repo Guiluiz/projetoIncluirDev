@@ -3,11 +3,10 @@
 <?php
 if (!empty($this->turmas)) {
     echo $this->table($this->turmas, 4, null, $this->liberacao); // constrói a tabela das turmas do aluno
-
     // constrói a tabela dos pagamentos da turma do aluno
     if (!empty($this->pagamentos))
-        echo $this->table($this->pagamentos, 6, null, array('alimentos' => $this->alimentos, 'condicao' => $this->condicoes_pagamentos_turmas, 'tipo_isencao_pendencia' => $this->tipo_isencao_pendencia_turmas, 'recibos_turmas' => $this->recibos_turmas), $this->turmas);
-    
+        echo $this->table($this->pagamentos, 6, null, array('alimentos' => $this->alimentos, 'condicao' => $this->condicoes_pagamentos_turmas, 'tipo_isencao_pendencia' => $this->tipo_isencao_pendencia_turmas, 'recibos_turmas' => $this->recibos_turmas, 'situacao_turmas' => $this->situacao_turmas), $this->turmas);
+
     // constrói a tabela com os alimentos referentes ao pagamentos das turmas
     if (!empty($this->alimentos))
         echo $this->table($this->alimentos, 5, null, $this->todos_alimentos, $this->turmas);

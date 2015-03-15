@@ -57,10 +57,10 @@ class AlunoController extends Zend_Controller_Action {
             if ($this->getRequest()->isPost()) {
                 $dados = $this->getRequest()->getPost();
 
-                /*echo '<pre>';
+                echo '<pre>';
                 var_dump($dados);
                 echo '</pre>';
-                */
+
                 if (isset($dados['cancelar']))
                     $this->_helper->redirector->goToRoute(array('controller' => 'aluno', 'action' => 'index'), null, true);
 
@@ -97,7 +97,7 @@ class AlunoController extends Zend_Controller_Action {
                 }
 
                 $form_cadastro->populate($dados);
-                
+
                 // necessário para exibir as turmas dos aluno no formato correto (tabelas)
                 if (!empty($dados['turmas'])) {
                     $turmas = $mapper_turma->buscaTurmasByID($dados['turmas']);
@@ -107,13 +107,14 @@ class AlunoController extends Zend_Controller_Action {
                     if (!empty($dados['liberacao']))
                         $this->view->liberacao = $dados['liberacao'];
 
-                    if (!empty($dados['pagamento_turmas'])){
+                    if (!empty($dados['pagamento_turmas'])) {
                         $this->view->pagamentos = $dados['pagamento_turmas'];
                         $this->view->condicoes_pagamentos_turmas = $dados['condicao_turmas'];
                         $this->view->tipo_isencao_pendencia_turmas = $dados['tipo_isencao_pendencia_turmas'];
                         $this->view->recibos_turmas = $dados['recibos_turmas'];
+                        $this->view->situacao_turmas = $dados['situacao_turmas'];
                     }
-                    
+
                     if (!empty($dados['alimentos']))
                         $this->view->alimentos = $dados['alimentos'];
 
@@ -257,12 +258,77 @@ class AlunoController extends Zend_Controller_Action {
         }
     }
 
+    /**
+     * Verifica se os dados da requisição estão de acordo com as regras estabelecidas para o cadastro dos alunos nas turmas
+     * @param array $dados
+     * @return boolean
+     */
     private function validaDados($dados) {
-        if (!empty($dados['turmas']) && !empty($dados['pagamento_turmas']) && !empty($dados['liberacao']) && !empty($dados['situacao_turmas'])) {
-            if (is_array($dados['pagamento_turmas']) && is_array($dados['pagamento_turmas']) && is_array($dados['liberacao']) && is_array($dados['situacao_turmas']))
-                return true;
+        $campos_verificados = array('turmas', 'pagamento_turmas', 'liberacao', 'situacao_turmas', 'condicao_turmas', 'tipo_isencao_pendencia_turmas', 'alimentos');
+        $mapper_periodo = new Application_Model_Mappers_Periodo();
+        $periodo_atual = $mapper_periodo->getPeriodoAtual();
+
+// verifica se todos os campos estão presentes e de acordo com o esperado
+        foreach ($campos_verificados as $campo) {
+            if (empty($dados[$campo]) || !is_array($dados[$campo]))
+                return false;
         }
-        return false;
+
+        unset($campos_verificados['turmas']);
+
+// verifica se todas as informações das turmas estão presentes
+        foreach ($dados['turmas'] as $turma) {
+            foreach ($campos_verificados as $campo) {
+                if (empty($dados[$campo][$turma]))
+                    return false;
+            }
+        }
+
+        foreach ($dados['turma'] as $turma) {
+            $soma_alimentos = 0.0;
+            $valor_pago = (float) $dados['pagamento_turmas'][$turma];
+            $num_recibo = $dados['recibos_turmas'][$turma];
+            $situacao = $dados['situacao_turmas'][$turma];
+                    
+            foreach ($dados['alimentos'][$turma] as $quantidade)
+                $soma_alimentos += (float) $quantidade;
+
+            switch ($dados['condicao_turmas'][$turma]) {
+                case Application_Model_Pagamento::$pagamento_normal:// no pagamento normal o valor deve ser maior ou igual ao mínimo e a quantidade de alimentos também
+                    if ($soma_alimentos >= $periodo_atual->getQuantidadeAlimentos() && $valor_pago >= $periodo_atual->getValorLiberacao() && $num_recibo != '' && $situacao == 'Liberado')
+                        return true;
+                    return false;
+
+                case Application_Model_Pagamento::$pagamento_isento_parcial:
+                case Application_Model_Pagamento::$pagamento_pendente_parcial:
+                    $tipo_isencao_pendencia = $dados['tipo_isencao_pendencia'][$turma];
+                    $condicao = $dados['condicao_turmas'][$turma];
+
+                    if (($condicao == Application_Model_Pagamento::$pagamento_isento_parcial && $situacao == 'Liberado') ||
+                            ($condicao == Application_Model_Pagamento::$pagamento_pendente_parcial && $situacao == 'Pendente')) {
+
+                        if ($num_recibo != "" &&
+                                ($tipo_isencao_pendencia == Application_Model_Pagamento::$isencao_pendencia_alimento && $soma_alimentos < $periodo_atual->getQuantidadeAlimentos() && $valor_pago >= $periodo_atual->getValorLiberacao()) ||
+                                ($tipo_isencao_pendencia == Application_Model_Pagamento::$isencao_pendencia_pagamento && $soma_alimentos >= $periodo_atual->getQuantidadeAlimentos() && $valor_pago < $periodo_atual->getValorLiberacao()) ||
+                                ($tipo_isencao_pendencia == Application_Model_Pagamento::$isencao_pendencia_alimento_pagamento && $soma_alimentos < $periodo_atual->getQuantidadeAlimentos() && $valor_pago < $periodo_atual->getValorLiberacao()))
+                            return true;
+                    }
+
+                    return false;
+
+                case Application_Model_Pagamento::$pagamento_isento_total:
+                case Application_Model_Pagamento::$pagamento_pendente_total:
+                    $condicao = $dados['condicao_turmas'][$turma];
+
+                    if (($condicao == Application_Model_Pagamento::$pagamento_isento_total && $situacao == 'Liberado') ||
+                            ($condicao == Application_Model_Pagamento::$pagamento_pendente_total && $situacao == 'Pendente')) {
+                        if ($valor_pago == 0 && $soma_alimentos == 0 && $num_recibo == '')
+                            return true;
+                    }
+
+                    return false;
+            }
+        }
     }
 
     /**

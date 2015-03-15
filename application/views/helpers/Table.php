@@ -97,6 +97,7 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Abstract {
                     );
 
                     $tipos_condicao = array(
+                        '' => '',
                         Application_Model_Pagamento::$pagamento_normal => 'Pagamento Normal',
                         Application_Model_Pagamento::$pagamento_isento_parcial => 'Isenção Parcial',
                         Application_Model_Pagamento::$pagamento_isento_total => 'Isenção Total',
@@ -106,73 +107,26 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Abstract {
 
                     foreach ($opcoes_aluno_turma as $turma) {
                         if ($turma instanceof Application_Model_Turma) {
-
                             if (isset($values[$turma->getIdTurma(true)])) {
                                 $valor_pago = $values[$turma->getIdTurma(true)];
                                 $soma_alimentos = 0.0;
+                                
+                                $situacao = $opcoes_aluno['situacao_turmas'][$turma->getIdTurma(true)];
 
                                 if (isset($opcoes_aluno['alimentos'][$turma->getIdTurma(true)])) {
                                     foreach ($opcoes_aluno['alimentos'][$turma->getIdTurma(true)] as $quantidade)
                                         $soma_alimentos += (float) $quantidade;
                                 }
 
-                                switch ($opcoes_aluno['condicao'][$turma->getIdTurma(true)]) {
-                                    case Application_Model_Pagamento::$pagamento_normal:
-                                        if ($soma_alimentos >= $periodo->getQuantidadeAlimentos() && $valor_pago >= $periodo->getValorLiberacao())
-                                            $table .= '<tr class="pagamento_' . $this->removeInvalidCaracteres($this->filtro_string->filter($turma->getDisciplina()->getNomeDisciplina() . '_' . $turma->getNomeTurma())) . '">'
-                                                    . '<input type="hidden" name="pagamentos_turmas[' . $turma->getIdTurma(true) . ']" value="' . $valor_pago . '"/>'
-                                                    . '<td>' . $turma->getDisciplina()->getNomeDisciplina() . '-' . $turma->getNomeTurma() . ' | ' . $turma->getHorarioInicio() . ' - ' . $turma->getHorarioFim() . '</td>'
-                                                    . '<td><input type="hidden" name="recibos_turmas[' . $turma->getIdTurma(true) . ']" value="' . $opcoes_aluno['recibos_turmas'][$turma->getIdTurma(true)] . '"/>' . $opcoes_aluno['recibos_turmas'][$turma->getIdTurma(true)] . '</td>'
-                                                    . '<td class="valor_pago">' . $valor_pago . '</td>'
-                                                    . '<td class="quant_alimento">' . $soma_alimentos . '</td>'
-                                                    . '<td class="condicao"><input type="hidden" name="condicao_turmas[' . $turma->getIdTurma(true) . ']" value="' . Application_Model_Pagamento::$pagamento_normal . '"><input type="hidden" name="tipo_isencao_pendencia_turmas[' . $turma->getIdTurma(true) . ']" value="">' . $tipos_condicao[Application_Model_Pagamento::$pagamento_normal] . '</td>'
-                                                    . '<td class="situacao"><input type="hidden" name="situacao_turmas[' . $turma->getIdTurma(true) . ']" value="Liberado"/>Liberado</td>'
-                                                    . '<td><div class="excluir_pagamento">Excluir</div></td></tr>';
-                                        else
-                                            $valido = false;
-                                        break;
-
-                                    case Application_Model_Pagamento::$pagamento_pendente_parcial:
-                                    case Application_Model_Pagamento::$pagamento_isento_parcial:
-                                        $tipo_isencao_pendencia = $opcoes_aluno['tipo_isencao_pendencia'][$turma->getIdTurma(true)];
-                                        $situacao = ($tipo_isencao_pendencia == Application_Model_Pagamento::$pagamento_pendente_parcial) ? 'Pendente' : 'Liberado';
-
-                                        if (($tipo_isencao_pendencia == Application_Model_Pagamento::$isencao_pendencia_alimento && $soma_alimentos < $periodo->getQuantidadeAlimentos() && $valor_pago >= $periodo->getValorLiberacao()) ||
-                                                ($tipo_isencao_pendencia == Application_Model_Pagamento::$isencao_pendencia_pagamento && $soma_alimentos >= $periodo->getQuantidadeAlimentos() && $valor_pago < $periodo->getValorLiberacao()) ||
-                                                ($tipo_isencao_pendencia == Application_Model_Pagamento::$isencao_pendencia_alimento_pagamento && $soma_alimentos < $periodo->getQuantidadeAlimentos() && $valor_pago < $periodo->getValorLiberacao())) {
-
-                                            $table .= '<tr class="pagamento_' . $this->removeInvalidCaracteres($this->filtro_string->filter($turma->getDisciplina()->getNomeDisciplina() . '_' . $turma->getNomeTurma())) . '">'
-                                                    . '<input type="hidden" name="pagamentos_turmas[' . $turma->getIdTurma(true) . ']" value="' . $valor_pago . '"/>'
-                                                    . '<td>' . $turma->getDisciplina()->getNomeDisciplina() . '-' . $turma->getNomeTurma() . ' | ' . $turma->getHorarioInicio() . ' - ' . $turma->getHorarioFim() . '</td>'
-                                                    . '<td><input type="hidden" name="recibos_turmas[' . $turma->getIdTurma(true) . ']" value="' . $opcoes_aluno['recibos_turmas'][$turma->getIdTurma(true)] . '"/>' . $opcoes_aluno['recibos_turmas'][$turma->getIdTurma(true)] . '</td>'
-                                                    . '<td class="valor_pago">' . $valor_pago . '</td>'
-                                                    . '<td class="quant_alimento">' . $soma_alimentos . '</td>'
-                                                    . '<td class="condicao"><input type="hidden" name="condicao_turmas[' . $turma->getIdTurma(true) . ']" value="' . $opcoes_aluno['condicao'][$turma->getIdTurma(true)] . '"><input type="hidden" name="tipo_isencao_pendencia_turmas[' . $turma->getIdTurma(true) . ']" value="' . $opcoes_aluno['tipo_isencao_pendencia'][$turma->getIdTurma(true)] . '">' . $tipos_condicao[$opcoes_aluno['condicao'][$turma->getIdTurma(true)]] . ' - ' . $tipo_isencao_pendencia[$opcoes_aluno['tipo_isencao_pendencia'][$turma->getIdTurma(true)]] . '</td>'
-                                                    . '<td class="situacao"><input type="hidden" name="situacao_turmas[' . $turma->getIdTurma(true) . ']" value="' . $situacao . '"/>' . $situacao . '</td>'
-                                                    . '<td><div class="excluir_pagamento">Excluir</div></td></tr>';
-                                        } else
-                                            $valido = false;
-                                        break;
-
-                                    case Application_Model_Pagamento::$pagamento_pendente_total:
-                                    case Application_Model_Pagamento::$pagamento_isento_total:
-                                        if ($valor_pago == 0 && $soma_alimentos == 0 && $opcoes_aluno['recibos_turmas'][$turma->getIdTurma(true)] == '') {
-                                            $situacao = ($tipo_isencao_pendencia == Application_Model_Pagamento::$pagamento_pendente_total) ? 'Pendente' : 'Liberado';
-
-                                            $table .= '<tr class="pagamento_' . $this->removeInvalidCaracteres($this->filtro_string->filter($turma->getDisciplina()->getNomeDisciplina() . '_' . $turma->getNomeTurma())) . '">'
-                                                    . '<input type="hidden" name="pagamentos_turmas[' . $turma->getIdTurma(true) . ']" value="' . $valor_pago . '"/>'
-                                                    . '<td>' . $turma->getDisciplina()->getNomeDisciplina() . '-' . $turma->getNomeTurma() . ' | ' . $turma->getHorarioInicio() . ' - ' . $turma->getHorarioFim() . '</td>'
-                                                    . '<td><input type="hidden" name="recibos_turmas[' . $turma->getIdTurma(true) . ']" value=""/></td>'
-                                                    . '<td class="valor_pago">' . $valor_pago . '</td>'
-                                                    . '<td class="quant_alimento">' . $soma_alimentos . '</td>'
-                                                    . '<td class="condicao"><input type="hidden" name="condicao_turmas[' . $turma->getIdTurma(true) . ']" value="' . $opcoes_aluno['condicao'][$turma->getIdTurma(true)] . '"><input type="hidden" name="tipo_isencao_pendencia_turmas[' . $turma->getIdTurma(true) . ']" value="">' . $tipos_condicao[$opcoes_aluno['condicao'][$turma->getIdTurma(true)]] . '</td>'
-                                                    . '<td class="situacao"><input type="hidden" name="situacao_turmas[' . $turma->getIdTurma(true) . ']" value="' . $situacao . '"/>' . $situacao . '</td>'
-                                                    . '<td><div class="excluir_pagamento">Excluir</div></td></tr>';
-                                        } else
-                                            $valido = false;
-
-                                        break;
-                                }
+                                $table .= '<tr class="pagamento_' . $this->removeInvalidCaracteres($this->filtro_string->filter($turma->getDisciplina()->getNomeDisciplina() . '_' . $turma->getNomeTurma())) . '">'
+                                        . '<input type="hidden" name="pagamentos_turmas[' . $turma->getIdTurma(true) . ']" value="' . $valor_pago . '"/>'
+                                        . '<td>' . $turma->getDisciplina()->getNomeDisciplina() . '-' . $turma->getNomeTurma() . ' | ' . $turma->getHorarioInicio() . ' - ' . $turma->getHorarioFim() . '</td>'
+                                        . '<td><input type="hidden" name="recibos_turmas[' . $turma->getIdTurma(true) . ']" value=""/></td>'
+                                        . '<td class="valor_pago">' . $valor_pago . '</td>'
+                                        . '<td class="quant_alimento">' . $soma_alimentos . '</td>'
+                                        . '<td class="condicao"><input type="hidden" name="condicao_turmas[' . $turma->getIdTurma(true) . ']" value="' . $opcoes_aluno['condicao'][$turma->getIdTurma(true)] . '"><input type="hidden" name="tipo_isencao_pendencia_turmas[' . $turma->getIdTurma(true) . ']" value="">' . $tipos_condicao[$opcoes_aluno['condicao'][$turma->getIdTurma(true)]] . '</td>'
+                                        . '<td class="situacao"><input type="hidden" name="situacao_turmas[' . $turma->getIdTurma(true) . ']" value="' . $situacao . '"/>' . $situacao . '</td>'
+                                        . '<td><div class="excluir_pagamento">Excluir</div></td></tr>';
                             }
                         } else {
                             $valido = false;
@@ -221,7 +175,7 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Abstract {
                     $valido = false;
                     break;
             }
-            
+
             if ($valido)
                 return $table;
 
