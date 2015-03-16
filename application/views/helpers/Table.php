@@ -110,8 +110,8 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Abstract {
                             if (isset($values[$turma->getIdTurma(true)])) {
                                 $valor_pago = $values[$turma->getIdTurma(true)];
                                 $soma_alimentos = 0.0;
-                                
                                 $situacao = $opcoes_aluno['situacao_turmas'][$turma->getIdTurma(true)];
+                                $num_recibo = $opcoes_aluno['recibos_turmas'][$turma->getIdTurma(true)];
 
                                 if (isset($opcoes_aluno['alimentos'][$turma->getIdTurma(true)])) {
                                     foreach ($opcoes_aluno['alimentos'][$turma->getIdTurma(true)] as $quantidade)
@@ -121,7 +121,7 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Abstract {
                                 $table .= '<tr class="pagamento_' . $this->removeInvalidCaracteres($this->filtro_string->filter($turma->getDisciplina()->getNomeDisciplina() . '_' . $turma->getNomeTurma())) . '">'
                                         . '<input type="hidden" name="pagamentos_turmas[' . $turma->getIdTurma(true) . ']" value="' . $valor_pago . '"/>'
                                         . '<td>' . $turma->getDisciplina()->getNomeDisciplina() . '-' . $turma->getNomeTurma() . ' | ' . $turma->getHorarioInicio() . ' - ' . $turma->getHorarioFim() . '</td>'
-                                        . '<td><input type="hidden" name="recibos_turmas[' . $turma->getIdTurma(true) . ']" value=""/></td>'
+                                        . '<td><input type="hidden" name="recibos_turmas[' . $turma->getIdTurma(true) . ']" value="' . $num_recibo . '"/>'.$num_recibo.'</td>'
                                         . '<td class="valor_pago">' . $valor_pago . '</td>'
                                         . '<td class="quant_alimento">' . $soma_alimentos . '</td>'
                                         . '<td class="condicao"><input type="hidden" name="condicao_turmas[' . $turma->getIdTurma(true) . ']" value="' . $opcoes_aluno['condicao'][$turma->getIdTurma(true)] . '"><input type="hidden" name="tipo_isencao_pendencia_turmas[' . $turma->getIdTurma(true) . ']" value="">' . $tipos_condicao[$opcoes_aluno['condicao'][$turma->getIdTurma(true)]] . '</td>'

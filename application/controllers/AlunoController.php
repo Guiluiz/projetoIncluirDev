@@ -57,17 +57,11 @@ class AlunoController extends Zend_Controller_Action {
             if ($this->getRequest()->isPost()) {
                 $dados = $this->getRequest()->getPost();
 
-                echo '<pre>';
-                var_dump($dados);
-                echo '</pre>';
-
                 if (isset($dados['cancelar']))
                     $this->_helper->redirector->goToRoute(array('controller' => 'aluno', 'action' => 'index'), null, true);
 
                 if ($form_cadastro->isValid($dados)) {
                     if ($this->validaDados($dados)) {
-
-
                         /* $aluno = new Application_Model_Aluno(null, $form_cadastro->getValue('nome_aluno'), $form_cadastro->getValue('cpf'), Application_Model_Aluno::$status_ativo, null, null, $form_cadastro->getValue('rg'), $form_cadastro->getValue('data_nascimento'), $form_cadastro->getValue('email'), $form_cadastro->getValue('escolaridade'), $form_cadastro->getValue('telefone'), $form_cadastro->getValue('celular'), $form_cadastro->getValue('endereco'), $form_cadastro->getValue('bairro'), $form_cadastro->getValue('numero'), $form_cadastro->getValue('complemento'), $form_cadastro->getValue('cep'), $form_cadastro->getValue('cidade'), $form_cadastro->getValue('estado'), $form_cadastro->getValue('data_registro'), $form_cadastro->getValue('is_cpf_responsavel'), $form_cadastro->getValue('nome_responsavel'));
 
                           foreach ($dados['turmas'] as $turma)
@@ -267,36 +261,38 @@ class AlunoController extends Zend_Controller_Action {
         $campos_verificados = array('turmas', 'pagamento_turmas', 'liberacao', 'situacao_turmas', 'condicao_turmas', 'tipo_isencao_pendencia_turmas', 'alimentos');
         $mapper_periodo = new Application_Model_Mappers_Periodo();
         $periodo_atual = $mapper_periodo->getPeriodoAtual();
-
-// verifica se todos os campos estão presentes e de acordo com o esperado
+        
+        // verifica se todos os campos estão presentes e de acordo com o esperado
         foreach ($campos_verificados as $campo) {
             if (empty($dados[$campo]) || !is_array($dados[$campo]))
                 return false;
         }
 
-        unset($campos_verificados['turmas']);
+        unset($campos_verificados[0]);
 
-// verifica se todas as informações das turmas estão presentes
+        // verifica se todas as informações das turmas estão presentes
         foreach ($dados['turmas'] as $turma) {
             foreach ($campos_verificados as $campo) {
-                if (empty($dados[$campo][$turma]))
+                if (!isset($dados[$campo][$turma])) 
                     return false;
             }
         }
 
-        foreach ($dados['turma'] as $turma) {
+        foreach ($dados['turmas'] as $turma) {
             $soma_alimentos = 0.0;
             $valor_pago = (float) $dados['pagamento_turmas'][$turma];
             $num_recibo = $dados['recibos_turmas'][$turma];
             $situacao = $dados['situacao_turmas'][$turma];
-                    
+            
             foreach ($dados['alimentos'][$turma] as $quantidade)
                 $soma_alimentos += (float) $quantidade;
-
+            
             switch ($dados['condicao_turmas'][$turma]) {
                 case Application_Model_Pagamento::$pagamento_normal:// no pagamento normal o valor deve ser maior ou igual ao mínimo e a quantidade de alimentos também
+                    
                     if ($soma_alimentos >= $periodo_atual->getQuantidadeAlimentos() && $valor_pago >= $periodo_atual->getValorLiberacao() && $num_recibo != '' && $situacao == 'Liberado')
                         return true;
+                   
                     return false;
 
                 case Application_Model_Pagamento::$pagamento_isento_parcial:
