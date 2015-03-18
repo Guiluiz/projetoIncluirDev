@@ -6,14 +6,17 @@
  */
 
 class Application_Model_Curso {
+    
     /**
      * @var int 
      */
     private $id_curso;
+    
     /**
      * @var String 
      */
     private $nome_curso;
+    
     /**
      * @var string 
      */
@@ -25,6 +28,11 @@ class Application_Model_Curso {
         $this->descricao_curso = $descricao_curso;
     }
     
+    /**
+     * Retorna o id do curso
+     * @param boolean $isView Indica se o id será criptografado ou não
+     * @return int|string
+     */
     public function getIdCurso($isView = null){
         if(!empty($isView))
             return base64_encode($this->id_curso);
@@ -39,6 +47,12 @@ class Application_Model_Curso {
         return $this->descricao_curso;
     }
     
+    /**
+     * Retorna um array com informações do curso
+     * Utilizado tanto para popular formulários de curso quanto para cadastro/alteração no banco de dados
+     * @param boolean $isView Indica o formato de saída de alguns dos dados
+     * @return array
+     */
     public function parseArray($isView = null){
         return array(
             'id_curso' => $this->getIdCurso($isView),

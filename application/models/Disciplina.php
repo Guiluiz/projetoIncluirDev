@@ -2,7 +2,7 @@
 
 /**
  * Classe para representar uma disciplina do projeto
- * @author Pablo Augusto
+ * @author Projeto Incluir
  */
 class Application_Model_Disciplina {
 
@@ -40,6 +40,11 @@ class Application_Model_Disciplina {
         $this->addPreRequisitos($pre_requisito);
     }
 
+    /**
+     * Retorna o id da disciplina
+     * @param boolean $isView Indica se o id será criptografado ou não
+     * @return int|string
+     */
     public function getIdDisciplina($isView = null) {
         if (!empty($isView))
             return base64_encode($this->id_disciplina);
@@ -54,14 +59,22 @@ class Application_Model_Disciplina {
         return $this->ementa_disciplina;
     }
 
+    /**
+     * Retorna o curso ao qual a disciplina pertence
+     * @return Application_Model_Curso
+     */
     public function getCurso() {
         return $this->curso;
     }
 
+    /**
+     * Inclui o pré requisito especificado por parâmetro para a disciplina.
+     * @param Application_Model_Disciplina $disciplina
+     */
     public function addPreRequisitos($disciplina) {
         if ($disciplina instanceof Application_Model_Disciplina)
             $this->pre_requisitos[] = $disciplina;
-        
+
         else if (is_array($disciplina) && !empty($disciplina)) {
             foreach ($disciplina as $aux) {
                 if ($aux instanceof Application_Model_Disciplina)
@@ -70,16 +83,26 @@ class Application_Model_Disciplina {
         }
     }
 
+    /**
+     * Retorna os pré requisitos da disciplina
+     * @return Application_Model_Disciplina
+     */
     public function getPreRequisitos() {
         return $this->pre_requisitos;
     }
 
-    public function hasPreRequisitos(){
-        if(count($this->pre_requisitos)>0)
+    public function hasPreRequisitos() {
+        if (count($this->pre_requisitos) > 0)
             return true;
         return false;
     }
-    
+
+    /**
+     * Retorna um array com as informações da disciplina.
+     * Utilizado tanto para popular formulários de disciplina quanto para cadastro/alteração no banco de dados
+     * @param boolean $isView Indica qual será o formato de alguns dos dados (id, data...)
+     * @return array
+     */
     public function parseArray($isView = null) {
         return array(
             'id_disciplina' => $this->getIdDisciplina($isView),

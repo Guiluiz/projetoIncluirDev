@@ -4,8 +4,17 @@
  * @author Projeto Incluir
  */
 class Application_Model_DatasAtividade {
-
+    
+    /**
+     *
+     * @var DateTime[]
+     */
     private $datas;
+    
+    /**
+     *
+     * @var Application_Model_Periodo 
+     */
     private $periodo;
     
     public function __construct($periodo) {
@@ -84,6 +93,10 @@ class Application_Model_DatasAtividade {
         return $data;
     }
     
+    /**
+     * Retorna o período ao qual o calendário pertence
+     * @return Application_Model_Periodo
+     */
     public function getPeriodoCalendario(){
         return $this->periodo;
     }

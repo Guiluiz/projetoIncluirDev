@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Classe que representa uma frequência lançada para um voluntário
+ */
 class Application_Model_EscalaFrequencia {
 
     private $id_frequencia;
@@ -16,12 +19,22 @@ class Application_Model_EscalaFrequencia {
         $this->hora_saida = $this->parseDateTime($hora_saida);
     }
 
+    /**
+     * Retorna o id da frequência
+     * @param boolean $isView Indica se o id será criptografado ou não
+     * @return int|string
+     */
     public function getIdFrequencia($isView = null) {
         if ($isView)
             return base64_encode($this->id_frequencia);
         return $this->id_frequencia;
     }
 
+    /**
+     * Converte uma data em string para um objeto de DateTime
+     * @param string $data
+     * @return null|\DateTime
+     */
     private function parseDate($data) {
         if (!empty($data)) {
             if (strpos($data, '-') === false)
@@ -31,6 +44,11 @@ class Application_Model_EscalaFrequencia {
         return null;
     }
 
+    /**
+     * Converte a hora passada em objeto da classe DateTime
+     * @param string $hora
+     * @return DateTime|null
+     */
     private function parseDateTime($hora) {
         $aux_tam = strlen($hora);
         if ($aux_tam == 5 || $aux_tam == 4)
@@ -38,10 +56,6 @@ class Application_Model_EscalaFrequencia {
         if ($aux_tam == 8)
             return DateTime::createFromFormat('H:i:s', $hora);
         return null;
-    }
-
-    public function getData() {
-        return $this->data;
     }
 
     public function getHoraEntrada() {
@@ -64,16 +78,34 @@ class Application_Model_EscalaFrequencia {
         $this->hora_saida = $this->parseDateTime($hora_saida);
     }
 
+    /**
+     * Retorna um array com as informações da frequencia.
+     * @param boolean $isView Indica qual será o formato de alguns dos dados (id, data...)
+     * @return array
+     */
     public function parseArray($isView = null) {
         return array(
-        'id_frequencia' => $this->getIdFrequencia($isView),
-        'data_funcionamento' => $this->getFormatedData($isView),
-        'hora_entrada' => ($this->hora_entrada instanceof DateTime) ? $this->hora_entrada->format('H:i') : null,
-        'hora_saida' => ($this->hora_saida) ? $this->hora_saida->format('H:i') : null,
-        'is_presente' => $this->is_presente
+            'id_frequencia' => $this->getIdFrequencia($isView),
+            'data_funcionamento' => $this->getFormatedData($isView),
+            'hora_entrada' => ($this->hora_entrada instanceof DateTime) ? $this->hora_entrada->format('H:i') : null,
+            'hora_saida' => ($this->hora_saida) ? $this->hora_saida->format('H:i') : null,
+            'is_presente' => $this->is_presente
         );
     }
 
+    /**
+     * Retorna o objeto da data
+     * @return DateTime|null
+     */
+    public function getData() {
+        return $this->data;
+    }
+
+    /**
+     * Retorna a data formatada
+     * @param boolean $isView Indica o formato da data
+     * @return string|null
+     */
     public function getFormatedData($isView = null) {
         if ($this->data instanceof DateTime) {
             if ($isView)
@@ -83,6 +115,11 @@ class Application_Model_EscalaFrequencia {
         return null;
     }
 
+    /**
+     * Método auxiliar para verificar a validade das frequências a serem lançadas
+     * @param array $frequencias
+     * @return boolean
+     */
     public static function verificaFrequencias($frequencias) {
         if (is_array($frequencias) && !empty($frequencias)) {
             foreach ($frequencias as $frequencia) {

@@ -1,11 +1,39 @@
 <?php
 
+/**
+ * Classe que representa uma atividade
+ * @author Projeto Incluir
+ */
 class Application_Model_Atividade {
 
+    /**
+     *
+     * @var int 
+     */
     private $id_atividade;
+
+    /**
+     *
+     * @var DateTime 
+     */
     private $data_atividade;
+
+    /**
+     *
+     * @var string 
+     */
     private $nome_atividade;
+
+    /**
+     *
+     * @var string 
+     */
     private $desc_atividade;
+
+    /**
+     *
+     * @var float 
+     */
     private $valor;
 
     /**
@@ -20,9 +48,14 @@ class Application_Model_Atividade {
         $this->data_atividade = $this->parseDate($data_atividade);
         $this->nome_atividade = $nome_atividade;
         $this->desc_atividade = $desc_atividade;
-        $this->valor = (float)$valor;
+        $this->valor = (float) $valor;
     }
 
+    /**
+     * Retorna o id da atividade
+     * @param boolean $isView Indica se o id será criptografado ou não
+     * @return int|string
+     */
     public function getIdAtividade($isView = null) {
         if ($isView)
             return base64_encode($this->id_atividade);
@@ -33,6 +66,11 @@ class Application_Model_Atividade {
         return $this->nome_atividade;
     }
 
+    /**
+     * Retorna a data em que ocorreu a atividade
+     * @param boolean $isView Indica o formato da data
+     * @return string|null
+     */
     public function getDataAtividade($isView = null) {
         if ($this->data_atividade instanceof DateTime) {
             if ($isView)
@@ -45,7 +83,13 @@ class Application_Model_Atividade {
     public function getDescricaoAtividade() {
         return $this->desc_atividade;
     }
-
+    
+    /**
+     * Retorna um array com as informações da atividade.
+     * Utilizado tanto para popular formulários de atividade quanto para cadastro/alteração no banco de dados
+     * @param boolean $isView Indica qual será o formato de alguns dos dados (id, data...)
+     * @return array
+     */
     public function parseArray($isView = null) {
         return array(
             'id_atividade' => $this->getIdAtividade($isView),
@@ -56,17 +100,30 @@ class Application_Model_Atividade {
         );
     }
 
+    /**
+     * Retorna o valor da atividade
+     * @param boolean $isView Indica o formato do valor
+     * @return float|string|null
+     */
     public function getValor($isView = false) {
-        if ($isView) {
+        if ($isView)
             return number_format($this->valor, 2, ',', '.');
-        }
         return $this->valor;
     }
-
+    
+    /**
+     * Retorna a turma ao qual a atividade pertence
+     * @return Application_Model_Turma
+     */
     public function getTurma() {
         return $this->turma;
     }
 
+    /**
+     * Converte uma data em string para um objeto de DateTime
+     * @param string $data
+     * @return null|\DateTime
+     */
     private function parseDate($data) {
         if (!$data instanceof DateTime) {
             if (!empty($data)) {

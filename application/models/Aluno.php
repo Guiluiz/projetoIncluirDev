@@ -662,7 +662,7 @@ class Application_Model_Aluno {
     /**
      * Retorna um array com as informações do aluno.
      * Utilizado tanto para popular formulários de aluno quanto para cadastro/alteração no banco de dados
-     * @param boolean $isView Indica se os id's serão criptografados ou não
+     * @param boolean $isView Indica qual será o formato de alguns dos dados (id, data...)
      * @return array
      */
     public function parseArray($isView = null) {

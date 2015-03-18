@@ -2,7 +2,7 @@
 
 /**
  * Classe que representa um usuário Administrador
- * @author Pablo Augusto
+ * @author Projeto Incluir
  */
 class Application_Model_Administrador implements Application_Model_Interface_Usuario, Zend_Acl_Role_Interface {
 
@@ -85,7 +85,6 @@ class Application_Model_Administrador implements Application_Model_Interface_Usu
 
     public function getUserIndex() {
         return array('controller' => 'index', 'action' => 'index');
-        
     }
 
 }
