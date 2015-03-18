@@ -122,7 +122,7 @@ class Application_Model_Mappers_Aluno {
     /**
      * Remove as informações dos pagamentos do aluno passado por parâmetro
      * @param int $id_aluno
-     * @param boolean $tudo Indica se apenas os pagamentos do semestre atual será excluído, ou todos os pagamentos
+     * @param boolean $tudo Indica se apenas os pagamentos do semestre atual serão excluídos, ou todos os pagamentos
      * @return boolean
      * @throws Zend_Exception
      */
@@ -160,9 +160,9 @@ class Application_Model_Mappers_Aluno {
     }
     
     /**
-     * 
+     * Remove o aluno de suas turmas.
      * @param type $id_aluno
-     * @param type $tudo
+     * @param type $tudo Indica se o aluno será retirado somente das turmas do périodo atual ou de todos os outros.
      * @return boolean
      * @throws Zend_Exception
      */
