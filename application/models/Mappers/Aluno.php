@@ -158,7 +158,7 @@ class Application_Model_Mappers_Aluno {
             throw new Zend_Exception('Houve problemas');
         }
     }
-    
+
     /**
      * Remove o aluno de suas turmas.
      * @param type $id_aluno
@@ -345,16 +345,16 @@ class Application_Model_Mappers_Aluno {
 
                 foreach ($alunos as $inf_aluno) {
                     if (!isset($array_alunos[$inf_aluno->id_aluno]))
-                        $array_alunos[$inf_aluno->id_aluno] = new Application_Model_Aluno($inf_aluno->id_aluno, $inf_aluno->nome_aluno, $inf_aluno->cpf, $inf_aluno->status, $inf_aluno->data_desligamento, $inf_aluno->motivo_desligamento, $inf_aluno->rg, $inf_aluno->data_nascimento, $inf_aluno->email, $inf_aluno->escolaridade, $inf_aluno->telefone, $inf_aluno->celular, $inf_aluno->endereco, $inf_aluno->bairro, $inf_aluno->numero, $inf_aluno->complemento, $inf_aluno->cep, $inf_aluno->cidade, $inf_aluno->estado, $inf_aluno->data_registro, $inf_aluno->is_cpf_responsavel, $inf_aluno->nome_responsavel, null, new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma, null, null, null, null, new Application_Model_Disciplina($inf_aluno->id_disciplina, $inf_aluno->nome_disciplina, null, new Application_Model_Curso($inf_aluno->id_curso, $inf_aluno->nome_curso)), null, null, new Application_Model_Periodo($inf_aluno->id_periodo)), $inf_aluno->aprovado, $inf_aluno->liberacao, null);
+                        $array_alunos[$inf_aluno->id_aluno] = new Application_Model_Aluno($inf_aluno->id_aluno, $inf_aluno->nome_aluno, $inf_aluno->cpf, $inf_aluno->status, $inf_aluno->sexo, $inf_aluno->data_desligamento, $inf_aluno->motivo_desligamento, $inf_aluno->rg, $inf_aluno->data_nascimento, $inf_aluno->email, $inf_aluno->escolaridade, $inf_aluno->telefone, $inf_aluno->celular, $inf_aluno->endereco, $inf_aluno->bairro, $inf_aluno->numero, $inf_aluno->complemento, $inf_aluno->cep, $inf_aluno->cidade, $inf_aluno->estado, $inf_aluno->data_registro, $inf_aluno->is_cpf_responsavel, $inf_aluno->nome_responsavel, null, new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma, null, null, null, null, new Application_Model_Disciplina($inf_aluno->id_disciplina, $inf_aluno->nome_disciplina, null, new Application_Model_Curso($inf_aluno->id_curso, $inf_aluno->nome_curso)), null, null, new Application_Model_Periodo($inf_aluno->id_periodo)), $inf_aluno->aprovado, $inf_aluno->liberacao, null);
                     else
                         $array_alunos[$inf_aluno->id_aluno]->addTurma(new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma, null, null, null, null, new Application_Model_Disciplina($inf_aluno->id_disciplina, $inf_aluno->nome_disciplina, null, new Application_Model_Curso($inf_aluno->id_curso, $inf_aluno->nome_curso)), null, null, new Application_Model_Periodo($inf_aluno->id_periodo)), $inf_aluno->liberacao, $inf_aluno->aprovado);
 
                     if (!empty($inf_aluno->id_pagamento)) {
                         if (!isset($array_pagamentos[$inf_aluno->id_turma][$inf_aluno->id_pagamento])) {
                             if (!empty($inf_aluno->id_alimento))
-                                $array_pagamentos[$inf_aluno->id_turma][$inf_aluno->id_pagamento] = new Application_Model_Pagamento($inf_aluno->id_pagamento, $inf_aluno->situacao, $inf_aluno->valor_pago, new Application_Model_Alimento($inf_aluno->id_alimento, $inf_aluno->nome_alimento), $inf_aluno->quantidade);
+                                $array_pagamentos[$inf_aluno->id_turma][$inf_aluno->id_pagamento] = new Application_Model_Pagamento($inf_aluno->id_pagamento, $inf_aluno->situacao, $inf_aluno->valor_pago, new Application_Model_Alimento($inf_aluno->id_alimento, $inf_aluno->nome_alimento), $inf_aluno->quantidade, $inf_aluno->condicao, $id_aluno->tipo_isencao_pendencia);
                             else
-                                $array_pagamentos[$inf_aluno->id_turma][$inf_aluno->id_pagamento] = new Application_Model_Pagamento($inf_aluno->id_pagamento, $inf_aluno->situacao, $inf_aluno->valor_pago, null, null);
+                                $array_pagamentos[$inf_aluno->id_turma][$inf_aluno->id_pagamento] = new Application_Model_Pagamento($inf_aluno->id_pagamento, $inf_aluno->situacao, $inf_aluno->valor_pago, null, null, $inf_aluno->condicao, $id_aluno->tipo_isencao_pendencia);
                         } else
                             $array_pagamentos[$inf_aluno->id_turma][$inf_aluno->id_pagamento]->addAlimento(new Application_Model_Alimento($inf_aluno->id_alimento, $inf_aluno->nome_alimento), $inf_aluno->quantidade);
                     }
@@ -402,7 +402,7 @@ class Application_Model_Mappers_Aluno {
 
     /**
      * Verifica se o cadastro do aluno é válido. 
-     * Não podem haver alunos, com o mesmo cpf, a nâo ser que seja o cpf de um responsável.
+     * Não podem haver alunos, com o mesmo cpf, a não ser que seja o cpf de um responsável.
      * O responsável também pode ser cadastrado.
      * 
      * @param Application_Model_Aluno $aluno
@@ -477,32 +477,8 @@ class Application_Model_Mappers_Aluno {
             throw $e;
         }
     }
-
-    public function isAprovado($id_aluno, $ids_pre_requisitos) {
-        try {
-            $this->db_aluno = new Application_Model_DbTable_TurmaAlunos();
-            $where = "( ";
-
-            $select = $this->db_aluno->select()
-                    ->from('turma_alunos')
-                    ->setIntegrityCheck(false)
-                    ->joinInner('turma', 'turma_alunos.id_turma = turma.id_turma', array('id_disciplina'));
-
-            foreach ($ids_pre_requisitos as $id)
-                $where .= $this->db_aluno->getAdapter()->quoteInto('(id_disciplina = ?', $id->getIdDisciplina()) . ' AND ' .
-                        $this->db_aluno->getAdapter()->quoteInto('turma_alunos.aprovado = ?) OR ', true);
-            $where = substr($where, 0, -4) . ")";
-
-            $select->where($where)
-                    ->where('turma_alunos.id_aluno = ?', base64_decode($id_aluno));
-
-            return $this->db_aluno->fetchAll($select)->toArray();
-        } catch (Zend_Exception $e) {
-            echo $e;
-            return false;
-        }
-    }
-
+    
+    
     /**
      * Separa os alunos nas suas respectivas turmas [um array para cada turma] método utilizado para a geração de relatórios
      * @param array $turmas Turmas que serão buscadas
@@ -581,7 +557,7 @@ class Application_Model_Mappers_Aluno {
 
                 foreach ($alunos as $inf_aluno) {
                     if (!isset($array_alunos[$inf_aluno->id_aluno]))
-                        $array_alunos[$inf_aluno->id_aluno] = new Application_Model_Aluno($inf_aluno->id_aluno, $inf_aluno->nome_aluno, $inf_aluno->cpf, $inf_aluno->status, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new Application_Model_Turma($inf_aluno->id_turma));
+                        $array_alunos[$inf_aluno->id_aluno] = new Application_Model_Aluno($inf_aluno->id_aluno, $inf_aluno->nome_aluno, $inf_aluno->cpf, $inf_aluno->status, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new Application_Model_Turma($inf_aluno->id_turma));
                     else
                         $array_alunos[$inf_aluno->id_aluno]->addTurma(new Application_Model_Turma($inf_aluno->id_turma), $inf_aluno->liberacao);
                 }
@@ -623,7 +599,7 @@ class Application_Model_Mappers_Aluno {
 
                 foreach ($alunos as $inf_aluno) {
                     if (!isset($array_alunos[$inf_aluno->id_aluno]))
-                        $array_alunos[$inf_aluno->id_aluno] = new Application_Model_Aluno($inf_aluno->id_aluno, $inf_aluno->nome_aluno, $inf_aluno->cpf, $inf_aluno->status, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma));
+                        $array_alunos[$inf_aluno->id_aluno] = new Application_Model_Aluno($inf_aluno->id_aluno, $inf_aluno->nome_aluno, $inf_aluno->cpf, $inf_aluno->status, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma));
                     else
                         $array_alunos[$inf_aluno->id_aluno]->addTurma(new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma));
 
@@ -677,7 +653,7 @@ class Application_Model_Mappers_Aluno {
 
                 foreach ($alunos as $inf_aluno) {
                     if (!isset($array_alunos[$inf_aluno->id_aluno]))
-                        $array_alunos[$inf_aluno->id_aluno] = new Application_Model_Aluno($inf_aluno->id_aluno, $inf_aluno->nome_aluno, $inf_aluno->cpf, $inf_aluno->status, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma));
+                        $array_alunos[$inf_aluno->id_aluno] = new Application_Model_Aluno($inf_aluno->id_aluno, $inf_aluno->nome_aluno, $inf_aluno->cpf, $inf_aluno->status, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma));
                     else
                         $array_alunos[$inf_aluno->id_aluno]->addTurma(new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma));
 
@@ -765,16 +741,16 @@ class Application_Model_Mappers_Aluno {
 
                 foreach ($alunos as $inf_aluno) {
                     if (!isset($array_alunos[$inf_aluno->id_aluno]))
-                        $array_alunos[$inf_aluno->id_aluno] = new Application_Model_Aluno($inf_aluno->id_aluno, $inf_aluno->nome_aluno, $inf_aluno->cpf, $inf_aluno->status, $inf_aluno->data_desligamento, $inf_aluno->motivo_desligamento, $inf_aluno->rg, $inf_aluno->data_nascimento, $inf_aluno->email, $inf_aluno->escolaridade, $inf_aluno->telefone, $inf_aluno->celular, $inf_aluno->endereco, $inf_aluno->bairro, $inf_aluno->numero, $inf_aluno->complemento, $inf_aluno->cep, $inf_aluno->cidade, $inf_aluno->estado, $inf_aluno->data_registro, $inf_aluno->is_cpf_responsavel, $inf_aluno->nome_responsavel, null, new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma, null, null, null, null, new Application_Model_Disciplina($inf_aluno->id_disciplina, $inf_aluno->nome_disciplina, null, new Application_Model_Curso($inf_aluno->id_curso, $inf_aluno->nome_curso))), $inf_aluno->aprovado, $inf_aluno->liberacao, null);
+                        $array_alunos[$inf_aluno->id_aluno] = new Application_Model_Aluno($inf_aluno->id_aluno, $inf_aluno->nome_aluno, $inf_aluno->cpf, $inf_aluno->status, $inf_aluno->sexo, $inf_aluno->data_desligamento, $inf_aluno->motivo_desligamento, $inf_aluno->rg, $inf_aluno->data_nascimento, $inf_aluno->email, $inf_aluno->escolaridade, $inf_aluno->telefone, $inf_aluno->celular, $inf_aluno->endereco, $inf_aluno->bairro, $inf_aluno->numero, $inf_aluno->complemento, $inf_aluno->cep, $inf_aluno->cidade, $inf_aluno->estado, $inf_aluno->data_registro, $inf_aluno->is_cpf_responsavel, $inf_aluno->nome_responsavel, null, new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma, null, null, null, null, new Application_Model_Disciplina($inf_aluno->id_disciplina, $inf_aluno->nome_disciplina, null, new Application_Model_Curso($inf_aluno->id_curso, $inf_aluno->nome_curso))), $inf_aluno->aprovado, $inf_aluno->liberacao, null);
                     else
                         $array_alunos[$inf_aluno->id_aluno]->addTurma(new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma, null, null, null, null, new Application_Model_Disciplina($inf_aluno->id_disciplina, $inf_aluno->nome_disciplina, null, new Application_Model_Curso($inf_aluno->id_curso, $inf_aluno->nome_curso))), $inf_aluno->liberacao, $inf_aluno->aprovado);
 
                     if (!empty($inf_aluno->id_pagamento)) {
                         if (!isset($array_pagamentos[$inf_aluno->id_aluno][$inf_aluno->id_turma][$inf_aluno->id_pagamento])) {
                             if (!empty($inf_aluno->id_alimento))
-                                $array_pagamentos[$inf_aluno->id_aluno][$inf_aluno->id_turma][$inf_aluno->id_pagamento] = new Application_Model_Pagamento($inf_aluno->id_pagamento, $inf_aluno->situacao, $inf_aluno->valor_pago, new Application_Model_Alimento($inf_aluno->id_alimento, $inf_aluno->nome_alimento), $inf_aluno->quantidade);
+                                $array_pagamentos[$inf_aluno->id_aluno][$inf_aluno->id_turma][$inf_aluno->id_pagamento] = new Application_Model_Pagamento($inf_aluno->id_pagamento, $inf_aluno->situacao, $inf_aluno->valor_pago, new Application_Model_Alimento($inf_aluno->id_alimento, $inf_aluno->nome_alimento), $inf_aluno->quantidade, $inf_aluno->condicao, $id_aluno->tipo_isencao_pendencia);
                             else
-                                $array_pagamentos[$inf_aluno->id_aluno][$inf_aluno->id_turma][$inf_aluno->id_pagamento] = new Application_Model_Pagamento($inf_aluno->id_pagamento, $inf_aluno->situacao, $inf_aluno->valor_pago);
+                                $array_pagamentos[$inf_aluno->id_aluno][$inf_aluno->id_turma][$inf_aluno->id_pagamento] = new Application_Model_Pagamento($inf_aluno->id_pagamento, $inf_aluno->situacao, $inf_aluno->valor_pago, null, null, $inf_aluno->condicao, $id_aluno->tipo_isencao_pendencia);
                         }
                         elseif (!empty($inf_aluno->id_alimento))
                             $array_pagamentos[$inf_aluno->id_aluno][$inf_aluno->id_turma][$inf_aluno->id_pagamento]->addAlimento(new Application_Model_Alimento($inf_aluno->id_alimento, $inf_aluno->nome_alimento), $inf_aluno->quantidade);
@@ -991,7 +967,8 @@ class Application_Model_Mappers_Aluno {
 
     /**
      * Aprova/desaprova alunos baseado em suas notas/frequências.
-     * Só é realizado se todas as notas/frequências estiverem lançadas
+     * Só é realizado se todas as notas/frequências estiverem lançadas. 
+     * Chamado quando um período é finalizado.
      */
     public function finalizaAlunos($quantidade_alunos_turma, $calendario_atual, $turmas_datas_lancamentos, $ids_atividades_turma, $notas_lancadas) {
         try {
@@ -1027,6 +1004,15 @@ class Application_Model_Mappers_Aluno {
         }
     }
 
+    /**
+     * Verifica se os lançamentos estão presentes
+     * @param type $quantidade_alunos_turma
+     * @param Application_Model_DatasAtividade $calendario_atual
+     * @param type $turmas_datas_lancamentos
+     * @param type $ids_atividades_turma
+     * @param type $notas_lancadas
+     * @return boolean
+     */
     private function verificaLancamentos(&$quantidade_alunos_turma, &$calendario_atual, &$turmas_datas_lancamentos, &$ids_atividades_turma, &$notas_lancadas) {
         try {
             if ($calendario_atual instanceof Application_Model_DatasAtividade) {
@@ -1097,7 +1083,7 @@ class Application_Model_Mappers_Aluno {
                             else {
                                 $aprovado['tipo'] = 'reprovado';
                                 $aprovado['periodo'] = $turma->nome_periodo;
-                                $aprovado['nome_turma'] = $turmas_pre_requisito[$turma->id_turma]->getCompleteNomeTurma();
+                                $aprovado['nome_turma'] = $turmas_pre_requisito[$turma->id_turma]->toString();
                             }
                         }
                     }

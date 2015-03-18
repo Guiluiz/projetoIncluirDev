@@ -27,7 +27,7 @@ class Application_Model_Disciplina {
     private $curso;
 
     /**
-     * @var array 
+     * @var Application_Model_Disciplina[] 
      */
     private $pre_requisitos;
 

@@ -626,15 +626,7 @@ class Application_Model_Aluno {
         return $aux;
     }
 
-    /* public function getAprovacaoTurmas() {
-      $aux = array();
-      if ($this->hasTurmas()) {
-      foreach ($this->turmas as $turma)
-      $aux[$turma[Application_Model_Aluno::$index_turma]->getIdTurma(true)] = $turma[Application_Model_Aluno::$index_aprovacao_turma];
-      }
-      return $aux;
-      } */
-
+    
     /**
      * Retorna um array com os alimentos dos pagamentos das turmas do aluno.
      * Utilizado na construção da tabela de alimentos, exibida na alteração do aluno.
@@ -669,6 +661,7 @@ class Application_Model_Aluno {
 
     /**
      * Retorna um array com as informações do aluno.
+     * Utilizado tanto para popular formulários de aluno quanto para cadastro/alteração no banco de dados
      * @param boolean $isView Indica se os id's serão criptografados ou não
      * @return array
      */

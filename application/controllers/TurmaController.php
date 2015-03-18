@@ -67,7 +67,7 @@ class TurmaController extends Zend_Controller_Action {
                     $mapper_turma = new Application_Model_Mappers_Turma();
                     $periodo_atual = $periodo->getPeriodoAtual();
 
-                    $turma = new Application_Model_Turma(null, $form_cadastro->getValue('nome_turma'), $form_cadastro->getValue('data_inicio'), $form_cadastro->getValue('data_fim'), $form_cadastro->getValue('horario_inicio'), $form_cadastro->getValue('horario_fim'), new Application_Model_Disciplina(base64_decode($form_cadastro->getValue('disciplina'))), Application_Model_Turma::$status_iniciada, null, $periodo_atual);
+                    $turma = new Application_Model_Turma(null, $form_cadastro->getValue('nome_turma'), $form_cadastro->getValue('data_inicio'), $form_cadastro->getValue('data_fim'), $form_cadastro->getValue('horario_inicio'), $form_cadastro->getValue('horario_fim'), new Application_Model_Disciplina(base64_decode($form_cadastro->getValue('disciplina'))), Application_Model_Turma::$status_iniciada, null, $periodo_atual, $form_cadastro->getValue('sala'));
 
                     if (!empty($dados['professores'])) {
                         foreach ($dados['professores']as $professor)
@@ -119,7 +119,7 @@ class TurmaController extends Zend_Controller_Action {
                         $this->_helper->redirector->goToRoute(array('controller' => 'turma', 'action' => 'index'), null, true);
 
                     if ($form_alteracao->isValid($dados)) {
-                        $turma = new Application_Model_Turma(base64_decode($form_alteracao->getValue('id_turma')), $form_alteracao->getValue('nome_turma'), $form_alteracao->getValue('data_inicio'), $form_alteracao->getValue('data_fim'), $form_alteracao->getValue('horario_inicio'), $form_alteracao->getValue('horario_fim'), new Application_Model_Disciplina(base64_decode($form_alteracao->getValue('disciplina'))), Application_Model_Turma::$status_iniciada, null, $periodo_atual);
+                        $turma = new Application_Model_Turma(base64_decode($form_alteracao->getValue('id_turma')), $form_alteracao->getValue('nome_turma'), $form_alteracao->getValue('data_inicio'), $form_alteracao->getValue('data_fim'), $form_alteracao->getValue('horario_inicio'), $form_alteracao->getValue('horario_fim'), new Application_Model_Disciplina(base64_decode($form_alteracao->getValue('disciplina'))), Application_Model_Turma::$status_iniciada, null, $periodo_atual, $form_alteracao->getValue('sala'));
 
                         if (!empty($dados['professores'])) {
                             foreach ($dados['professores']as $professor)

@@ -476,7 +476,7 @@ class Aplicacao_Relatorio_Excel {
                                     $aux_turma = $mapper_turma->buscaTurmaByID($id_turma);
 
                                     if ($aux_turma instanceof Application_Model_Turma) {
-                                        $aux_nome_turma = $aux_turma->getCompleteNomeTurma() . ' | ' . $aux_turma->horarioTurmaToString();
+                                        $aux_nome_turma = $aux_turma->toString() . ' | ' . $aux_turma->horarioTurmaToString();
 
                                         $aux_pagamento = '';
                                         $aux_situacao = '';
@@ -1098,7 +1098,7 @@ class Aplicacao_Relatorio_Excel {
                                     $aux_turma = $mapper_turma->buscaTurmaByID($id_turma);
 
                                     if ($aux_turma instanceof Application_Model_Turma)
-                                        $aux_nome_turma = $aux_turma->getCompleteNomeTurma() . ' | ' . $aux_turma->horarioTurmaToString();
+                                        $aux_nome_turma = $aux_turma->toString() . ' | ' . $aux_turma->horarioTurmaToString();
                                 }
                                 $sheet->setCellValue('B' . $i, $aux_nome_turma);
                                 $sheet->setCellValue('D' . $i, $aluno->getNotaAcumulada($id_turma, false));

@@ -124,7 +124,7 @@ if ($this->aluno instanceof Application_Model_Aluno):
                     $total_aulas = $this->calendarios[$array_turmas_periodo_atual['periodo']]->getQuantidadeAulas();
                     ?>
                     <tr>
-                        <td><?php echo $turma[Application_Model_Aluno::$index_turma]->getCompleteNomeTurma() ?></td>
+                        <td><?php echo $turma[Application_Model_Aluno::$index_turma]->toString() ?></td>
                         <td><?php echo $turma[Application_Model_Aluno::$index_pagamento_turma]->getSituacao() ?></td>
                         <td><?php echo $turma[Application_Model_Aluno::$index_pagamento_turma]->getValorPagamento() ?></td>
                         <td>
@@ -169,7 +169,7 @@ if ($this->aluno instanceof Application_Model_Aluno):
                         <?php $total_aulas = $this->calendarios[$id_periodo]->getQuantidadeAulas();
                         ?>
                         <tr>
-                            <td><?php echo $turma[Application_Model_Aluno::$index_turma]->getCompleteNomeTurma() ?></td>
+                            <td><?php echo $turma[Application_Model_Aluno::$index_turma]->toString() ?></td>
                             <td><?php echo $turma[Application_Model_Aluno::$index_pagamento_turma]->getSituacao() ?></td>
                             <td><?php echo $turma[Application_Model_Aluno::$index_pagamento_turma]->getValorPagamento() ?></td>
                             <td>

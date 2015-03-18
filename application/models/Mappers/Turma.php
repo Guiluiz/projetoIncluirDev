@@ -7,7 +7,12 @@
 class Application_Model_Mappers_Turma {
 
     private $db_turma;
-
+    
+    /**
+     * Inclui a turma especificada no banco de dados
+     * @param Application_Model_Turma $turma
+     * @return boolean
+     */
     public function addTurma($turma) {
         try {
             if ($turma instanceof Application_Model_Turma) {
@@ -31,7 +36,12 @@ class Application_Model_Mappers_Turma {
             return false;
         }
     }
-
+    
+    /**
+     * Altera a turma especificada no banco de dados
+     * @param Application_Model_Turma $turma
+     * @return boolean
+     */
     public function alterarTurma($turma) {
         try {
             if ($turma instanceof Application_Model_Turma) {
@@ -57,7 +67,12 @@ class Application_Model_Mappers_Turma {
             return false;
         }
     }
-
+    
+    /**
+     * Exclui a turma com o id especificado do banco de dados
+     * @param int $id_turma
+     * @return boolean
+     */
     public function excluirTurma($id_turma) {
         try {
             $this->db_turma = new Application_Model_DbTable_Turma();
@@ -68,17 +83,28 @@ class Application_Model_Mappers_Turma {
             return false;
         }
     }
-
-    public function cancelarTurma($turma) {
+    
+    /**
+     * Altera o status da turma especificada para cancelado
+     * @param int $id_turma
+     * @return boolean
+     */
+    public function cancelarTurma($id_turma) {
         try {
             $this->db_turma = new Application_Model_DbTable_Turma();
-            $this->db_turma->update(array('status' => Application_Model_Turma::$status_cancelada), $this->db_turma->getAdapter()->quoteInto('id_turma = ?', (int) $turma));
+            $this->db_turma->update(array('status' => Application_Model_Turma::$status_cancelada), $this->db_turma->getAdapter()->quoteInto('id_turma = ?', (int) $id_turma));
             return true;
         } catch (Zend_Exception $e) {
             return false;
         }
     }
-
+    
+    /**
+     * Retorna a quantidade de alunos da(s) turma(s) e outras informações de acordo com o parâmetro
+     * @param int|null $id_turma Indica a turma que terá a quantidade retornada, caso seja nulo as quantidades de todas as turmas são buscadas
+     * @param boolean $complete Indica se informações sobre a disciplina serao retornadas (utilizada para fazer a distribuição de alunos nas turmas)
+     * @return array|int (retorna int quando é apenas uma turma e o $complete é false)
+     */
     public function getQuantidadeAlunos($id_turma = null, $complete = true) {
         try {
             $this->db_turma = new Application_Model_DbTable_Turma();
@@ -150,7 +176,13 @@ class Application_Model_Mappers_Turma {
             return null;
         }
     }
-
+    
+    /**
+     * Busca as turmas de acordo com os filtros indicados
+     * @param type $filtros_busca
+     * @param type $paginator
+     * @return \Zend_Paginator|\Application_Model_Turma|null
+     */
     public function buscaTurmas($filtros_busca = null, $paginator = null) {
         try {
             $this->db_turma = new Application_Model_DbTable_Turma();
@@ -190,7 +222,15 @@ class Application_Model_Mappers_Turma {
             return null;
         }
     }
-
+    
+    /**
+     * Retorna a turma de acordo com o id especificado. Os campos de período e ativa,
+     * são necessários para evitar a alteração de turmas canceladas ou de períodos passados.
+     * @param int $id_turma
+     * @param int|null $periodo 
+     * @param int|null $ativa
+     * @return \Application_Model_Turma|null
+     */
     public function buscaTurmaByID($id_turma, $periodo = null, $ativa = null) {
         try {
             $this->db_turma = new Application_Model_DbTable_Turma();
@@ -216,7 +256,7 @@ class Application_Model_Mappers_Turma {
 
                 foreach ($turma as $inf_turma) {
                     if (empty($array_turmas[$inf_turma->id_turma]))
-                        $array_turmas[$inf_turma->id_turma] = new Application_Model_Turma($inf_turma->id_turma, $inf_turma->nome_turma, $inf_turma->data_inicio, $inf_turma->data_fim, $inf_turma->horario_inicio, $inf_turma->horario_fim, new Application_Model_Disciplina($inf_turma->id_disciplina, $inf_turma->nome_disciplina, null, new Application_Model_Curso($inf_turma->id_curso)), $inf_turma->status, ((!empty($inf_turma->id_voluntario)) ? new Application_Model_Professor($inf_turma->id_voluntario, $inf_turma->nome) : null), new Application_Model_Periodo($inf_turma->id_periodo));
+                        $array_turmas[$inf_turma->id_turma] = new Application_Model_Turma($inf_turma->id_turma, $inf_turma->nome_turma, $inf_turma->data_inicio, $inf_turma->data_fim, $inf_turma->horario_inicio, $inf_turma->horario_fim, new Application_Model_Disciplina($inf_turma->id_disciplina, $inf_turma->nome_disciplina, null, new Application_Model_Curso($inf_turma->id_curso)), $inf_turma->status, ((!empty($inf_turma->id_voluntario)) ? new Application_Model_Professor($inf_turma->id_voluntario, $inf_turma->nome) : null), new Application_Model_Periodo($inf_turma->id_periodo), $inf_turma->sala);
                     else {
                         if (!empty($inf_turma->id_voluntario))
                             $array_turmas[$inf_turma->id_turma]->addProfessor(new Application_Model_Professor($inf_turma->id_voluntario, $inf_turma->nome));
@@ -236,8 +276,8 @@ class Application_Model_Mappers_Turma {
 
     /**
      * Retorna as turmas com os id's indicados por parâmetro. 
-     * Utilizado para popular as turmas selecionadas para o aluno
-     * @param type $array_ids
+     * Utilizado para popular as turmas selecionadas para o aluno no cadastro (quando há erro no cadastro, as tabelas com as turmas escolhidas devem ser inseridas)
+     * @param array $array_ids
      * @return \Application_Model_Turma|null
      */
     public function buscaTurmasByID($array_ids) {
@@ -367,9 +407,9 @@ class Application_Model_Mappers_Turma {
     /**
      * Busca as turmas de uma disciplina de acordo com os horários especificados. Usado para redistribuir alunos 
      * nas turmas
-     * @param type $id_disciplina
-     * @param type $horario_inicio
-     * @param type $horario_termino
+     * @param int $id_disciplina
+     * @param string $horario_inicio
+     * @param string $horario_termino
      * @return \Application_Model_Turma|null
      */
     public function getTurmasByDisciplinaHorario($id_disciplina, $horario_inicio, $horario_termino) {
@@ -404,12 +444,12 @@ class Application_Model_Mappers_Turma {
 
     /**
      * Retorna as turmas das disciplinas indicadas por parâmetro
-     * @param type $array_ids
+     * @param array $array_ids_disciplinas Array de id's de disciplinas
      * @return \Application_Model_Turma|null
      */
-    public function getTurmasByDisciplinas($array_ids, $inclui_turmas_periodo_atual = false) {
+    public function getTurmasByDisciplinas($array_ids_disciplinas, $inclui_turmas_periodo_atual = false) {
         try {
-            if (!empty($array_ids) && is_array($array_ids)) {
+            if (!empty($array_ids_disciplinas) && is_array($array_ids_disciplinas)) {
                 $this->db_turma = new Application_Model_DbTable_Turma();
                 $select = $this->db_turma->select()
                         ->setIntegrityCheck(false)
@@ -423,7 +463,7 @@ class Application_Model_Mappers_Turma {
 
                 $where = "( ";
 
-                foreach ($array_ids as $id)
+                foreach ($array_ids_disciplinas as $id)
                     $where .= $this->db_turma->getAdapter()->quoteInto('turma.id_disciplina = ?', (int) $id) . " OR ";
 
                 $where = substr($where, 0, -4) . ")";
