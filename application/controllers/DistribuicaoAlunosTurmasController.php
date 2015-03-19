@@ -43,13 +43,12 @@ class DistribuicaoAlunosTurmasController extends Zend_Controller_Action {
                         echo '<br><br><b>' . $nome_disciplina . ' | ' . $aux[2] . ' - ' . $aux[3] . '</b> | Alunos:<b>' . count($alunos) . '</b> | Turmas: <b>' . count($turmas) . '</b> | Limite: <b>' . $parada . '</b><br><br>';
 
                         foreach ($alunos as &$aluno) {
-                            echo $i + 1 . ' Aluno: <b>' . mb_strtoupper($aluno['nome_aluno'], 'UTF-8') . '</b>   |   Data Nascimento: <b>' . $aluno['data_nascimento']->format('d/m/Y') . '</b>  |   Turma: <b>' . $turmas[$j]->getNomeTurma() . '</b><br><br>';
                             if ($j < count($turmas)) {
-                                if ($i < $parada - 1) {
+                                if ($i < $parada) {
                                     $aluno['nova_turma'] = $turmas[$j]->getIdTurma();
                                     $i++;
                                 } else {
-                                    $i = 0;
+                                    $i = 1;
                                     if (isset($turmas[$j + 1])) {
                                         echo '<br><br>';
                                         $j++;
@@ -57,6 +56,8 @@ class DistribuicaoAlunosTurmasController extends Zend_Controller_Action {
                                     $aluno['nova_turma'] = $turmas[$j]->getIdTurma();
                                 }
                             }
+                            echo $i . ' Aluno: <b>' . mb_strtoupper($aluno['nome_aluno'], 'UTF-8') . '</b>   |   Data Nascimento: <b>' . $aluno['data_nascimento']->format('d/m/Y') . '</b>  |   Turma: <b>' . $turmas[$j]->getNomeTurma() . '</b><br><br>';
+                            
                             //$mapper_alunos->updateTurmaAlunos(array($aluno['turma'] => $aluno['nova_turma']), $aluno['aluno']);
                         }
                     }
