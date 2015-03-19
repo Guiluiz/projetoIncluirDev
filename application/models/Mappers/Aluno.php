@@ -320,7 +320,7 @@ class Application_Model_Mappers_Aluno {
                     ->joinLeft('turma_atividades', 'turma_atividades.id_atividades_turma = nota_aluno.id_atividades_turma', array())
                     ->joinLeft('atividade', 'turma_atividades.id_atividade = atividade.id_atividade', array('id_atividade', 'nome', 'valor_total', 'data_funcionamento as data_atividade'))
                     ->joinLeft('falta', 'turma_alunos.id_turma_aluno = falta.id_turma_aluno', array('id_falta', 'data_funcionamento', 'observacao'))
-                    ->joinLeft('pagamento', 'turma_alunos.id_pagamento = pagamento.id_pagamento', array('situacao', 'valor_pago'))
+                    ->joinLeft('pagamento', 'turma_alunos.id_pagamento = pagamento.id_pagamento', array('situacao', 'valor_pago', 'condicao', 'tipo_isencao_pendencia'))
                     ->joinLeft('pagamento_alimentos', 'turma_alunos.id_pagamento = pagamento_alimentos.id_pagamento', array('id_alimento', 'quantidade'))
                     ->joinLeft('alimento', 'pagamento_alimentos.id_alimento = alimento.id_alimento', array('nome_alimento'));
 
@@ -354,7 +354,7 @@ class Application_Model_Mappers_Aluno {
                             if (!empty($inf_aluno->id_alimento))
                                 $array_pagamentos[$inf_aluno->id_turma][$inf_aluno->id_pagamento] = new Application_Model_Pagamento($inf_aluno->id_pagamento, $inf_aluno->situacao, $inf_aluno->valor_pago, new Application_Model_Alimento($inf_aluno->id_alimento, $inf_aluno->nome_alimento), $inf_aluno->quantidade, $inf_aluno->condicao, $id_aluno->tipo_isencao_pendencia);
                             else
-                                $array_pagamentos[$inf_aluno->id_turma][$inf_aluno->id_pagamento] = new Application_Model_Pagamento($inf_aluno->id_pagamento, $inf_aluno->situacao, $inf_aluno->valor_pago, null, null, $inf_aluno->condicao, $id_aluno->tipo_isencao_pendencia);
+                                $array_pagamentos[$inf_aluno->id_turma][$inf_aluno->id_pagamento] = new Application_Model_Pagamento($inf_aluno->id_pagamento, $inf_aluno->situacao, $inf_aluno->valor_pago, null, null, $inf_aluno->condicao, $inf_aluno->tipo_isencao_pendencia);
                         } else
                             $array_pagamentos[$inf_aluno->id_turma][$inf_aluno->id_pagamento]->addAlimento(new Application_Model_Alimento($inf_aluno->id_alimento, $inf_aluno->nome_alimento), $inf_aluno->quantidade);
                     }
@@ -701,7 +701,7 @@ class Application_Model_Mappers_Aluno {
                     ->joinLeft('nota_aluno', 'turma_alunos.id_turma_aluno = nota_aluno.id_turma_aluno', array('id_nota', 'valor_nota'))
                     ->joinLeft('turma_atividades', 'turma_atividades.id_atividades_turma = nota_aluno.id_atividades_turma', array())
                     ->joinLeft('atividade', 'turma_atividades.id_atividade = atividade.id_atividade', array('id_atividade', 'nome', 'valor_total'))
-                    ->joinLeft('pagamento', 'turma_alunos.id_pagamento = pagamento.id_pagamento', array('situacao', 'valor_pago'))
+                    ->joinLeft('pagamento', 'turma_alunos.id_pagamento = pagamento.id_pagamento', array('situacao', 'valor_pago', 'condicao', 'tipo_isencao_pendencia'))
                     ->joinLeft('pagamento_alimentos', 'turma_alunos.id_pagamento = pagamento_alimentos.id_pagamento', array('id_alimento', 'quantidade'))
                     ->joinLeft('alimento', 'pagamento_alimentos.id_alimento = alimento.id_alimento', array('nome_alimento'))
                     ->joinLeft('turma', 'turma.id_turma = turma_alunos.id_turma', array('nome_turma', 'id_disciplina'))
@@ -748,7 +748,7 @@ class Application_Model_Mappers_Aluno {
                     if (!empty($inf_aluno->id_pagamento)) {
                         if (!isset($array_pagamentos[$inf_aluno->id_aluno][$inf_aluno->id_turma][$inf_aluno->id_pagamento])) {
                             if (!empty($inf_aluno->id_alimento))
-                                $array_pagamentos[$inf_aluno->id_aluno][$inf_aluno->id_turma][$inf_aluno->id_pagamento] = new Application_Model_Pagamento($inf_aluno->id_pagamento, $inf_aluno->situacao, $inf_aluno->valor_pago, new Application_Model_Alimento($inf_aluno->id_alimento, $inf_aluno->nome_alimento), $inf_aluno->quantidade, $inf_aluno->condicao, $id_aluno->tipo_isencao_pendencia);
+                                $array_pagamentos[$inf_aluno->id_aluno][$inf_aluno->id_turma][$inf_aluno->id_pagamento] = new Application_Model_Pagamento($inf_aluno->id_pagamento, $inf_aluno->situacao, $inf_aluno->valor_pago, new Application_Model_Alimento($inf_aluno->id_alimento, $inf_aluno->nome_alimento), $inf_aluno->quantidade, $inf_aluno->condicao, $inf_aluno->tipo_isencao_pendencia);
                             else
                                 $array_pagamentos[$inf_aluno->id_aluno][$inf_aluno->id_turma][$inf_aluno->id_pagamento] = new Application_Model_Pagamento($inf_aluno->id_pagamento, $inf_aluno->situacao, $inf_aluno->valor_pago, null, null, $inf_aluno->condicao, $id_aluno->tipo_isencao_pendencia);
                         }

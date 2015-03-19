@@ -102,7 +102,7 @@ class Application_Model_Mappers_Turma {
     /**
      * Retorna a quantidade de alunos da(s) turma(s) e outras informações de acordo com o parâmetro
      * @param int|null $id_turma Indica a turma que terá a quantidade retornada, caso seja nulo as quantidades de todas as turmas são buscadas
-     * @param boolean $complete Indica se informações sobre a disciplina serao retornadas (utilizada para fazer a distribuição de alunos nas turmas)
+     * @param boolean $complete Indica se informações sobre a disciplina serao retornadas (utilizada para exibição de quantidades para usuário, verificação de quantidade de lançamentos de notas e frequencia, etc)
      * @return array|int (retorna int quando é apenas uma turma e o $complete é false)
      */
     public function getQuantidadeAlunos($id_turma = null, $complete = true) {
@@ -115,6 +115,7 @@ class Application_Model_Mappers_Turma {
                         ->joinInner('disciplina', 'turma.id_disciplina = disciplina.id_disciplina', array('nome_disciplina'))
                         ->joinleft('turma_alunos', 'turma.id_turma = turma_alunos.id_turma', array('count(aluno.id_aluno)'))
                         ->joinLeft('aluno', 'turma_alunos.id_aluno = aluno.id_aluno AND ' . $this->db_turma->getDefaultAdapter()->quoteInto('aluno.status = ?', Application_Model_Aluno::$status_ativo), array())
+                        ->order(array('disciplina.nome_disciplina ASC', 'turma.nome_turma ASC'))
                         ->group('turma.id_turma');
 
                 if (!empty($id_turma))

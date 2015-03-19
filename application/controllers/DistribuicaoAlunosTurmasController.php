@@ -14,23 +14,9 @@ class DistribuicaoAlunosTurmasController extends Zend_Controller_Action {
 
         $alunos_turmas = $mapper_alunos->getInfAlunosDisciplinaHorario();
         $max_alunos_turmas_disciplinas = array(
-            'Básico de Informática' => 24,
-            'Noções Básicas de Direito I' => 45,
-            'Espanhol Instrumental Básico I Para Eventos' => 45,
-            'Espanhol Instrumental Básico II Para Eventos' => 45,
-            'Empreendedorismo, Negócios e Educação Financeira I' => 45,
-            'Formação de Líderes e Voluntários' => 45,
-            'Empreendedorismo, Negócios e Educação Financeira II' => 45,
-            'Inglês Instrumental Básico I Para Eventos' => 45,
-            'Inglês Instrumental Básico II Para Eventos' => 45,
-            'Inglês Instrumental Intermediário I Para Eventos' => 45,
-            'Inglês Para Conversação' => 45,
-            'Inglês Básico I Para Crianças' => 32,
-            'Inglês Básico II Para Crianças' => 30,
-            'Oficina de leitura e interpretação geográfica da cidade' => 45,
-            'Português Para Adultos I - Noções Gerais' => 45,
-            'Português Para Adultos II - Nova Gramática e Produção de Textos' => 45,
-            'Ciências, Física, Português, Matemática e Química' => 45
+            'Inglês Instrumental Básico I Para Eventos' => array('quant_turmas' => 3, 'max_alunos' => 25),
+            'Inglês Básico I Para Crianças' => array('quant_turmas' => 2, 'max_alunos' => 25),
+            'Inglês Básico II Para Crianças' => array('quant_turmas' => 2, 'max_alunos' => 25),
         );
 
         foreach ($alunos_turmas as $inf_turma => $alunos) {
@@ -48,33 +34,34 @@ class DistribuicaoAlunosTurmasController extends Zend_Controller_Action {
                         });
                     }
 
-                    $parada = $max_alunos_turmas_disciplinas[$nome_disciplina];
-                    if (count($alunos) > $parada) {
+                    $parada = ceil(count($alunos) / $max_alunos_turmas_disciplinas[$nome_disciplina]['quant_turmas']);
+
+                    if (count($alunos) > $max_alunos_turmas_disciplinas[$nome_disciplina]['max_alunos']) {
                         $i = 0;
                         $j = 0;
 
-                        echo '<br><br><b>' . $nome_disciplina . '</b> | Alunos:<b>' . count($alunos) . '</b> | Turmas: <b>' . count($turmas) . '</b> | Limite: <b>' . $parada . '</b><br><br>';
+                        echo '<br><br><b>' . $nome_disciplina . ' | ' . $aux[2] . ' - ' . $aux[3] . '</b> | Alunos:<b>' . count($alunos) . '</b> | Turmas: <b>' . count($turmas) . '</b> | Limite: <b>' . $parada . '</b><br><br>';
 
                         foreach ($alunos as &$aluno) {
-                            echo $i+1 . ' Aluno: <b>' . mb_strtoupper($aluno['nome_aluno'], 'UTF-8') . '</b>   |   Data Nascimento: <b>'.$aluno['data_nascimento']->format('d/m/Y').'</b>  |   Turma: <b>' . $turmas[$j]->getNomeTurma() . '</b><br><br>';
+                            echo $i + 1 . ' Aluno: <b>' . mb_strtoupper($aluno['nome_aluno'], 'UTF-8') . '</b>   |   Data Nascimento: <b>' . $aluno['data_nascimento']->format('d/m/Y') . '</b>  |   Turma: <b>' . $turmas[$j]->getNomeTurma() . '</b><br><br>';
                             if ($j < count($turmas)) {
-                                if ($i < $parada) {
+                                if ($i < $parada - 1) {
                                     $aluno['nova_turma'] = $turmas[$j]->getIdTurma();
                                     $i++;
                                 } else {
-                                    $i = 1;
-                                    if (isset($turmas[$j + 1])){
+                                    $i = 0;
+                                    if (isset($turmas[$j + 1])) {
                                         echo '<br><br>';
                                         $j++;
                                     }
                                     $aluno['nova_turma'] = $turmas[$j]->getIdTurma();
                                 }
                             }
-                            $mapper_alunos->updateTurmaAlunos(array($aluno['turma'] => $aluno['nova_turma']), $aluno['aluno']);
+                            //$mapper_alunos->updateTurmaAlunos(array($aluno['turma'] => $aluno['nova_turma']), $aluno['aluno']);
                         }
                     }
-                } else
-                    echo 'erro, disciplina ' . $nome_disciplina . ' não foi encontrada';
+                } //else
+                //echo 'erro, disciplina ' . $nome_disciplina . ' não foi encontrada';
             }
         }
 
