@@ -13,6 +13,7 @@ var controle_frequencia_aluno = (function() {
         container: $('#calendario_frequencia'),
         container_frequencias: $('#frequencia'),
         form: $('form'),
+        confirmado: false,
         url_ajax_aluno: '',
         url_ajax_disciplina: '',
         url_ajax_turma: '',
@@ -64,6 +65,13 @@ var controle_frequencia_aluno = (function() {
             }
             else
                 frequencia.getAlunosFrequencias();
+        });
+
+        frequencia.form.submit(function(event) {
+            if (frequencia.confirmado == false) {
+                frequencia.printConfirmacao();
+                event.preventDefault();
+            }
         });
     };
 
@@ -198,7 +206,7 @@ var controle_frequencia_aluno = (function() {
 
     frequencia.printContador = function() {
         $('div').remove('#inf_presentes');
-        $('#title-frequencia').append('<div id="inf_presentes" class="obs">Presentes: <b>' + $('.check_frequencia:checked').length + '</b> / Ausentes: <b>' + $('.check_frequencia:not(:checked)').length + '</b></div>');
+        $('#title-frequencia').append('<div id="inf_presentes" class="obs">Ausentes: <b>' + $('.check_frequencia:checked').length + '</b> / Presentes: <b>' + $('.check_frequencia:not(:checked)').length + '</b></div>');
     };
 
     frequencia.printMensagem = function(msg) {
@@ -207,31 +215,36 @@ var controle_frequencia_aluno = (function() {
 
     frequencia.printConfirmacao = function() {
         var clone = frequencia.container_frequencias.clone();
-        
-        clone.find('tr').each(function(){
-           if($(this).find('input[type="hidden"]').length > 0)
-               $(this).remove();
-        });
-        
-        $('body').append('<div style="display:none" id="confirm">'+clone.html()+'</div>');
-        
-        $("#confirm").dialog({
-            resizable: false,
-            height: 140,
-            modal: true,
-            buttons: {
-                'Confirm submit': function() {
-                    frequencia.form.submit();
-                },
-                Cancel: function() {
-                    $(this).dialog('destroy');
-                    $(this).remove();
-                }
+
+        clone.find('tr').each(function() {
+            var ultima_coluna = $(this).children().last();
+
+            if (ultima_coluna.find('input[type="checkbox"]').length > 0) {
+                if (ultima_coluna.find('input[type="checkbox"]').prop('checked'))
+                    ultima_coluna.html('Ausente');
+                else
+                    ultima_coluna.html('Presente');
             }
         });
-        frequencia.form.submit(function() {
-            $('#confirm').dialog('open');
-            return false;
+
+        $('body').append('<div style="display:none" id="confirm">' + clone.html() + '</div>');
+
+        $("#confirm").dialog({
+            resizable: false,
+            modal: true,
+            width: 650,
+            title: 'Confirmação de lançamento',
+            buttons: {
+                'Confirmar o lançamento': function() {
+                    frequencia.confirmado = true;
+                    frequencia.form.submit();
+                },
+                Cancelar: function() {
+                    frequencia.confirmado = false;
+                    $(this).dialog('destroy');
+                    $('#confirm').remove();
+                }
+            }
         });
     };
 
