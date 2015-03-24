@@ -310,7 +310,7 @@ var controle_aluno = (function() {
                 aluno.container_alimento.hide().find('input,select,button').attr('disabled', 'disabled');
                 aluno.container_pagamento.hide().find('input,select,button').attr('disabled', 'disabled');
 
-                aluno.container_campo_isencao_pendencia.find('select').removeAttr('disabled');
+                aluno.container_campo_isencao_pendencia.find('select').removeAttr('disabled').val('');
                 aluno.container_campo_isencao_pendencia.show();
                 break;
 
@@ -373,8 +373,8 @@ var controle_aluno = (function() {
         $(aluno.getIdAlimentosTurma()).show();
 
         if (aluno.verificaExistenciaPagamento()) {
-            aluno.container_campo_isencao_pendencia.hide().find('select').attr('disabled', 'disabled');
-            aluno.container_campo_condicao_matricula.hide().find('select').attr('disabled', 'disabled');
+            aluno.container_campo_isencao_pendencia.hide().find('select').attr('disabled', 'disabled').val('');
+            aluno.container_campo_condicao_matricula.hide().find('select').attr('disabled', 'disabled').val('');
 
             aluno.table_gerenciamento_alimentos.hide().find('select,input,button').attr('disabled', 'disabled');
             aluno.container_pagamento.hide();
@@ -837,7 +837,7 @@ var controle_aluno = (function() {
                 return aluno.turmas_condicoes[i].condicao;
             }
         }
-        return false;
+        return '';
     };
 
     aluno.getTipoIsencaoPendenciaTurma = function(id_turma) {
@@ -847,7 +847,7 @@ var controle_aluno = (function() {
                 return aluno.turmas_condicoes[i].tipo_isencao;
             }
         }
-        return false;
+        return '';
     };
 
 

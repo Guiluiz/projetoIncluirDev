@@ -63,6 +63,12 @@ var controle_notas = (function() {
         });
 
         notas.form.submit(function(event) {
+            if ($('input[id^="aluno_"]').length == 0) {
+                exibeMensagem('Você deve escolher a ativadade e fazer os lançamentos', 'Lançamento de notas');
+                event.preventDefault();
+                return;
+            }
+
             if (notas.confirmado == false) {
                 notas.printConfirmacao();
                 event.preventDefault();
@@ -89,7 +95,7 @@ var controle_notas = (function() {
 
                 if (atividades instanceof Object) {
                     if (atividades.length > 0) {
-                        var html = '<option>Selecione</option>';
+                        var html = '<option value="">Selecione</option>';
 
                         for (var key in atividades)
                             html += '<option value = "' + atividades[key].id + '" valor="' + atividades[key].valor + '">' + atividades[key].nome + '</option>';
@@ -170,66 +176,72 @@ var controle_notas = (function() {
         notas.container_atividade.show();
 
         notas.container_atividade.find('select').change(function() { // exibe os campos para preenchimento de nota c/ as notas já preenchidas(se houver)
-            var notas_alunos = $('#alunos_turma_notas').find('td[id*="aluno_nota"]');
-            var opcao = $(this).find('option:selected');
-            var max = parseFloat($(opcao).attr('valor'));
-            var atividade = opcao.val();
+            if ($(this).find('option:selected').val().length > 0) {
+                console.log($(this).find('option:selected').val());
+                var notas_alunos = $('#alunos_turma_notas').find('td[id*="aluno_nota"]');
+                var opcao = $(this).find('option:selected');
+                var max = parseFloat($(opcao).attr('valor'));
+                var atividade = opcao.val();
 
-            $('#valor_atividade').html('<strong>A atividade vale ' + max + ' pontos</strong>');
+                $('#valor_atividade').html('<strong>A atividade vale ' + max + ' pontos</strong>');
 
-            $(notas_alunos).each(function() {
-                var aluno = $(this).attr('id').replace('aluno_nota_', ''); // pega o id do aluno
-                var nota_lancada = "";
+                $(notas_alunos).each(function() {
+                    var aluno = $(this).attr('id').replace('aluno_nota_', ''); // pega o id do aluno
+                    var nota_lancada = "";
 
-                for (var key in notas.alunos) {
-                    if (aluno == notas.alunos[key].id_aluno) { // verifica se já há nota lançada para a o aluno na aatividade solicitada
-                        for (var key_notas in notas.alunos[key].notas) {
-                            for (var key_nota in notas.alunos[key].notas[key_notas]) {
-                                if (atividade == notas.alunos[key].notas[key_notas][key_nota].atividade) {
-                                    nota_lancada = notas.alunos[key].notas[key_notas][key_nota].valor_nota;
-                                    break;
+                    for (var key in notas.alunos) {
+                        if (aluno == notas.alunos[key].id_aluno) { // verifica se já há nota lançada para a o aluno na aatividade solicitada
+                            for (var key_notas in notas.alunos[key].notas) {
+                                for (var key_nota in notas.alunos[key].notas[key_notas]) {
+                                    if (atividade == notas.alunos[key].notas[key_notas][key_nota].atividade) {
+                                        nota_lancada = notas.alunos[key].notas[key_notas][key_nota].valor_nota;
+                                        break;
+                                    }
                                 }
-                            }
 
+                                if (nota_lancada)
+                                    break;
+                            }
                             if (nota_lancada)
                                 break;
                         }
-                        if (nota_lancada)
-                            break;
                     }
-                }
-                $(this).html('<input type="text" value ="' + nota_lancada + '" name="aluno_' + aluno + '" id="aluno_' + aluno + '"/><span class="msg-error"></span>');
+                    $(this).html('<input type="text" value="' + nota_lancada + '" name="aluno_' + aluno + '" id="aluno_' + aluno + '"/><span class="msg-error"></span>');
 
-                $(this).children().blur(function(event) { // valida os valores inseridos nos campos
-                    var val = parseFloat($(this).val());
+                    $(this).children().blur(function(event) { // valida os valores inseridos nos campos
+                        var val = ($(this).val().length == 0) ? 0 : parseFloat($(this).val());
 
-                    if (isNaN(val) || isNaN(max) || val > max || val < 0)
-                        $(this).val('').focus().next().html('<strong>Valor inválido</strong>');
-                    else
-                        $(this).val(val).next().html('');
+                        if (isNaN(val) || isNaN(max) || val > max || val < 0)
+                            $(this).val('').focus().next().html('<strong>Valor inválido</strong>');
+                        else
+                            $(this).val(val).next().html('');
 
-                    event.stopPropagation();
-                    return false;
+                        event.stopPropagation();
+                        return false;
 
+                    });
                 });
-            });
+            }
+            
+            else
+                notas.printAlunos();
         });
     };
 
     notas.printConfirmacao = function() {
         var clone = notas.container_alunos.clone();
-        
+
         clone.find('#title-notas').remove();
-        
+
         clone.find('tr').each(function() {
             var ultima_coluna = $(this).children().last();
             var val = ultima_coluna.find('input').val();
-            
-            if(parseInt(val) == 0)
+
+            if (parseInt(val) == 0)
                 val = 0;
-            
+
             ultima_coluna.html(val);
-            
+
         });
 
         $('body').append('<div style="display:none" id="confirm">' + clone.html() + '</div>');
