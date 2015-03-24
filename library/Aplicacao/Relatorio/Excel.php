@@ -1012,18 +1012,20 @@ class Aplicacao_Relatorio_Excel {
         }
     }
 
-    public function getRelatorioNotasAluno($alunos, $formato_saida, $calendario_atual) {
+    public function getRelatorioNotasAluno($alunos, $formato_saida) {
         try {
-            if (!empty($alunos) && $calendario_atual instanceof Application_Model_DatasAtividade) {
+            if (!empty($alunos)) {
                 set_time_limit(0);
                 @ini_set('memory_limit', '512M');
 
-                $array_aprovacao = array(1 => 'Aprovado', 0 => 'Reprovado', null => '-');
-                $total_aulas = $calendario_atual->getQuantidadeAulas();
-
+                $array_aprovacao = array(
+                    Application_Model_Aluno::$aluno_aprovado => 'Aprovado',
+                    Application_Model_Aluno::$aluno_reprovado => 'Reprovado',
+                    Application_Model_Aluno::$aluno_sem_status_aprovacao => '-');
+                
                 $mapper_turma = new Application_Model_Mappers_Turma();
-                //$filter = new Aplicacao_Filtros_StringSimpleFilter();
-
+                $mapper_frequencia = new Application_Model_Mappers_Frequencia();
+                
                 $excel = new PHPExcel();
                 $excel->getProperties()->setCreator("Projeto Incluir")
                         ->setTitle("Notas dos Alunos");
@@ -1092,14 +1094,24 @@ class Aplicacao_Relatorio_Excel {
 
                         if ($aluno->hasTurmas()) {
                             $aux_turma = '';
+                            
                             foreach ($aluno->getCompleteTurmas() as $id_turma => $turma) {
+                                $total_aulas = $mapper_frequencia->getQuantidadeLancamentosByPeriodo(array($id_turma));
+                                
                                 $aux_nome_turma = 'Sem Turma Definida';
+                                
+                                if(isset($total_aulas[$id_turma]))
+                                    $total_aulas = $total_aulas[$id_turma];
+                                else
+                                    $total_aulas = 0;
+                                
                                 if (!empty($id_turma)) {
                                     $aux_turma = $mapper_turma->buscaTurmaByID($id_turma);
 
                                     if ($aux_turma instanceof Application_Model_Turma)
                                         $aux_nome_turma = $aux_turma->toString() . ' | ' . $aux_turma->horarioTurmaToString();
                                 }
+                                
                                 $sheet->setCellValue('B' . $i, $aux_nome_turma);
                                 $sheet->setCellValue('D' . $i, $aluno->getNotaAcumulada($id_turma, false));
                                 $sheet->setCellValue('E' . $i, $aluno->getPorcentagemFaltas($id_turma, $total_aulas, true));

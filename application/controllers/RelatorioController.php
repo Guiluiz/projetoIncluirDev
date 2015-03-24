@@ -160,10 +160,10 @@ class RelatorioController extends Zend_Controller_Action {
         $this->_helper->viewRenderer->setNoRender(true);
 
         $mapper_turma = new Application_Model_Mappers_Aluno();
-        $mapper_calendario = new Application_Model_Mappers_DatasAtividade();
+        //$mapper_calendario = new Application_Model_Mappers_DatasAtividade();
 
         $excel = new Aplicacao_Relatorio_Excel();
-        $resultado = $excel->getRelatorioNotasAluno($mapper_turma->getAlunosTurmaUnicoArray(unserialize(base64_decode($this->getParam('turmas'))), false, (int) base64_decode($this->getParam('periodo'))), base64_decode($this->getParam('formato')), $mapper_calendario->getDatasByPeriodo(new Application_Model_Periodo((int) base64_decode($this->getParam('periodo')))));
+        $resultado = $excel->getRelatorioNotasAluno($mapper_turma->getAlunosTurmaUnicoArray(unserialize(base64_decode($this->getParam('turmas'))), false, (int) base64_decode($this->getParam('periodo'))), base64_decode($this->getParam('formato')));
 
         if (is_null($resultado))
             $this->_helper->redirector->goToRoute(array('controller' => 'error', 'action' => 'error', 'msg' => 'As salas escolhidas não possuem nenhum aluno cadastrado'), null, true);
