@@ -68,7 +68,7 @@ class AlunoController extends Zend_Controller_Action {
                             $aluno->addTurma(new Application_Model_Turma((int) base64_decode($turma)), $dados['liberacao'][$turma]);
 
                         foreach ($dados['pagamento_turmas'] as $turma => $valor_pagamento) {
-                            $obj_pagamento = new Application_Model_Pagamento(null, $dados['situacao_turmas'][$turma], $valor_pagamento, null, null, $dados['condicao_turma'][$turma], $dados['tipo_isencao_pendencia'][$turma]);
+                            $obj_pagamento = new Application_Model_Pagamento(null, $dados['situacao_turmas'][$turma], $valor_pagamento, null, null, $dados['condicao_turmas'][$turma], $dados['tipo_isencao_pendencia_turmas'][$turma], $dados['recibos_turmas'][$turma]);
 
                             if (!empty($dados['alimentos'][$turma])) {
                                 foreach ($dados['alimentos'][$turma] as $tipo_alimento => $quantidade)
@@ -78,14 +78,12 @@ class AlunoController extends Zend_Controller_Action {
                             $aluno->addPagamento(new Application_Model_Turma(base64_decode($turma)), $obj_pagamento);
                         }
 
-                        var_dump($aluno);
-
-                        /* $mapper_aluno = new Application_Model_Mappers_Aluno();
-                          if ($mapper_aluno->addAluno($aluno)) {
-                          $form_cadastro->reset();
-                          $this->view->mensagem = "Aluno cadastrado com sucesso!";
-                          return;
-                          } */
+                        $mapper_aluno = new Application_Model_Mappers_Aluno();
+                        if ($mapper_aluno->addAluno($aluno)) {
+                            $form_cadastro->reset();
+                            $this->view->mensagem = "Aluno cadastrado com sucesso!";
+                            return;
+                        }
                     }
                     $this->view->mensagem = "O aluno não foi cadastrado.<br/>Por favor, verifique se há algum aluno cadastrado com o cpf especificado";
                 }
@@ -155,7 +153,7 @@ class AlunoController extends Zend_Controller_Action {
                                 $aluno->addTurma(new Application_Model_Turma((int) base64_decode($turma)), $dados['liberacao'][$turma]);
 
                             foreach ($dados['pagamento_turmas'] as $turma => $valor_pagamento) {
-                                $obj_pagamento = new Application_Model_Pagamento(null, $dados['situacao_turmas'][$turma], $valor_pagamento, null, null, $dados['condicao_turma'][$turma], $dados['tipo_isencao_pendencia'][$turma]);
+                                $obj_pagamento = new Application_Model_Pagamento(null, $dados['situacao_turmas'][$turma], $valor_pagamento, null, null, $dados['condicao_turmas'][$turma], $dados['tipo_isencao_pendencia_turmas'][$turma], $dados['recibos_turmas'][$turma]);
 
                                 if (!empty($dados['alimentos'][$turma])) {
                                     foreach ($dados['alimentos'][$turma] as $tipo_alimento => $quantidade)
@@ -258,7 +256,7 @@ class AlunoController extends Zend_Controller_Action {
      * @return boolean
      */
     private function validaDados($dados) {
-        $campos_verificados = array('turmas', 'pagamento_turmas', 'liberacao', 'situacao_turmas', 'condicao_turmas', 'tipo_isencao_pendencia_turmas', 'alimentos');
+        $campos_verificados = array('turmas', 'pagamento_turmas', 'liberacao', 'situacao_turmas', 'condicao_turmas', 'tipo_isencao_pendencia_turmas');
         $mapper_periodo = new Application_Model_Mappers_Periodo();
         $periodo_atual = $mapper_periodo->getPeriodoAtual();
 
@@ -271,12 +269,17 @@ class AlunoController extends Zend_Controller_Action {
         unset($campos_verificados[0]);
 
         // verifica se todas as informações das turmas estão presentes
+
         foreach ($dados['turmas'] as $turma) {
             foreach ($campos_verificados as $campo) {
-                if (!isset($dados[$campo][$turma]))
+                if (!isset($dados[$campo][$turma])) {
+                    echo $campo;
                     return false;
+                }
             }
         }
+
+        var_dump($dados);
 
         foreach ($dados['turmas'] as $turma) {
             $soma_alimentos = 0.0;
@@ -284,8 +287,10 @@ class AlunoController extends Zend_Controller_Action {
             $num_recibo = $dados['recibos_turmas'][$turma];
             $situacao = $dados['situacao_turmas'][$turma];
 
-            foreach ($dados['alimentos'][$turma] as $quantidade)
-                $soma_alimentos += (float) $quantidade;
+            if (!empty($dados['alimentos'][$turma])) {
+                foreach ($dados['alimentos'][$turma] as $quantidade)
+                    $soma_alimentos += (float) $quantidade;
+            }
 
             switch ($dados['condicao_turmas'][$turma]) {
                 case Application_Model_Pagamento::$pagamento_normal:// no pagamento normal o valor deve ser maior ou igual ao mínimo e a quantidade de alimentos também

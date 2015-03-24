@@ -754,7 +754,7 @@ var controle_aluno = (function() {
                 if ($(container_alimentos_turma).children().length == 0)
                     $(container_alimentos_turma).append('<tr><th>Alimento</th><th>Quantidade(kg)</th><th>Opções</th></tr>');
 
-                $(container_alimentos_turma).append('<tr class="' + $(tipo_alimento_option).val() + '"><input type="hidden" name="alimentos[' + aluno.getIdTurma() + '][' + $(tipo_alimento_option).val() + ']" value="' + quantidade + '"/><td>' + $(tipo_alimento_option).html() + '</td><td class="quantidade_alimento_turma">' + quantidade + '</td><td><div class="excluir_alimento" >Excluir</div></td></tr>');
+                $(container_alimentos_turma).append('<tr class="' + $(tipo_alimento_option).val() + '"><input type="hidden" name="alimentos[' + aluno.select_turma_pagamento.find('option:selected').val() + '][' + $(tipo_alimento_option).val() + ']" value="' + quantidade + '"/><td>' + $(tipo_alimento_option).html() + '</td><td class="quantidade_alimento_turma">' + quantidade + '</td><td><div class="excluir_alimento" >Excluir</div></td></tr>');
 
                 aluno.eventExcluirAlimento();
                 $(container_alimentos_turma).show();

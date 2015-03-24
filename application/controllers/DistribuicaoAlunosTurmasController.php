@@ -13,12 +13,16 @@ class DistribuicaoAlunosTurmasController extends Zend_Controller_Action {
         $mapper_alunos = new Application_Model_Mappers_Aluno();
 
         $alunos_turmas = $mapper_alunos->getInfAlunosDisciplinaHorario();
+        /*$max_alunos_turmas_disciplinas = array(
+            'Inglês Instrumental Básico I Para Eventos' => array('max_alunos' => 25),
+            'Inglês Básico I Para Crianças' => array('max_alunos' => 25),
+            'Inglês Básico II Para Crianças' => array('max_alunos' => 25),
+        );*/
+        
         $max_alunos_turmas_disciplinas = array(
-            'Inglês Instrumental Básico I Para Eventos' => array('quant_turmas' => 3, 'max_alunos' => 25),
-            'Inglês Básico I Para Crianças' => array('quant_turmas' => 2, 'max_alunos' => 25),
-            'Inglês Básico II Para Crianças' => array('quant_turmas' => 2, 'max_alunos' => 25),
+            'Inglês Instrumental Básico II Para Eventos' => array('max_alunos' => 50),
         );
-
+        
         foreach ($alunos_turmas as $inf_turma => $alunos) {
             $aux = explode('_', $inf_turma);
 
@@ -34,7 +38,7 @@ class DistribuicaoAlunosTurmasController extends Zend_Controller_Action {
                         });
                     }
 
-                    $parada = ceil(count($alunos) / $max_alunos_turmas_disciplinas[$nome_disciplina]['quant_turmas']);
+                    $parada = ceil(count($alunos) / count($turmas));
 
                     if (count($alunos) > $max_alunos_turmas_disciplinas[$nome_disciplina]['max_alunos']) {
                         $i = 0;

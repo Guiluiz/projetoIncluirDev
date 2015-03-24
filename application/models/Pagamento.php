@@ -55,8 +55,14 @@ class Application_Model_Pagamento {
      * @var int 
      */
     private $tipo_isencao_pendencia;
-
-    public function __construct($id_pagamento, $situacao, $valor = null, $alimento = null, $quantidade = null, $condicao = null, $isencao_pendencia = null) {//$turma, $situacao = null, $valor = null, $alimento = null, $quantidade = null) {
+    
+    /**
+     *
+     * @var int 
+     */
+    private $num_recibo;
+    
+    public function __construct($id_pagamento, $situacao, $valor = null, $alimento = null, $quantidade = null, $condicao = null, $isencao_pendencia = null, $recibo = null) {//$turma, $situacao = null, $valor = null, $alimento = null, $quantidade = null) {
         $this->id_pagamento = ((!empty($id_pagamento)) ? (int) $id_pagamento : null);
         $this->situacao = $this->parseSituacao($situacao);
         $this->valor = $valor;
@@ -64,6 +70,7 @@ class Application_Model_Pagamento {
         $this->addAlimento($alimento, $quantidade);
         $this->condicao = $condicao;
         $this->tipo_isencao_pendencia = $isencao_pendencia;
+        $this->num_recibo = $recibo;
     }
 
     public function getIdPagamento($isView = null) {
@@ -138,7 +145,8 @@ class Application_Model_Pagamento {
             'situacao' => $this->situacao,
             'condicao' => $this->condicao,
             'tipo_isencao_pendencia' => $this->tipo_isencao_pendencia,
-            'valor_pago' => $this->valor
+            'valor_pago' => $this->valor,
+            'num_recibo' => $this->num_recibo
         );
     }
 
@@ -183,6 +191,10 @@ class Application_Model_Pagamento {
         return $this->situacao;
     }
 
+    public function getRecibo(){
+        return $this->recibo;
+    }
+    
 }
 
 ?>

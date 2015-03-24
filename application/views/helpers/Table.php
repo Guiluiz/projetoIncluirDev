@@ -87,15 +87,6 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Abstract {
                 case Zend_View_Helper_Table::$pagamento:
                     $table .= '<table id="opcoes_escolhidas_pagamentos" class="escondido"><tr><th>Disciplina - Turma</th><th>Nº Recibo</th><th>Total Pago(R$)</th><th>Total de Alimentos(kg)</th><th>Condição</th><th>Situação</th><th>Opções</th></tr>';
 
-                    $mapper_periodo = new Application_Model_Mappers_Periodo();
-                    $periodo = $mapper_periodo->getPeriodoAtual();
-
-                    $tipos_isencao_pendencia = array(
-                        Application_Model_Pagamento::$isencao_pendencia_alimento => 'Alimento',
-                        Application_Model_Pagamento::$isencao_pendencia_pagamento => 'Pagamento',
-                        Application_Model_Pagamento::$isencao_pendencia_alimento_pagamento => 'Alimento e Pagamento',
-                    );
-
                     $tipos_condicao = array(
                         '' => '',
                         Application_Model_Pagamento::$pagamento_normal => 'Pagamento Normal',
@@ -112,7 +103,7 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Abstract {
                                 $soma_alimentos = 0.0;
                                 $situacao = $opcoes_aluno['situacao_turmas'][$turma->getIdTurma(true)];
                                 $num_recibo = $opcoes_aluno['recibos_turmas'][$turma->getIdTurma(true)];
-
+                                
                                 if (isset($opcoes_aluno['alimentos'][$turma->getIdTurma(true)])) {
                                     foreach ($opcoes_aluno['alimentos'][$turma->getIdTurma(true)] as $quantidade)
                                         $soma_alimentos += (float) $quantidade;
