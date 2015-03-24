@@ -986,6 +986,7 @@ var controle_aluno = (function() {
     };
 
     aluno.eventAlterarTurmaAluno = function() {
+        aluno.container_turmas_aluno.find('.alterar_turma').off('click');
         aluno.container_turmas_aluno.find('.alterar_turma').click(function(evt) {
             var linha_turma = $(this).parents('tr'); // a linha correspondente a turma armazena o id para retirar os pagamentos/alimentos da turma
 
@@ -1017,9 +1018,9 @@ var controle_aluno = (function() {
     };
 
     aluno.eventExcluirTurmaAluno = function() {
+        aluno.container_turmas_aluno.find('.excluir_turma').off('click');
         aluno.container_turmas_aluno.find('.excluir_turma').click(function(evt) {
             var confirma_exclusao = confirm('Deseja realmente retirar o aluno dessa turma?');
-
             if (confirma_exclusao) {
                 var aux_class = $(this).parents('tr').attr('class'); // a linha correspondente a turma armazena o id para retirar os pagamentos/alimentos da turma
                 var table = $(this).parents('table');
@@ -1081,6 +1082,7 @@ var controle_aluno = (function() {
     };
 
     aluno.eventOpcaoExcluirPagamento = function() {
+        $('.excluir_pagamento').off('click');
         $('.excluir_pagamento').click(function(evt) {
             var table = $(this).parents('table');
             var class_turma = $(this).parents('tr').attr('class').replace('pagamento_', ''); // necessario para descobrir a turma a qual o pagamento faz parte
