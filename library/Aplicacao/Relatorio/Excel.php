@@ -601,8 +601,7 @@ class Aplicacao_Relatorio_Excel {
 
                     if (!$data instanceof DateTime)
                         $data = new DateTime();
-                } 
-                else
+                } else
                     $data = new DateTime();
 
                 $excel = new PHPExcel();
@@ -755,7 +754,7 @@ class Aplicacao_Relatorio_Excel {
 
                         $new_sheet->setCellValue('C1', "Turma: " . $turma->toString());
                         $new_sheet->setCellValue('C2', "Horário: " . $turma->horarioTurmaToString());
-                        $new_sheet->setCellValue('C3', "Professor(es): " . $turma->getNomesProfessores());
+                        $new_sheet->setCellValue('C3', "Professor(es): " . $turma->getNomesProfessores() . ' | ' . "Sala:" . $turma->getSala());
 
                         $new_sheet->getStyle('C1:C3')->getFont()
                                 ->setSize(10);

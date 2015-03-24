@@ -92,7 +92,7 @@ class Application_Model_Turma {
         $this->professores = array();
         $this->addProfessor($professor);
     }
-    
+
     /**
      * Retorna o id da turma
      * @param boolean $isView Indica se o id será criptografado ou não
@@ -103,7 +103,7 @@ class Application_Model_Turma {
             return base64_encode($this->id_turma);
         return $this->id_turma;
     }
-    
+
     /**
      * Inclui um ou mais professores na turma
      * @param Application_Model_Professor $professor
@@ -119,7 +119,7 @@ class Application_Model_Turma {
             }
         }
     }
-    
+
     /**
      * Retorna a data de início da turma
      * @param boolean $isView Indica o formato da data retornada
@@ -133,7 +133,7 @@ class Application_Model_Turma {
         }
         return null;
     }
-    
+
     /**
      * Retorna o status da turma
      * @param boolean $isView Indica se o valor retornado vai ser criptografado ou não
@@ -149,7 +149,6 @@ class Application_Model_Turma {
         return mb_strtoupper($this->nome, 'UTF-8');
     }
 
-    
     /**
      * Retorna a data de término da turma
      * @param boolean $isView Indica o formato da data retornada
@@ -172,7 +171,6 @@ class Application_Model_Turma {
         return $this->professores;
     }
 
-    
     public function hasProfessores() {
         if (count($this->professores) > 0)
             return true;
@@ -192,7 +190,7 @@ class Application_Model_Turma {
         }
         return null;
     }
-    
+
     /**
      * Converte a hora passada em objeto da classe DateTime
      * @param string $hora
@@ -218,11 +216,11 @@ class Application_Model_Turma {
             return $this->horario_termino->format("H:i");
         return null;
     }
-    
+
     public function getSala() {
         return $this->sala;
     }
-    
+
     public function getDisciplina() {
         return $this->disciplina;
     }
@@ -230,7 +228,7 @@ class Application_Model_Turma {
     public function getPeriodo() {
         return $this->periodo;
     }
-    
+
     /**
      * Retorna o nome completo da turma, incluindo o nome da disciplina
      * @return string
@@ -239,7 +237,7 @@ class Application_Model_Turma {
         if ($this->disciplina instanceof Application_Model_Disciplina)
             return $this->disciplina->getNomeDisciplina() . ' - ' . $this->getNomeTurma();
     }
-    
+
     /**
      * Retorna uma string com o nome de todos os professores, separados por ",".
      * Utilizado na emissão de lista de presença.
@@ -248,15 +246,15 @@ class Application_Model_Turma {
     public function getNomesProfessores() {
         if (!empty($this->professores)) {
             $nomes = '';
-
             foreach ($this->professores as $professor) {
                 if ($professor instanceof Application_Model_Professor)
                     $nomes .= $professor->getNomeVoluntario() . ', ';
             }
             return substr($nomes, 0, -2);
         }
+        return 'Não definido';
     }
-    
+
     /**
      * Retorna uma string informando o horário da turma
      * @return string|null
@@ -265,7 +263,7 @@ class Application_Model_Turma {
         if (!empty($this->horario_inicio) && !empty($this->horario_termino))
             return 'De ' . $this->getHorarioInicio() . ' a ' . $this->getHorarioFim();
     }
-    
+
     /**
      * Verifica se a turma está cancelada
      * @return boolean
@@ -275,7 +273,7 @@ class Application_Model_Turma {
             return true;
         return false;
     }
-    
+
     /**
      * Verifica se a turma é do período indicado por parâmetro
      * @param Application_Model_Periodo $periodo_atual
@@ -284,7 +282,7 @@ class Application_Model_Turma {
     public function isAtual($periodo_atual) {
         return ($periodo_atual == $this->periodo);
     }
-    
+
     /**
      * Retorna um array com as informações da turma.
      * Utilizado tanto para popular formulários de turma quanto para cadastro/alteração no banco de dados
@@ -309,4 +307,5 @@ class Application_Model_Turma {
         }
         return $aux;
     }
+
 }
