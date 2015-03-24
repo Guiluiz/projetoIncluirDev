@@ -110,8 +110,8 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Abstract {
                                 }
 
                                 $table .= '<tr class="pagamento_' . $this->removeInvalidCaracteres($this->filtro_string->filter($turma->getDisciplina()->getNomeDisciplina() . '_' . $turma->getNomeTurma())) . '">'
-                                        . '<input type="hidden" name="pagamentos_turmas[' . $turma->getIdTurma(true) . ']" value="' . $valor_pago . '"/>'
-                                        . '<td>' . $turma->getDisciplina()->getNomeDisciplina() . '-' . $turma->getNomeTurma() . ' | ' . $turma->getHorarioInicio() . ' - ' . $turma->getHorarioFim() . '</td>'
+                                        . '<input type="hidden" name="pagamento_turmas[' . $turma->getIdTurma(true) . ']" value="' . $valor_pago . '"/>'
+                                        . '<td>' . $turma->getDisciplina()->getNomeDisciplina() . ' - ' . $turma->getNomeTurma() . ' | ' . $turma->getHorarioInicio() . ' - ' . $turma->getHorarioFim() . '</td>'
                                         . '<td><input type="hidden" name="recibos_turmas[' . $turma->getIdTurma(true) . ']" value="' . $num_recibo . '"/>'.$num_recibo.'</td>'
                                         . '<td class="valor_pago">' . $valor_pago . '</td>'
                                         . '<td class="quant_alimento">' . $soma_alimentos . '</td>'

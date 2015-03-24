@@ -10,6 +10,8 @@ class Application_Model_Aluno {
     public static $index_liberacao_turma = 2;
     public static $index_pagamento_turma = 3;
     public static $index_aprovacao_turma = 4;
+    public static $sexo_masculino = 0;
+    public static $sexo_feminino = 1;
     public static $index_faltas_turma = 5;
     public static $index_notas_turma = 6;
     public static $status_ativo = 10;
@@ -18,145 +20,145 @@ class Application_Model_Aluno {
     public static $aluno_turma_liberada = 1;
     public static $aluno_turma_prova_nivelamento = 2;
     public static $string_liberacoes = array(0 => '', 1 => 'Liberado', 2 => 'Prova de Nivelamento');
-    
+
     /**
      *
      * @var int 
      */
     private $id_aluno;
-    
+
     /**
      *
      * @var string 
      */
     private $nome;
-    
+
     /**
      *
      * @var string 
      */
     private $cpf;
-    
+
     /**
      *
      * @var string 
      */
     private $sexo;
-    
+
     /**
      *
      * @var string 
      */
     private $rg;
-    
+
     /**
      *
      * @var DateTime 
      */
     private $data_nascimento;
-    
+
     /**
      *
      * @var string 
      */
     private $email;
-    
+
     /**
      *
      * @var string 
      */
     private $escolaridade;
-    
+
     /**
      *
      * @var string 
      */
     private $tel_fixo;
-    
+
     /**
      *
      * @var string 
      */
     private $tel_celular;
-    
+
     /**
      *
      * @var string 
      */
     private $endereco;
-    
+
     /**
      *
      * @var string 
      */
     private $bairro;
-    
+
     /**
      *
      * @var string 
      */
     private $numero;
-    
+
     /**
      *
      * @var string 
      */
     private $complemento;
-    
+
     /**
      *
      * @var string 
      */
     private $cep;
-    
+
     /**
      *
      * @var string 
      */
     private $cidade;
-    
+
     /**
      *
      * @var string 
      */
     private $estado;
-    
+
     /**
      *
      * @var DateTime 
      */
     private $data_registro;
-    
+
     /**
      *
      * @var boolean 
      */
     private $is_cpf_responsavel;
-    
+
     /**
      *
      * @var string 
      */
     private $nome_responsavel;
-    
+
     /**
      *
      * @var array 
      */
     private $turmas;
-    
+
     /**
      *
      * @var int 
      */
     private $status;
-    
+
     /**
      *
      * @var DateTime 
      */
     private $data_desligamento;
-    
+
     /**
      *
      * @var string 
@@ -203,7 +205,18 @@ class Application_Model_Aluno {
         return $this->nome;
     }
 
-    public function getSexo() {
+    public function getSexo($isView = false) {
+        if ($isView) {
+            if (is_null($this->sexo))
+                return 'não definido';
+            
+            elseif ((int) $this->sexo === Application_Model_Aluno::$sexo_masculino)
+                return 'Masculino';
+            
+            else
+                return 'Feminino';
+        }
+
         return $this->sexo;
     }
 
@@ -222,7 +235,7 @@ class Application_Model_Aluno {
     public function getMotivoDesligamento() {
         return $this->motivo_desligamento;
     }
-    
+
     /**
      * Retorna a data de nascimento do aluno
      * @param boolean $isView Indica o formato da data retornada
@@ -236,7 +249,7 @@ class Application_Model_Aluno {
         }
         return null;
     }
-    
+
     /**
      * Retorna a data de registro do aluno
      * @param boolean $isView Indica o formato da data retornada
@@ -250,7 +263,7 @@ class Application_Model_Aluno {
         }
         return null;
     }
-    
+
     /**
      * Retorna o nome do responsável
      * @param boolean $isView Indica como será o retorno do valor
@@ -337,7 +350,7 @@ class Application_Model_Aluno {
         }
         return null;
     }
-    
+
     /**
      * Retorna a porcentagem de faltas do aluno de acordo com os parâmetros indicados.
      * @param int $id_turma
@@ -606,6 +619,82 @@ class Application_Model_Aluno {
     }
 
     /**
+     * Retorna um array com as condições dos pagamentos das turmas do aluno. 
+     * Utilizado na construção da tabela de pagamentos do aluno, exibida na alteração do aluno.
+     * @param int $isView Indica se a string da liberação será retornada ou o valor inteiro, conforme é armazenado no banco de dados.
+     * @return array
+     */
+    public function getCondicoesPagamentos() {
+        $aux = array();
+        if ($this->hasTurmas()) {
+            foreach ($this->turmas as $turma) {
+                if (!empty($turma[Application_Model_Aluno::$index_pagamento_turma])) {
+                    if ($turma[Application_Model_Aluno::$index_pagamento_turma] instanceof Application_Model_Pagamento)
+                        $aux[$turma[Application_Model_Aluno::$index_turma]->getIdTurma(true)] = $turma[Application_Model_Aluno::$index_pagamento_turma]->getCondicaoPagamento();
+                }
+            }
+        }
+        return $aux;
+    }
+
+    /**
+     * Retorna um array com os recibos dos pagamentos das turmas do aluno. 
+     * Utilizado na construção da tabela de pagamentos do aluno, exibida na alteração do aluno.
+     * @param int $isView Indica se a string da liberação será retornada ou o valor inteiro, conforme é armazenado no banco de dados.
+     * @return array
+     */
+    public function getRecibosPagamentos() {
+        $aux = array();
+        if ($this->hasTurmas()) {
+            foreach ($this->turmas as $turma) {
+                if (!empty($turma[Application_Model_Aluno::$index_pagamento_turma])) {
+                    if ($turma[Application_Model_Aluno::$index_pagamento_turma] instanceof Application_Model_Pagamento)
+                        $aux[$turma[Application_Model_Aluno::$index_turma]->getIdTurma(true)] = $turma[Application_Model_Aluno::$index_pagamento_turma]->getRecibo();
+                }
+            }
+        }
+        return $aux;
+    }
+
+    /**
+     * Retorna um array com os tipos de isenção ou pendência (se houver) das turmas do aluno. 
+     * Utilizado na construção da tabela de pagamentos do aluno, exibida na alteração do aluno.
+     * @param int $isView Indica se a string da liberação será retornada ou o valor inteiro, conforme é armazenado no banco de dados.
+     * @return array
+     */
+    public function getTipoIsencaoPendenciaPagamentos() {
+        $aux = array();
+        if ($this->hasTurmas()) {
+            foreach ($this->turmas as $turma) {
+                if (!empty($turma[Application_Model_Aluno::$index_pagamento_turma])) {
+                    if ($turma[Application_Model_Aluno::$index_pagamento_turma] instanceof Application_Model_Pagamento)
+                        $aux[$turma[Application_Model_Aluno::$index_turma]->getIdTurma(true)] = $turma[Application_Model_Aluno::$index_pagamento_turma]->getTipoIsencaoPendencia();
+                }
+            }
+        }
+        return $aux;
+    }
+
+    /**
+     * Retorna um array com as situações das turmas do aluno. 
+     * Utilizado na construção da tabela de pagamentos do aluno, exibida na alteração do aluno.
+     * @param int $isView Indica se a string da liberação será retornada ou o valor inteiro, conforme é armazenado no banco de dados.
+     * @return array
+     */
+    public function getSituacoesPagamentos() {
+        $aux = array();
+        if ($this->hasTurmas()) {
+            foreach ($this->turmas as $turma) {
+                if (!empty($turma[Application_Model_Aluno::$index_pagamento_turma])) {
+                    if ($turma[Application_Model_Aluno::$index_pagamento_turma] instanceof Application_Model_Pagamento)
+                        $aux[$turma[Application_Model_Aluno::$index_turma]->getIdTurma(true)] = $turma[Application_Model_Aluno::$index_pagamento_turma]->getSituacao();
+                }
+            }
+        }
+        return $aux;
+    }
+
+    /**
      * Retorna um array com as liberações (prova de nivelamento ou liberado) das turmas do aluno. 
      * As liberações são necessárias quando o aluno não possui pré requisitos para cursar uma determinada disciplina.
      * Utilizado na construção da tabela de turmas do aluno, exibida na alteração do aluno.
@@ -626,7 +715,6 @@ class Application_Model_Aluno {
         return $aux;
     }
 
-    
     /**
      * Retorna um array com os alimentos dos pagamentos das turmas do aluno.
      * Utilizado na construção da tabela de alimentos, exibida na alteração do aluno.

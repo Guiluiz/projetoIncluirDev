@@ -85,8 +85,11 @@ var controle_aluno = (function() {
 
         // em caso de alterção de aluno, ou correção no cadastro após enviar a requisição, o servidor exibe os dados 
         // em um container, que deve ser movido para o lugar certo;
+        
         if (aluno.container_turmas_pre_definidas.length == 1) {
             aluno.container_turmas_aluno.append(aluno.container_turmas_pre_definidas.children()).show();
+            
+            aluno.campo_quantidade_turmas.val(aluno.container_turmas_aluno.find('tr').length - 1);
             aluno.eventExcluirTurmaAluno();
 
             aluno.container_opcoes_turmas_aluno.show();
