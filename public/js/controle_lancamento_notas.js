@@ -10,6 +10,8 @@ var controle_notas = (function() {
         campo_turma: $('#turma'),
         container_atividade: $('#container_atividade'), // contém todas as informações da atividade que terá as notas lançadas
         container_alunos: $('#notas_alunos'),
+        form: $('form'),
+        confirmado: false,
         url_ajax_aluno: '',
         url_ajax_disciplina: '',
         url_ajax_turma: '',
@@ -24,7 +26,7 @@ var controle_notas = (function() {
         notas.url_ajax_turma = url_ajax_turma;
         notas.data_atual = data_atual;
         notas.url_ajax_atividade = url_ajax_atividade;
-        
+
         notas.ini();
     };
 
@@ -59,6 +61,14 @@ var controle_notas = (function() {
             else
                 notas.getAtividadesTurma();
         });
+
+        notas.form.submit(function(event) {
+            if (notas.confirmado == false) {
+                notas.printConfirmacao();
+                event.preventDefault();
+            }
+        });
+
     };
 
     notas.getIdTurma = function() {
@@ -147,7 +157,7 @@ var controle_notas = (function() {
             html += '<tr><td>' + notas.alunos[key].nome_aluno + '</td><td id="aluno_nota_' + notas.alunos[key].id_aluno + '"> - </td></tr>';
 
         html += '</table>';
-        
+
         notas.container_alunos.html(html);
         notas.printCamposNota();
     };
@@ -205,6 +215,44 @@ var controle_notas = (function() {
             });
         });
     };
+
+    notas.printConfirmacao = function() {
+        var clone = notas.container_alunos.clone();
+        
+        clone.find('#title-notas').remove();
+        
+        clone.find('tr').each(function() {
+            var ultima_coluna = $(this).children().last();
+            var val = ultima_coluna.find('input').val();
+            
+            if(parseInt(val) == 0)
+                val = 0;
+            
+            ultima_coluna.html(val);
+            
+        });
+
+        $('body').append('<div style="display:none" id="confirm">' + clone.html() + '</div>');
+
+        $("#confirm").dialog({
+            resizable: false,
+            modal: true,
+            width: 650,
+            title: 'Confirmação de lançamento',
+            buttons: {
+                'Confirmar o lançamento': function() {
+                    notas.confirmado = true;
+                    notas.form.submit();
+                },
+                Cancelar: function() {
+                    notas.confirmado = false;
+                    $(this).dialog('destroy');
+                    $('#confirm').remove();
+                }
+            }
+        });
+    };
+
 
     return {ini: notas.setValues};
 })();
