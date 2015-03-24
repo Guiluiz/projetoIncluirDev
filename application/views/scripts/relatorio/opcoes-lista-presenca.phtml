@@ -5,9 +5,12 @@
     <div id="porcentagem"></div>
 </div>
 
-<script src="<?php echo $this->baseUrl() . '/js/porcentagem.js'; ?>" ></script>
+<!--<script src="<?php echo $this->baseUrl() . '/js/porcentagem.js'; ?>" ></script>-->
 <script src="<?php echo $this->baseUrl() . '/js/jquery.validate.min.js' ?>"></script>
 <script src="<?php echo $this->baseUrl() . '/js/form.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/jquery.maskedinput.min.js' ?>"></script>
+<script src="<?php echo $this->baseUrl() . '/js/ui.datepicker-pt-BR.js' ?>"></script>
+    
 
 <script src="<?php echo $this->baseUrl() . '/js/functions.js' ?>"></script>
 <script src="<?php echo $this->baseUrl() . '/js/controle_relatorios.js' ?>"></script>
@@ -18,5 +21,16 @@
                 '<?= $this->url(array('controller' => 'ajax', 'action' => 'ajax-relatorio')); ?>',
                 '<?= $this->url(array('controller' => 'turma', 'action' => 'buscar-turmas')); ?>'
                 );
+
+        $('#data').datepicker({
+            buttonText: "Clique para selecionar uma data",
+            showOn: "button",
+            buttonImageOnly: true,
+            buttonImage: '<?php echo $this->baseUrl() . "/imagens/calendar.png" ?>'
+        });
+
+        form.iniForm('');
+
     });
+
 </script>

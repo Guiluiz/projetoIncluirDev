@@ -49,6 +49,19 @@ class Application_Form_RelatorioListaPresenca extends Zend_Form {
                     'Errors'
         ));
         
+        $data = new Zend_Form_Element_Text('data');
+        $data->setLabel('Data:')
+                ->addFilter('StripTags')
+                ->addFilter('StringTrim')
+                ->setAttrib('class', 'data')
+                ->addValidator('Regex', true, array('pattern' => '/^([1-9]|0[1-9]|[1,2][0-9]|3[0,1])[\/](0[1-9]|1[0,1,2])[\/]\d{4}$/',
+                    'messages' => array('regexNotMatch' => 'Data Inválida')))
+                ->setDecorators(array(
+                    'ViewHelper',
+                    'Label',
+                    'Errors'
+        ));
+        
         $formato_saida = new Zend_Form_Element_Radio('formato_saida');
         $formato_saida->setLabel('Formato do Arquivo: ')
                 ->setMultiOptions(array(
@@ -81,6 +94,7 @@ class Application_Form_RelatorioListaPresenca extends Zend_Form {
             $periodo,
             $todas_turmas,
             $turmas,
+            $data,
             $submit,
             $formato_saida,
             $cancelar

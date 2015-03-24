@@ -584,9 +584,8 @@ class Aplicacao_Relatorio_Excel {
         }
     }
 
-    public function getListaPresenca($alunos_turmas, $formato_saida) {
+    public function getListaPresenca($alunos_turmas, $formato_saida, $data) {
         try {
-
             if (!empty($alunos_turmas)) {
                 set_time_limit(0);
                 @ini_set('memory_limit', '512M');
@@ -597,7 +596,14 @@ class Aplicacao_Relatorio_Excel {
                 $mapper_turma = new Application_Model_Mappers_Turma();
                 $filter = new Aplicacao_Filtros_StringSimpleFilter();
 
-                $data = new DateTime();
+                if (!empty($data)) {
+                    $data = DateTime::createFromFormat('d/m/Y', $data);
+
+                    if (!$data instanceof DateTime)
+                        $data = new DateTime();
+                } 
+                else
+                    $data = new DateTime();
 
                 $excel = new PHPExcel();
                 $excel->getProperties()->setCreator("Projeto Incluir")
@@ -934,8 +940,7 @@ class Aplicacao_Relatorio_Excel {
                                         $new_sheet->setCellValue($cell . $i, 'A');
                                     else
                                         $new_sheet->setCellValue($cell . $i, 'P');
-                                } 
-                                else
+                                } else
                                     $new_sheet->setCellValue($cell . $i, '-');
                             }
                         }
@@ -1022,10 +1027,10 @@ class Aplicacao_Relatorio_Excel {
                     Application_Model_Aluno::$aluno_aprovado => 'Aprovado',
                     Application_Model_Aluno::$aluno_reprovado => 'Reprovado',
                     Application_Model_Aluno::$aluno_sem_status_aprovacao => '-');
-                
+
                 $mapper_turma = new Application_Model_Mappers_Turma();
                 $mapper_frequencia = new Application_Model_Mappers_Frequencia();
-                
+
                 $excel = new PHPExcel();
                 $excel->getProperties()->setCreator("Projeto Incluir")
                         ->setTitle("Notas dos Alunos");
@@ -1094,24 +1099,24 @@ class Aplicacao_Relatorio_Excel {
 
                         if ($aluno->hasTurmas()) {
                             $aux_turma = '';
-                            
+
                             foreach ($aluno->getCompleteTurmas() as $id_turma => $turma) {
                                 $total_aulas = $mapper_frequencia->getQuantidadeLancamentosByPeriodo(array($id_turma));
-                                
+
                                 $aux_nome_turma = 'Sem Turma Definida';
-                                
-                                if(isset($total_aulas[$id_turma]))
+
+                                if (isset($total_aulas[$id_turma]))
                                     $total_aulas = $total_aulas[$id_turma];
                                 else
                                     $total_aulas = 0;
-                                
+
                                 if (!empty($id_turma)) {
                                     $aux_turma = $mapper_turma->buscaTurmaByID($id_turma);
 
                                     if ($aux_turma instanceof Application_Model_Turma)
                                         $aux_nome_turma = $aux_turma->toString() . ' | ' . $aux_turma->horarioTurmaToString();
                                 }
-                                
+
                                 $sheet->setCellValue('B' . $i, $aux_nome_turma);
                                 $sheet->setCellValue('D' . $i, $aluno->getNotaAcumulada($id_turma, false));
                                 $sheet->setCellValue('E' . $i, $aluno->getPorcentagemFaltas($id_turma, $total_aulas, true));
