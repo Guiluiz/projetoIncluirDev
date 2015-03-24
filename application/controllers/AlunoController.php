@@ -167,8 +167,9 @@ class AlunoController extends Zend_Controller_Action {
                             else
                                 $this->view->mensagem = "O aluno não foi alterado.<br/>Por favor, verifique se há algum aluno cadastrado com o cpf especificado";
                         } else
-                            $this->view->mensagem = "O aluno não foi alterado.<br/>Por favor, verifique se as turmas foram inseridas";
-                    }
+                            $this->view->mensagem = "O aluno não foi alterado.<br/>Por favor, verifique os dados informados.";
+                    } else
+                        $this->view->mensagem = "O aluno não foi alterado.<br/>Por favor, verifique os dados informados.";
                 }
 
                 $periodo_atual = $periodo->getPeriodoAtual();
@@ -177,6 +178,7 @@ class AlunoController extends Zend_Controller_Action {
                 if ($aluno instanceof Application_Model_Aluno) {
                     $form_alteracao->populate($aluno->parseArray(true));
                     $form_alteracao->seTurmasAlunos($aluno->getTurmas());
+                    $form_alteracao->initializeTurmasAlunos($aluno->getTurmas());
 
                     $this->view->turmas = $aluno->getTurmas();
                     $this->view->liberacao = $aluno->getLiberacaoTurmas();
@@ -184,6 +186,11 @@ class AlunoController extends Zend_Controller_Action {
                     $this->view->alimentos = $aluno->getAlimentosPagamentos();
                     $this->view->todos_alimentos = $alimentos;
                     $form_alteracao->setEstadoCidade($aluno->getCidade(), $aluno->getEstado());
+
+                    $this->view->condicoes_pagamentos_turmas = $aluno->getCondicoesPagamentos();
+                    $this->view->tipo_isencao_pendencia_turmas = $aluno->getTipoIsencaoPendenciaPagamentos();
+                    $this->view->recibos_turmas = $aluno->getRecibosPagamentos();
+                    $this->view->situacao_turmas = $aluno->getSituacoesPagamentos();
 
                     return;
                 }
@@ -261,25 +268,25 @@ class AlunoController extends Zend_Controller_Action {
         $periodo_atual = $mapper_periodo->getPeriodoAtual();
 
         // verifica se todos os campos estão presentes e de acordo com o esperado
+
         foreach ($campos_verificados as $campo) {
-            if (empty($dados[$campo]) || !is_array($dados[$campo]))
+            if (empty($dados[$campo]) || !is_array($dados[$campo])) {
+                echo $campo;
                 return false;
+            }
         }
 
         unset($campos_verificados[0]);
+
 
         // verifica se todas as informações das turmas estão presentes
 
         foreach ($dados['turmas'] as $turma) {
             foreach ($campos_verificados as $campo) {
-                if (!isset($dados[$campo][$turma])) {
-                    echo $campo;
+                if (!isset($dados[$campo][$turma]))
                     return false;
-                }
             }
         }
-
-        var_dump($dados);
 
         foreach ($dados['turmas'] as $turma) {
             $soma_alimentos = 0.0;

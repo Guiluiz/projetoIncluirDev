@@ -192,7 +192,7 @@ class Application_Model_Pagamento {
     }
 
     public function getRecibo(){
-        return $this->recibo;
+        return $this->num_recibo;
     }
     
 }

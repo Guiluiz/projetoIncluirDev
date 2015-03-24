@@ -31,8 +31,8 @@ class Application_Form_FormAluno extends Zend_Form {
                 ->setRequired(true)
                 ->setMultiOptions(array(
                     '' => 'Selecione',
-                    'Masculino' => 'Masculino',
-                    'Feminino' => 'Feminino'
+                    Application_Model_Aluno::$sexo_masculino => 'Masculino',
+                    Application_Model_Aluno::$sexo_feminino => 'Feminino'
                 ))
                 ->setDecorators(array(
                     'ViewHelper',
@@ -423,8 +423,8 @@ class Application_Form_FormAluno extends Zend_Form {
                 ->addFilter('StringTrim')
                 //->setValue('00,00')
                 ->setAttrib('class', 'dinheiro')
-                ->setRequired(true)
-                ->addValidator('NotEmpty')
+                //->setRequired(true)
+                //->addValidator('NotEmpty')
                 ->setDecorators(array(
                     'ViewHelper',
                     'Label',
@@ -523,11 +523,15 @@ class Application_Form_FormAluno extends Zend_Form {
         $this->getElement('estado_escolhido')->setValue($estado);
     }
 
-    public function initializeTurmasAlunos($turmas, $turmas_alunos) {
+    public function initializeTurmasAlunos($turmas, $turmas_alunos = null) {
         $array_aux = array();
 
         foreach ($turmas as $turma) {
-            if (in_array($turma->getIdTurma(true), $turmas_alunos))
+            if (!empty($turmas_alunos)) {
+                if (in_array($turma->getIdTurma(true), $turmas_alunos))
+                    $array_aux[$turma->getIdTurma(true)] = $turma->getDisciplina()->getNomeDisciplina() . ' - ' . $turma->getNomeTurma() . ' | ' . $turma->getHorarioInicio() . ' - ' . $turma->getHorarioFim();
+            } 
+            else
                 $array_aux[$turma->getIdTurma(true)] = $turma->getDisciplina()->getNomeDisciplina() . ' - ' . $turma->getNomeTurma() . ' | ' . $turma->getHorarioInicio() . ' - ' . $turma->getHorarioFim();
         }
 

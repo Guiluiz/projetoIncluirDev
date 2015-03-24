@@ -202,65 +202,65 @@ class Application_Model_Mappers_Aluno {
      * Método auxiliar para atualizar status de pagamentos de alunos. Utilizado somente quando há necessidade (deve ser atualizado para novo padrão de pagamentos)
      * @param Application_Model_Periodo $periodo
      * @return boolean
-     public function updatePagamentos($periodo) {
-        @ini_set('memory_limit', '512M');
-        try {
-            if ($periodo instanceof Application_Model_Periodo) {
-                $db_turma_alunos = new Application_Model_DbTable_TurmaAlunos();
+      public function updatePagamentos($periodo) {
+      @ini_set('memory_limit', '512M');
+      try {
+      if ($periodo instanceof Application_Model_Periodo) {
+      $db_turma_alunos = new Application_Model_DbTable_TurmaAlunos();
 
-                $select = $db_turma_alunos->select()
-                        ->setIntegrityCheck(false)
-                        ->from('turma_alunos', array('id_pagamento'))
-                        ->joinInner('aluno', 'aluno.id_aluno = turma_alunos.id_aluno', array('nome_aluno'))
-                        ->joinInner('pagamento', 'pagamento.id_pagamento = turma_alunos.id_pagamento', array('valor_pago', 'situacao'))
-                        ->joinInner('pagamento_alimentos', 'pagamento.id_pagamento = pagamento_alimentos.id_pagamento', array('quantidade', 'id_alimento'))
-                        ->joinInner('turma', 'turma.id_turma = turma_alunos.id_turma', array('nome_turma'))
-                        ->where('id_periodo = ?', $periodo->getIdPeriodo())
-                        ->order('aluno.nome_aluno ASC');
+      $select = $db_turma_alunos->select()
+      ->setIntegrityCheck(false)
+      ->from('turma_alunos', array('id_pagamento'))
+      ->joinInner('aluno', 'aluno.id_aluno = turma_alunos.id_aluno', array('nome_aluno'))
+      ->joinInner('pagamento', 'pagamento.id_pagamento = turma_alunos.id_pagamento', array('valor_pago', 'situacao'))
+      ->joinInner('pagamento_alimentos', 'pagamento.id_pagamento = pagamento_alimentos.id_pagamento', array('quantidade', 'id_alimento'))
+      ->joinInner('turma', 'turma.id_turma = turma_alunos.id_turma', array('nome_turma'))
+      ->where('id_periodo = ?', $periodo->getIdPeriodo())
+      ->order('aluno.nome_aluno ASC');
 
-                $pagamentos = $db_turma_alunos->fetchAll($select);
+      $pagamentos = $db_turma_alunos->fetchAll($select);
 
-                if (!empty($pagamentos)) {
-                    $array_pagamentos = array();
-                    $db_pagamento = new Application_Model_DbTable_Pagamento();
+      if (!empty($pagamentos)) {
+      $array_pagamentos = array();
+      $db_pagamento = new Application_Model_DbTable_Pagamento();
 
-                    foreach ($pagamentos as $pagamento) {
-                        if (!isset($array_pagamentos[$pagamento->id_pagamento])) {
-                            $array_pagamentos[$pagamento->id_pagamento]['nome_aluno'] = $pagamento->nome_aluno;
-                            $array_pagamentos[$pagamento->id_pagamento]['valor'] = $pagamento->valor_pago;
-                            $array_pagamentos[$pagamento->id_pagamento]['quantidade'] = 0;
-                            $array_pagamentos[$pagamento->id_pagamento]['situacao_antiga'] = $pagamento->situacao;
-                            $array_pagamentos[$pagamento->id_pagamento]['nome_turma'] = $pagamento->nome_turma;
-                        }
+      foreach ($pagamentos as $pagamento) {
+      if (!isset($array_pagamentos[$pagamento->id_pagamento])) {
+      $array_pagamentos[$pagamento->id_pagamento]['nome_aluno'] = $pagamento->nome_aluno;
+      $array_pagamentos[$pagamento->id_pagamento]['valor'] = $pagamento->valor_pago;
+      $array_pagamentos[$pagamento->id_pagamento]['quantidade'] = 0;
+      $array_pagamentos[$pagamento->id_pagamento]['situacao_antiga'] = $pagamento->situacao;
+      $array_pagamentos[$pagamento->id_pagamento]['nome_turma'] = $pagamento->nome_turma;
+      }
 
-                        if (!isset($array_pagamentos[$pagamento->id_pagamento][$pagamento->id_alimento])) {
-                            $array_pagamentos[$pagamento->id_pagamento]['quantidade'] += $pagamento->quantidade;
-                            $array_pagamentos[$pagamento->id_pagamento][$pagamento->id_alimento] = true;
-                        }
-                    }
+      if (!isset($array_pagamentos[$pagamento->id_pagamento][$pagamento->id_alimento])) {
+      $array_pagamentos[$pagamento->id_pagamento]['quantidade'] += $pagamento->quantidade;
+      $array_pagamentos[$pagamento->id_pagamento][$pagamento->id_alimento] = true;
+      }
+      }
 
-                    foreach ($array_pagamentos as $id => $pagamento) {
-                        if ($pagamento['valor'] >= $periodo->getValorLiberacao() && $pagamento['quantidade'] >= $periodo->getQuantidadeAlimentos()) {
-                            $situacao = Application_Model_Pagamento::$pagamento_liberado;
-                            // echo 'Pagamento do Aluno(a) <b>' . mb_strtoupper($pagamento['nome_aluno'], 'UTF-8') . '</b> na turma <b>' . $pagamento['nome_turma'] . '</b> [<b>R$' . number_format($pagamento['valor'], 2, ',', '') . '</b> - <b>' . $pagamento['quantidade'] . '</b> alimento(s)] foi <b>Liberado</b>';
-                        } else {
-                            $situacao = Application_Model_Pagamento::$pagamento_pendente;
-                            //  echo 'Pagamento do Aluno(a) <b>' . mb_strtoupper($pagamento['nome_aluno'], 'UTF-8') . '</b> na turma <b>' . $pagamento['nome_turma'] . '</b> [<b>R$' . number_format($pagamento['valor'], 2, ',', '') . '</b> - <b>' . $pagamento['quantidade'] . '</b> alimento(s)] está <b>Pendente</b>';
-                        }
+      foreach ($array_pagamentos as $id => $pagamento) {
+      if ($pagamento['valor'] >= $periodo->getValorLiberacao() && $pagamento['quantidade'] >= $periodo->getQuantidadeAlimentos()) {
+      $situacao = Application_Model_Pagamento::$pagamento_liberado;
+      // echo 'Pagamento do Aluno(a) <b>' . mb_strtoupper($pagamento['nome_aluno'], 'UTF-8') . '</b> na turma <b>' . $pagamento['nome_turma'] . '</b> [<b>R$' . number_format($pagamento['valor'], 2, ',', '') . '</b> - <b>' . $pagamento['quantidade'] . '</b> alimento(s)] foi <b>Liberado</b>';
+      } else {
+      $situacao = Application_Model_Pagamento::$pagamento_pendente;
+      //  echo 'Pagamento do Aluno(a) <b>' . mb_strtoupper($pagamento['nome_aluno'], 'UTF-8') . '</b> na turma <b>' . $pagamento['nome_turma'] . '</b> [<b>R$' . number_format($pagamento['valor'], 2, ',', '') . '</b> - <b>' . $pagamento['quantidade'] . '</b> alimento(s)] está <b>Pendente</b>';
+      }
 
-                        //echo '<br><br>';
-                        $db_pagamento->update(array('situacao' => $situacao), $db_pagamento->getAdapter()->quoteInto('id_pagamento = ?', $id));
-                    }
-                }
-            }
-            return false;
-        } catch (Zend_Exception $e) {
-            echo $e;
-            return false;
-        }
-    }
-    */
-    
+      //echo '<br><br>';
+      $db_pagamento->update(array('situacao' => $situacao), $db_pagamento->getAdapter()->quoteInto('id_pagamento = ?', $id));
+      }
+      }
+      }
+      return false;
+      } catch (Zend_Exception $e) {
+      echo $e;
+      return false;
+      }
+      }
+     */
+
     /**
      * Busca os alunos de acordo com os filtros passados por parâmetro
      * @param array $filtros_busca
@@ -320,7 +320,7 @@ class Application_Model_Mappers_Aluno {
                     ->joinLeft('turma_atividades', 'turma_atividades.id_atividades_turma = nota_aluno.id_atividades_turma', array())
                     ->joinLeft('atividade', 'turma_atividades.id_atividade = atividade.id_atividade', array('id_atividade', 'nome', 'valor_total', 'data_funcionamento as data_atividade'))
                     ->joinLeft('falta', 'turma_alunos.id_turma_aluno = falta.id_turma_aluno', array('id_falta', 'data_funcionamento', 'observacao'))
-                    ->joinLeft('pagamento', 'turma_alunos.id_pagamento = pagamento.id_pagamento', array('situacao', 'valor_pago', 'condicao', 'tipo_isencao_pendencia'))
+                    ->joinLeft('pagamento', 'turma_alunos.id_pagamento = pagamento.id_pagamento', array('situacao', 'valor_pago', 'condicao', 'tipo_isencao_pendencia', 'num_recibo'))
                     ->joinLeft('pagamento_alimentos', 'turma_alunos.id_pagamento = pagamento_alimentos.id_pagamento', array('id_alimento', 'quantidade'))
                     ->joinLeft('alimento', 'pagamento_alimentos.id_alimento = alimento.id_alimento', array('nome_alimento'));
 
@@ -328,7 +328,7 @@ class Application_Model_Mappers_Aluno {
             if (!empty($periodo))
                 $query = $this->db_aluno->getAdapter()->quoteInto(' AND id_periodo = ?', (int) $periodo);
 
-            $select->joinLeft('turma', 'turma.id_turma = turma_alunos.id_turma' . $query, array('id_turma', 'nome_turma', 'id_disciplina', 'id_periodo'))
+            $select->joinLeft('turma', 'turma.id_turma = turma_alunos.id_turma' . $query, array('id_turma', 'nome_turma', 'id_disciplina', 'id_periodo', 'data_inicio', 'data_fim', 'horario_inicio', 'horario_fim'))
                     ->joinLeft('disciplina', 'turma.id_disciplina = disciplina.id_disciplina', array('nome_disciplina', 'id_curso'))
                     ->joinLeft('curso', 'disciplina.id_curso = curso.id_curso', array('nome_curso'))
                     ->where('aluno.id_aluno = ?', (int) $id_aluno);
@@ -345,9 +345,9 @@ class Application_Model_Mappers_Aluno {
 
                 foreach ($alunos as $inf_aluno) {
                     if (!isset($array_alunos[$inf_aluno->id_aluno]))
-                        $array_alunos[$inf_aluno->id_aluno] = new Application_Model_Aluno($inf_aluno->id_aluno, $inf_aluno->nome_aluno, $inf_aluno->cpf, $inf_aluno->status, $inf_aluno->sexo, $inf_aluno->data_desligamento, $inf_aluno->motivo_desligamento, $inf_aluno->rg, $inf_aluno->data_nascimento, $inf_aluno->email, $inf_aluno->escolaridade, $inf_aluno->telefone, $inf_aluno->celular, $inf_aluno->endereco, $inf_aluno->bairro, $inf_aluno->numero, $inf_aluno->complemento, $inf_aluno->cep, $inf_aluno->cidade, $inf_aluno->estado, $inf_aluno->data_registro, $inf_aluno->is_cpf_responsavel, $inf_aluno->nome_responsavel, null, new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma, null, null, null, null, new Application_Model_Disciplina($inf_aluno->id_disciplina, $inf_aluno->nome_disciplina, null, new Application_Model_Curso($inf_aluno->id_curso, $inf_aluno->nome_curso)), null, null, new Application_Model_Periodo($inf_aluno->id_periodo)), $inf_aluno->aprovado, $inf_aluno->liberacao, null);
+                        $array_alunos[$inf_aluno->id_aluno] = new Application_Model_Aluno($inf_aluno->id_aluno, $inf_aluno->nome_aluno, $inf_aluno->cpf, $inf_aluno->status, $inf_aluno->sexo, $inf_aluno->data_desligamento, $inf_aluno->motivo_desligamento, $inf_aluno->rg, $inf_aluno->data_nascimento, $inf_aluno->email, $inf_aluno->escolaridade, $inf_aluno->telefone, $inf_aluno->celular, $inf_aluno->endereco, $inf_aluno->bairro, $inf_aluno->numero, $inf_aluno->complemento, $inf_aluno->cep, $inf_aluno->cidade, $inf_aluno->estado, $inf_aluno->data_registro, $inf_aluno->is_cpf_responsavel, $inf_aluno->nome_responsavel, null, new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma, $inf_aluno->data_inicio, $inf_aluno->data_fim, $inf_aluno->horario_inicio, $inf_aluno->horario_fim, new Application_Model_Disciplina($inf_aluno->id_disciplina, $inf_aluno->nome_disciplina, null, new Application_Model_Curso($inf_aluno->id_curso, $inf_aluno->nome_curso)), null, null, new Application_Model_Periodo($inf_aluno->id_periodo)), $inf_aluno->aprovado, $inf_aluno->liberacao, null);
                     else
-                        $array_alunos[$inf_aluno->id_aluno]->addTurma(new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma, null, null, null, null, new Application_Model_Disciplina($inf_aluno->id_disciplina, $inf_aluno->nome_disciplina, null, new Application_Model_Curso($inf_aluno->id_curso, $inf_aluno->nome_curso)), null, null, new Application_Model_Periodo($inf_aluno->id_periodo)), $inf_aluno->liberacao, $inf_aluno->aprovado);
+                        $array_alunos[$inf_aluno->id_aluno]->addTurma(new Application_Model_Turma($inf_aluno->id_turma, $inf_aluno->nome_turma, $inf_aluno->data_inicio, $inf_aluno->data_fim, $inf_aluno->horario_inicio, $inf_aluno->horario_fim, new Application_Model_Disciplina($inf_aluno->id_disciplina, $inf_aluno->nome_disciplina, null, new Application_Model_Curso($inf_aluno->id_curso, $inf_aluno->nome_curso)), null, null, new Application_Model_Periodo($inf_aluno->id_periodo)), $inf_aluno->liberacao, $inf_aluno->aprovado);
 
                     if (!empty($inf_aluno->id_pagamento)) {
                         if (!isset($array_pagamentos[$inf_aluno->id_turma][$inf_aluno->id_pagamento])) {
@@ -477,8 +477,7 @@ class Application_Model_Mappers_Aluno {
             throw $e;
         }
     }
-    
-    
+
     /**
      * Separa os alunos nas suas respectivas turmas [um array para cada turma] método utilizado para a geração de relatórios
      * @param array $turmas Turmas que serão buscadas
@@ -701,7 +700,7 @@ class Application_Model_Mappers_Aluno {
                     ->joinLeft('nota_aluno', 'turma_alunos.id_turma_aluno = nota_aluno.id_turma_aluno', array('id_nota', 'valor_nota'))
                     ->joinLeft('turma_atividades', 'turma_atividades.id_atividades_turma = nota_aluno.id_atividades_turma', array())
                     ->joinLeft('atividade', 'turma_atividades.id_atividade = atividade.id_atividade', array('id_atividade', 'nome', 'valor_total'))
-                    ->joinLeft('pagamento', 'turma_alunos.id_pagamento = pagamento.id_pagamento', array('situacao', 'valor_pago', 'condicao', 'tipo_isencao_pendencia'))
+                    ->joinLeft('pagamento', 'turma_alunos.id_pagamento = pagamento.id_pagamento', array('situacao', 'valor_pago', 'condicao', 'tipo_isencao_pendencia', 'num_recibo'))
                     ->joinLeft('pagamento_alimentos', 'turma_alunos.id_pagamento = pagamento_alimentos.id_pagamento', array('id_alimento', 'quantidade'))
                     ->joinLeft('alimento', 'pagamento_alimentos.id_alimento = alimento.id_alimento', array('nome_alimento'))
                     ->joinLeft('turma', 'turma.id_turma = turma_alunos.id_turma', array('nome_turma', 'id_disciplina'))
