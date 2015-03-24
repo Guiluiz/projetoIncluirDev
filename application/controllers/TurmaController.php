@@ -369,11 +369,10 @@ class TurmaController extends Zend_Controller_Action {
 
             if ($turma instanceof Application_Model_Turma) {
                 $mapper_aluno = new Application_Model_Mappers_Aluno();
-                $mapper_calendarios = new Application_Model_Mappers_DatasAtividade();
-
-                $calendario = $mapper_calendarios->getDatasByPeriodo($turma->getPeriodo());
-
-                $this->view->total_aulas = $calendario->getQuantidadeAulas();
+                $mapper_frequencia = new Application_Model_Mappers_Frequencia();
+                $quantidade_lancamentos = $mapper_frequencia->getQuantidadeLancamentosByPeriodo(array($id_turma));
+                
+                $this->view->total_aulas = (isset($quantidade_lancamentos[$id_turma]) ? $quantidade_lancamentos[$id_turma] : 0);
                 $this->view->turma = $turma;
                 $this->view->alunos = $mapper_aluno->getAlunos(array('id_turma' => $this->getParam('turma')), true, true);
                 $this->view->id_turma = $id_turma;

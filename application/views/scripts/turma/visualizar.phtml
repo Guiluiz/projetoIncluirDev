@@ -1,6 +1,9 @@
 <?php
 if ($this->turma instanceof Application_Model_Turma):
-    $array_aprovacao = array(1 => 'Aprovado', 0 => 'Reprovado', null => '-');
+    $array_aprovacao = array(
+        Application_Model_Aluno::$aluno_aprovado => 'Aprovado',
+        Application_Model_Aluno::$aluno_reprovado => 'Reprovado',
+        Application_Model_Aluno::$aluno_sem_status_aprovacao => '-');
     ?>
     <h2>Informações Gerais da Turma</h2>
 
