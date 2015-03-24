@@ -301,8 +301,10 @@ class Application_Model_Mappers_Turma {
 
                 if (!empty($turmas)) {
                     $array_turmas = array();
+                    
                     foreach ($turmas as $turma)
                         $array_turmas[$turma->id_turma] = new Application_Model_Turma($turma->id_turma, $turma->nome_turma, null, null, $turma->horario_inicio, $turma->horario_fim, new Application_Model_Disciplina($turma->id_disciplina, $turma->nome_disciplina, null, new Application_Model_Curso($turma->id_curso, $turma->nome_curso)), null, new Application_Model_Periodo($turma->id_periodo));
+                    
                     return $array_turmas;
                 }
             }
@@ -472,8 +474,10 @@ class Application_Model_Mappers_Turma {
 
                 if (!empty($turmas)) {
                     $array_turmas = array();
+                    
                     foreach ($turmas as $turma)
                         $array_turmas[$turma->id_turma] = new Application_Model_Turma($turma->id_turma, $turma->nome_turma, null, null, null, null, new Application_Model_Disciplina($turma->id_disciplina, $turma->nome_disciplina, null, new Application_Model_Curso($turma->id_curso, $turma->nome_curso)), null, new Application_Model_Periodo($turma->id_periodo));
+                    
                     return $array_turmas;
                 }
             }

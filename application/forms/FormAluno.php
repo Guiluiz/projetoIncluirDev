@@ -156,8 +156,7 @@ class Application_Form_FormAluno extends Zend_Form {
                 ->addFilter('StripTags')
                 ->addFilter('StringTrim')
                 //->setAttrib('readonly', 'readonly')
-                ->setAttrib('class', 'data')
-                ->setAttrib('class', 'obrigatorio')
+                ->setAttrib('class', 'data obrigatorio')
                 ->setRequired(true)
                 ->addValidator('NotEmpty')
                 ->addValidator('Regex', true, array('pattern' => '/^([1-9]|0[1-9]|[1,2][0-9]|3[0,1])[\/](0[1-9]|1[0,1,2])[\/]\d{4}$/',

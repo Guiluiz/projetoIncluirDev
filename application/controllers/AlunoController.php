@@ -442,7 +442,9 @@ class AlunoController extends Zend_Controller_Action {
             if ($aluno instanceof Application_Model_Aluno) {
                 $mapper_calendario = new Application_Model_Mappers_DatasAtividade();
                 $mapper_periodo = new Application_Model_Mappers_Periodo();
-
+                $mapper_frequencia = new Application_Model_Mappers_Frequencia();
+                
+                $this->view->total_lancamentos = $mapper_frequencia->getQuantidadeLancamentosByPeriodo(array_keys($aluno->getTurmas()));
                 $this->view->calendarios = $mapper_calendario->getCalendarios($mapper_periodo->getPeriodos());
                 $this->view->aluno = $aluno;
                 return;

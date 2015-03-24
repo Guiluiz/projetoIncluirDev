@@ -4,10 +4,6 @@ class Application_Model_Mappers_DatasAtividade {
 
     private $db_datas_atividades;
 
-    public function __construct() {
-        
-    }
-
     public function getDatasByPeriodo($periodo) {
         try {
             if ($periodo instanceof Application_Model_Periodo) {

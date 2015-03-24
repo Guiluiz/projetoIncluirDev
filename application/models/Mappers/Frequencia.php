@@ -80,7 +80,7 @@ class Application_Model_Mappers_Frequencia {
 
     /**
      * Méetodo para incluir datas de lançamentos
-     * @param type $turmas
+     * @param Application_Model_Turma[] $turmas
      * @param Application_Model_DatasAtividade $calendario
      * @return null
      */
@@ -109,7 +109,6 @@ class Application_Model_Mappers_Frequencia {
      * Método para retornar as datas de lançamentos de acordo com os filtros passados
      * @param Application_Model_Periodo $periodo
      * @param Application_Model_Turma $turma
-     * 
      */
     public function getDatasLancamentosByPeriodo($periodo = null, $turma = null) {
         try {
@@ -137,6 +136,43 @@ class Application_Model_Mappers_Frequencia {
                 return $array_datas;
             }
             return null;
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+    }
+
+    /**
+     * Método para retornar a quantidade de lançamentos das turmas passadas
+     * @param Application_Model_Turma $turma
+     */
+    public function getQuantidadeLancamentosByPeriodo($turmas = null) {
+        try {
+            $db_datas_lancamentos = new Application_Model_DbTable_DatasLancamentosFrequenciaTurmas();
+            $select = $db_datas_lancamentos->select();
+
+            if (!empty($turmas)) {
+                $where = "( ";
+
+                foreach ($turmas as $id)
+                    $where .= $db_datas_lancamentos->getAdapter()->quoteInto('id_turma = ?', (int) $id) . " OR ";
+
+                $where = substr($where, 0, -4) . ")";
+                $select->where($where);
+            }
+
+            $turmas = $db_datas_lancamentos->fetchAll($select);
+            $array_turma = array();
+            
+            if (!empty($turmas)) {
+
+                foreach ($turmas as $turma) {
+                    if (!isset($array_turma[$turma->id_turma]))
+                        $array_turma[$turma->id_turma] = 1;
+                    else
+                        $array_turma[$turma->id_turma] ++;
+                }
+            }
+            return $array_turma;
         } catch (Exception $ex) {
             throw $ex;
         }

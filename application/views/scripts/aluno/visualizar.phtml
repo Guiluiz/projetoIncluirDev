@@ -1,7 +1,11 @@
 <?php
 if ($this->aluno instanceof Application_Model_Aluno):
-    $array_aprovacao = array(1 => 'Aprovado', 0 => 'Reprovado', null => '-');
+    $array_aprovacao = array(
+        Application_Model_Aluno::$aluno_aprovado => 'Aprovado',
+        Application_Model_Aluno::$aluno_reprovado => 'Reprovado',
+        Application_Model_Aluno::$aluno_sem_status_aprovacao => '-');
     ?>
+
     <h2>Informações Gerais do Aluno</h2>
 
     <table class="form-dados visualizacao" style="width: 60%;">
@@ -96,10 +100,12 @@ if ($this->aluno instanceof Application_Model_Aluno):
                         $aux[$id_turma] = $turma;
                 }
 
+                // separa as turmas de períodos anteriores das do período atual
                 if ($calendario->getPeriodoCalendario()->isPeriodoAtual()) {
                     $array_turmas_periodo_atual['atual'] = $aux;
                     $array_turmas_periodo_atual['periodo'] = $calendario->getPeriodoCalendario()->getIdPeriodo();
                 }
+                
                 else
                     $array_turmas_periodo_antigo[$calendario->getPeriodoCalendario()->getIdPeriodo()] = $aux;
             }
@@ -121,7 +127,7 @@ if ($this->aluno instanceof Application_Model_Aluno):
 
                 <?php
                 foreach ($array_turmas_periodo_atual['atual'] as $id_turma => $turma):
-                    $total_aulas = $this->calendarios[$array_turmas_periodo_atual['periodo']]->getQuantidadeAulas();
+                    $total_aulas = isset($this->total_lancamentos[$id_turma]) ? $this->total_lancamentos[$id_turma] : 0;
                     ?>
                     <tr>
                         <td><?php echo $turma[Application_Model_Aluno::$index_turma]->toString() ?></td>
@@ -144,8 +150,7 @@ if ($this->aluno instanceof Application_Model_Aluno):
                 ?>
             </table>
 
-        <?php else:
-            ?>
+        <?php else:?>
             <p>O aluno não foi cadastrado em nenhuma turma do período atual, ou o período ainda não foi inicializado.</p>
 
         <?php endif; ?>
@@ -187,7 +192,7 @@ if ($this->aluno instanceof Application_Model_Aluno):
                 </table>
             <?php else:
                 ?>
-                <p>Nâo há nenhuma do aluno no período indicado.</p>
+                <p>Nâo há nenhuma turma do aluno no período indicado.</p>
             <?php
             endif;
         endforeach;

@@ -45,7 +45,7 @@ h2, h3{
 
 h2{
     color:#f69f2b;
-    padding: 0em 0em 0.5em 1em;
+    padding: 0em 0em 1em 1em;
     font-size: 1.2em;
 }
 
@@ -55,8 +55,9 @@ h3{
     padding: 0em 0em 0.5em 2em;
 }
 
+
 p{
-    padding: 2em; 
+    padding: 1em 1em 1em 2em; 
 }
 
 div.ui-datepicker {
@@ -262,6 +263,13 @@ label, .span-radio{
     display: block;
     font-weight: bold;
     color: #777;
+}
+
+
+#resultado-busca h3{
+    color:#f69f2b;
+    padding: 0em 0em 0em 0em;
+    font-size: 1em;
 }
 
 #count{

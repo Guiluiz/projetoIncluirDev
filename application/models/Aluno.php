@@ -20,7 +20,10 @@ class Application_Model_Aluno {
     public static $aluno_turma_liberada = 1;
     public static $aluno_turma_prova_nivelamento = 2;
     public static $string_liberacoes = array(0 => '', 1 => 'Liberado', 2 => 'Prova de Nivelamento');
-
+    public static $aluno_aprovado = 1;
+    public static $aluno_reprovado = 0;
+    public static $aluno_sem_status_aprovacao = null;
+    
     /**
      *
      * @var int 
