@@ -7,7 +7,7 @@ class Application_Form_FormTurma extends Zend_Form {
             array('ViewScript', array('viewScript' => 'Decorators/form-turma.phtml')))
         );
         
-        $string_filter = new Aplicacao_Filtros_StringSimpleFilter();
+        //$string_filter = new Aplicacao_Filtros_StringSimpleFilter();
         
         $id_turma = new Zend_Form_Element_Hidden('id_turma');
         $id_turma->setDecorators(array(

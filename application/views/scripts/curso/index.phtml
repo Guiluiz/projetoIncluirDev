@@ -14,14 +14,14 @@
             <table>
                 <tr>
                     <th>Nome do Curso</th>
-                    <th colspan=2>Opções</th>
+                    <th>Opções</th>
                 </tr>
 
                 <?php foreach ($this->resultado_busca as $alimento) : ?>
                     <tr>
                         <td><?= $alimento->getNomeCurso() ?></td>
                         <td><a href='<?= $this->url(array('controller' => 'curso', 'action' => 'alterar', 'curso' => $alimento->getIdCurso(true)), null, true) ?>'>Alterar</a></td>                     
-                        <td><a href='<?= $this->url(array('controller' => 'curso', 'action' => 'excluir', 'curso' => $alimento->getIdcurso(true)), null, true) ?>'>Excluir</a></td>
+                        <!--<td><a href='<?= $this->url(array('controller' => 'curso', 'action' => 'excluir', 'curso' => $alimento->getIdcurso(true)), null, true) ?>'>Excluir</a></td>-->
                     </tr>
                 <?php endforeach; ?>
             </table>

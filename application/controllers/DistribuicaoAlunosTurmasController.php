@@ -7,9 +7,13 @@ class DistribuicaoAlunosTurmasController extends Zend_Controller_Action {
     }
 
     public function indexAction() {
-        $this->view->title = "Projeto Incluir - Distribuição de Alunos nas Turmas";
+        $this->view->title = "Projeto Incluir - Distribuição de Alunos";
 
-        $mapper_turma = new Application_Model_Mappers_Turma();
+        $form_distribuicao = new Application_Form_FormDistribuicaoTurmas();
+        $this->view->form = $form_distribuicao;
+        
+        
+        /*$mapper_turma = new Application_Model_Mappers_Turma();
         $mapper_alunos = new Application_Model_Mappers_Aluno();
 
         $alunos_turmas = $mapper_alunos->getInfAlunosDisciplinaHorario();
@@ -17,7 +21,7 @@ class DistribuicaoAlunosTurmasController extends Zend_Controller_Action {
             'Inglês Instrumental Básico I Para Eventos' => array('max_alunos' => 25),
             'Inglês Básico I Para Crianças' => array('max_alunos' => 25),
             'Inglês Básico II Para Crianças' => array('max_alunos' => 25),
-        );*/
+        );
         
         $max_alunos_turmas_disciplinas = array(
             'Inglês Instrumental Básico II Para Eventos' => array('max_alunos' => 50),
@@ -70,7 +74,7 @@ class DistribuicaoAlunosTurmasController extends Zend_Controller_Action {
             }
         }
 
-        //svar_dump($alunos_turmas);
+        //svar_dump($alunos_turmas);*/
     }
 
 }

@@ -15,7 +15,7 @@
                 <tr>
                     <th>Nome da Disciplina</th>
                     <th>Nome do Curso</th>
-                    <th colspan=2>Opções</th>
+                    <th>Opções</th>
                 </tr>
 
                 <?php foreach ($this->resultado_busca as $voluntario) : ?>
@@ -23,7 +23,7 @@
                         <td><?= $voluntario->getNomeDisciplina() ?></td>
                         <td><?= $voluntario->getCurso()->getNomeCurso() ?></td>
                         <td><a href='<?= $this->url(array('controller' => 'disciplina', 'action' => 'alterar', 'disciplina' => $voluntario->getIdDisciplina(true)), null, true) ?>'>Alterar</a></td>                     
-                        <td><a href='<?= $this->url(array('controller' => 'disciplina', 'action' => 'excluir', 'disciplina' => $voluntario->getIdDisciplina(true)), null, true) ?>'>Excluir</a></td>
+                        <!--<td><a href='<?= $this->url(array('controller' => 'disciplina', 'action' => 'excluir', 'disciplina' => $voluntario->getIdDisciplina(true)), null, true) ?>'>Excluir</a></td>-->
                     </tr>
                 <?php endforeach; ?>
             </table>

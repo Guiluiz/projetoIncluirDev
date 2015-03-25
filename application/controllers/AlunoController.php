@@ -241,13 +241,18 @@ class AlunoController extends Zend_Controller_Action {
                     if ($aluno instanceof Application_Model_Aluno) {
                         $form_exclusao->populate($aluno->parseArray(true));
                         $form_exclusao->seTurmasAlunos($aluno->getTurmas());
-
+                        
                         $this->view->turmas = $aluno->getTurmas();
                         $this->view->liberacao = $aluno->getLiberacaoTurmas();
                         $this->view->pagamentos = $aluno->getValoresPagamentos();
                         $this->view->alimentos = $aluno->getAlimentosPagamentos();
                         $this->view->todos_alimentos = $alimentos;
                         $form_exclusao->setEstadoCidade($aluno->getCidade(), $aluno->getEstado());
+
+                        $this->view->condicoes_pagamentos_turmas = $aluno->getCondicoesPagamentos();
+                        $this->view->tipo_isencao_pendencia_turmas = $aluno->getTipoIsencaoPendenciaPagamentos();
+                        $this->view->recibos_turmas = $aluno->getRecibosPagamentos();
+                        $this->view->situacao_turmas = $aluno->getSituacoesPagamentos();
                     } else
                         $this->view->form = null;
                 }
@@ -277,7 +282,6 @@ class AlunoController extends Zend_Controller_Action {
         }
 
         unset($campos_verificados[0]);
-
 
         // verifica se todas as informações das turmas estão presentes
 
@@ -443,7 +447,7 @@ class AlunoController extends Zend_Controller_Action {
                 $mapper_calendario = new Application_Model_Mappers_DatasAtividade();
                 $mapper_periodo = new Application_Model_Mappers_Periodo();
                 $mapper_frequencia = new Application_Model_Mappers_Frequencia();
-                
+
                 $this->view->total_lancamentos = $mapper_frequencia->getQuantidadeLancamentosByPeriodo(array_keys($aluno->getTurmas()));
                 $this->view->calendarios = $mapper_calendario->getCalendarios($mapper_periodo->getPeriodos());
                 $this->view->aluno = $aluno;

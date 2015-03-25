@@ -1,0 +1,40 @@
+<form enctype="application/x-www-form-urlencoded" action="" method="post">
+    <h2>Distribuição de Alunos nas Turmas</h2>
+    
+    <h3>Distribuição 1</h3>
+        
+    <table class="form-dados" style="width: 60%" id="distribuicao_0">
+        <tr>
+            <td><?= $this->element->curso_0 ?></td>
+            <td><?= $this->element->disciplina_0 ?></td>
+        </tr>
+        
+        <tr>
+            <td><?= $this->element->horario_inicio_0 ?></td>
+            <td><?= $this->element->horario_fim_0 ?></td>
+        </tr>
+        
+        <tr>
+            <td><?= $this->element->dividir_por_0 ?></td>
+            <td><?= $this->element->ordem_0 ?></td>
+        </tr>
+        
+        <tr>
+            <td><?= $this->element->divisao_igualitaria_0 ?></td>
+            <td><?= $this->element->quantidade_0 ?></td>
+        </tr>
+    </table>
+
+    <div class="controle">
+        <div id="add">Add</div>
+        <div id="remove">Remove</div>
+    </div>
+    
+    <table class="submit" style="float: left;">
+        <tr>
+            <td><?= $this->element->enviar ?></td>
+            <td><?= $this->element->cancelar ?></td>
+        </tr>
+    </table>
+
+</form>

@@ -196,8 +196,6 @@ class Application_Form_FormAluno extends Zend_Form {
                     'Label'
         ));
 
-
-
         $is_responsavel = new Zend_Form_Element_Checkbox('is_cpf_responsavel');
         $is_responsavel->setLabel('CPF do Responsável:')
                 ->addFilter('StripTags')
