@@ -359,7 +359,7 @@ class Application_Model_Mappers_Turma {
                     ->setIntegrityCheck(false)
                     ->from('turma', array('id_turma', 'nome_turma', 'id_disciplina', 'id_periodo'))
                     ->joinInner('disciplina', 'disciplina.id_disciplina = turma.id_disciplina', array('nome_disciplina'))
-                    ->order('turma.nome_turma');
+                    ->order(array('disciplina.nome_disciplina ASC', 'turma.nome_turma ASC'));
 
             if (!empty($periodo))
                 $select->where('turma.id_periodo = ?', $periodo);

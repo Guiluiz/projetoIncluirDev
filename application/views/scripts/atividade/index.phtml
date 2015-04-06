@@ -7,7 +7,7 @@
 <?php echo $this->form ?>
 
 <?php if ($this->resultado_busca instanceof Zend_Paginator) : ?>
-    <?php if (count($this->resultado_busca) > 0) :?>
+    <?php if (count($this->resultado_busca) > 0) : ?>
         <div id='resultado-busca'>
             <h3>Resultados da Busca</h3>
             <span>Foram encontrados (<?= $this->resultado_busca->getTotalItemCount() ?>) registros</span>
@@ -20,15 +20,21 @@
                     <th <?php echo (!$this->inativo) ? 'colspan=2' : '' ?>>Opções</th>
                 </tr>
 
-                <?php foreach ($this->resultado_busca as $atividade) : ?>
+                <?php
+                foreach ($this->resultado_busca as $atividade) :
+                    $periodo = $atividade->getTurma()->getPeriodo();
+                    ?>
                     <tr>
                         <td><?= $atividade->getNomeAtividade() ?></td>
                         <td><?= $atividade->getDataAtividade(true) ?></td>
                         <td><?= $atividade->getValor() ?></td>
                         <td><?= $atividade->getTurma()->toString() ?></td>
-                        <?php if (!$this->inativo): ?>
+                        <?php if (!$this->inativo && $periodo->isPeriodoAtual()): ?>
                             <td><a href='<?= $this->url(array('controller' => 'atividade', 'action' => 'alterar', 'atividade' => $atividade->getIdAtividade(true)), null, true) ?>'>Alterar</a></td>                     
                             <td><a href='<?= $this->url(array('controller' => 'atividade', 'action' => 'excluir', 'atividade' => $atividade->getIdAtividade(true)), null, true) ?>'>Excluir</a></td>
+
+                        <?php else: ?>
+                            <td> - </td>
                         <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>

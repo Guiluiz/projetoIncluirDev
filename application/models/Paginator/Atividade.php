@@ -14,7 +14,7 @@ class Application_Model_Paginator_Atividade extends Zend_Paginator_Adapter_DbSel
         foreach ($atividades as $atividade) {
             $array_atividades[] = new Application_Model_Atividade(
                             $atividade['id_atividade'],
-                            new Application_Model_Turma($atividade['id_turma'], $atividade['nome_turma'], null, null, null, null, new Application_Model_Disciplina($atividade['id_disciplina'], $atividade['nome_disciplina'])),
+                            new Application_Model_Turma($atividade['id_turma'], $atividade['nome_turma'], null, null, null, null, new Application_Model_Disciplina($atividade['id_disciplina'], $atividade['nome_disciplina']), null, null, new Application_Model_Periodo($atividade['id_periodo'], $atividade['is_atual'])),
                             $atividade['nome'],
                             $atividade['valor_total'],
                             null,

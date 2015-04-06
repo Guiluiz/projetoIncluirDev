@@ -30,7 +30,7 @@ class AtividadeController extends Zend_Controller_Action {
 
         if ($periodo->verificaFimPeriodo())
             $this->view->inativo = true;
-        
+
         if ($form_consulta->isValid($dados)) {
             if ($this->getRequest()->isPost() || !empty($pagina)) {
                 $mapper_atividades = new Application_Model_Mappers_Atividade();
@@ -109,7 +109,7 @@ class AtividadeController extends Zend_Controller_Action {
 
                 $atividade = $mapper_atividade->buscaAtividadeByID($id_atividade);
 
-                if ($atividade instanceof Application_Model_Atividade) {
+                if ($atividade instanceof Application_Model_Atividade && $atividade->getTurma()->getPeriodo()->isPeriodoAtual()) {
                     $mapper_curso = new Application_Model_Mappers_Curso();
                     $mapper_disciplina = new Application_Model_Mappers_Disciplina();
                     $mapper_turma = new Application_Model_Mappers_Turma();
@@ -141,8 +141,7 @@ class AtividadeController extends Zend_Controller_Action {
 
                 $this->view->form = $form_atividade;
 
-                if ($this->
-                                getRequest()->isPost()) {
+                if ($this->getRequest()->isPost()) {
                     $dados = $this->getRequest()->getPost();
 
                     if (isset($dados['cancelar']))
@@ -162,7 +161,7 @@ class AtividadeController extends Zend_Controller_Action {
 
                 $atividade = $mapper_atividade->buscaAtividadeByID($id_atividade);
 
-                if ($atividade instanceof Application_Model_Atividade) {
+                if ($atividade instanceof Application_Model_Atividade && $atividade->getTurma()->getPeriodo()->isPeriodoAtual()) {
                     $mapper_curso = new Application_Model_Mappers_Curso();
                     $mapper_disciplina = new Application_Model_Mappers_Disciplina();
                     $mapper_turma = new Application_Model_Mappers_Turma();
@@ -170,9 +169,9 @@ class AtividadeController extends Zend_Controller_Action {
                     $form_atividade->populate($atividade->parseArray(true));
                     $form_atividade->initializeCursos($mapper_curso->buscaCursos(), $atividade->getTurma()->getDisciplina()->getCurso()->getIdCurso(true));
                     $form_atividade->initializeDisciplinas($mapper_disciplina->buscaDisciplinas(array('id_curso' => $atividade->getTurma()->getDisciplina()->getCurso()->getIdCurso()), null), $atividade->getTurma()->getDisciplina()->getIdDisciplina(true));
-                    $form_atividade->initializeTurmas($mapper_turma->buscaTurmas(array('disciplina' =>
-                                        $atividade->getTurma()->getDisciplina()->
-                                        getIdDisciplina(true)), null), $atividade->getTurma()->getIdTurma(true));
+                    $form_atividade->initializeTurmas(
+                            $mapper_turma->buscaTurmas(array(
+                                'disciplina' => $atividade->getTurma()->getDisciplina()->getIdDisciplina(true)), null), $atividade->getTurma()->getIdTurma(true));
                 } else
                     $this->view->not_found = true;
 

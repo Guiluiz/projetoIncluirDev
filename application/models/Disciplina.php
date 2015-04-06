@@ -5,7 +5,9 @@
  * @author Projeto Incluir
  */
 class Application_Model_Disciplina {
-
+    const status_ativo = 1;
+    const status_inativo = 2;
+    
     /**
      * @var int 
      */
@@ -30,14 +32,21 @@ class Application_Model_Disciplina {
      * @var Application_Model_Disciplina[] 
      */
     private $pre_requisitos;
-
-    public function __construct($id_disciplina, $nome_disciplina = null, $ementa_disciplina = null, $curso = null, $pre_requisito = null) {
+    
+    /**
+     *
+     * @var int 
+     */
+    private $status;
+    
+    public function __construct($id_disciplina, $nome_disciplina = null, $ementa_disciplina = null, $curso = null, $pre_requisito = null, $status = null) {
         $this->id_disciplina = ((!empty($id_disciplina)) ? (int) $id_disciplina : null);
         $this->nome_disciplina = $nome_disciplina;
         $this->ementa_disciplina = $ementa_disciplina;
         $this->curso = $curso;
         $this->pre_requisitos = array();
         $this->addPreRequisitos($pre_requisito);
+        $this->status = $status;
     }
 
     /**
@@ -97,6 +106,10 @@ class Application_Model_Disciplina {
         return false;
     }
 
+    public function getStatus(){
+        return $this->status;
+    }
+    
     /**
      * Retorna um array com as informações da disciplina.
      * Utilizado tanto para popular formulários de disciplina quanto para cadastro/alteração no banco de dados

@@ -8,7 +8,7 @@ class Application_Model_Paginator_Disciplina extends Zend_Paginator_Adapter_DbSe
 
         foreach ($disciplinas as $disciplina) {
             $array_disciplinas[] = new Application_Model_Disciplina(
-                    $disciplina['id_disciplina'], $disciplina['nome_disciplina'], null, new Application_Model_Curso(null, $disciplina['nome_curso'])
+                    $disciplina['id_disciplina'], $disciplina['nome_disciplina'], null, new Application_Model_Curso(null, $disciplina['nome_curso']), null, $disciplina['status']
             );
         }
 

@@ -27,7 +27,7 @@ var controle_distribuicao = (function() {
 
     distribuicao.ini = function() {
         campos_curso.each(function(){
-           $(this). 
+        
         });
         
     };

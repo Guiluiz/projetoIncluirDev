@@ -23,7 +23,7 @@ class Application_Model_Periodo {
         $this->min_pts_aprovacao = $min_pts_aprov;
         $this->total_pts_periodo = $total_pts;
         $this->quantidade_alimentos = $quantidade_alimentos;
-        $this->is_semestre_atual = $is_atual;
+        $this->is_semestre_atual = (bool)$is_atual;
     }
 
     /**

@@ -159,7 +159,7 @@ class TurmaController extends Zend_Controller_Action {
     }
 
     public function excluirAction() {
-        $periodo = new Application_Model_Mappers_Periodo();
+        /*$periodo = new Application_Model_Mappers_Periodo();
         $this->view->title = "Projeto Incluir - Excluir Turma";
 
         if (!$periodo->verificaFimPeriodo()) {
@@ -210,7 +210,7 @@ class TurmaController extends Zend_Controller_Action {
             }
             $this->_helper->redirector->goToRoute(array('controller' => 'error', 'action' => 'error'), null, true);
         } else
-            $this->view->inativo = true;
+            $this->view->inativo = true;*/
     }
 
     /**

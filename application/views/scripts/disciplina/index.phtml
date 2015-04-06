@@ -15,15 +15,22 @@
                 <tr>
                     <th>Nome da Disciplina</th>
                     <th>Nome do Curso</th>
-                    <th>Opções</th>
+                    <th colspan="2">Opções</th>
                 </tr>
 
-                <?php foreach ($this->resultado_busca as $voluntario) : ?>
+                <?php foreach ($this->resultado_busca as $disciplina) : ?>
                     <tr>
-                        <td><?= $voluntario->getNomeDisciplina() ?></td>
-                        <td><?= $voluntario->getCurso()->getNomeCurso() ?></td>
-                        <td><a href='<?= $this->url(array('controller' => 'disciplina', 'action' => 'alterar', 'disciplina' => $voluntario->getIdDisciplina(true)), null, true) ?>'>Alterar</a></td>                     
-                        <!--<td><a href='<?= $this->url(array('controller' => 'disciplina', 'action' => 'excluir', 'disciplina' => $voluntario->getIdDisciplina(true)), null, true) ?>'>Excluir</a></td>-->
+                        <td><?= $disciplina->getNomeDisciplina() ?></td>
+                        <td><?= $disciplina->getCurso()->getNomeCurso() ?></td>
+
+                        <?php if ($disciplina->getStatus() == Application_Model_Disciplina::status_ativo): ?>
+                            <td><a href='<?= $this->url(array('controller' => 'disciplina', 'action' => 'alterar', 'disciplina' => $disciplina->getIdDisciplina(true)), null, true) ?>'>Alterar</a></td>                     
+                            <td><a href='<?= $this->url(array('controller' => 'disciplina', 'action' => 'cancelar', 'disciplina' => $disciplina->getIdDisciplina(true)), null, true) ?>'>Cancelar</a></td>                     
+
+                        <?php else: ?>
+                            <td> - </td>
+                        <?php endif; ?>
+            <!--<td><a href='<?= $this->url(array('controller' => 'disciplina', 'action' => 'excluir', 'disciplina' => $disciplina->getIdDisciplina(true)), null, true) ?>'>Excluir</a></td>-->
                     </tr>
                 <?php endforeach; ?>
             </table>

@@ -99,6 +99,21 @@ class Application_Model_Mappers_Disciplina {
     }
 
     /**
+     * Altera o status da disciplina especificada para cancelado
+     * @param int $id_disciplina
+     * @return boolean
+     */
+    public function cancelarDisciplina($id_disciplina) {
+        try {
+            $this->db_disciplina = new Application_Model_DbTable_Disciplina();
+            $this->db_disciplina->update(array('status' => Application_Model_Disciplina::status_inativo), $this->db_disciplina->getAdapter()->quoteInto('id_disciplina = ?', (int) $id_disciplina));
+            return true;
+        } catch (Zend_Exception $e) {
+            return false;
+        }
+    }
+
+    /**
      * Busca os disciplinas de acordo com os filtros especificados
      * @param array $filtros_busca
      * @param boolean $paginator
@@ -109,7 +124,7 @@ class Application_Model_Mappers_Disciplina {
             $this->db_disciplina = new Application_Model_DbTable_Disciplina();
             $select = $this->db_disciplina->select()
                     ->setIntegrityCheck(false)
-                    ->from('disciplina', array('id_disciplina', 'nome_disciplina'))
+                    ->from('disciplina', array('id_disciplina', 'nome_disciplina', 'status'))
                     ->joinInner('curso', 'curso.id_curso = disciplina.id_curso', array('nome_curso'))
                     ->order('disciplina.nome_disciplina ASC');
 
@@ -124,11 +139,12 @@ class Application_Model_Mappers_Disciplina {
 
             if (empty($paginator)) {
                 $disciplinas = $this->db_disciplina->fetchAll($select->order('curso.nome_curso'));
+                
                 if (!empty($disciplinas)) {
                     $array_disciplinas = array();
 
                     foreach ($disciplinas as $disciplina)
-                        $array_disciplinas[] = new Application_Model_Disciplina($disciplina->id_disciplina, $disciplina->nome_disciplina, null, new Application_Model_Curso(null, $disciplina->nome_curso));
+                        $array_disciplinas[] = new Application_Model_Disciplina($disciplina->id_disciplina, $disciplina->nome_disciplina, null, new Application_Model_Curso(null, $disciplina->nome_curso), $disciplina->status);
 
                     return $array_disciplinas;
                 }
@@ -155,7 +171,7 @@ class Application_Model_Mappers_Disciplina {
             $disciplina = $this->db_disciplina->fetchRow($select);
 
             if (!empty($disciplina))
-                return new Application_Model_Disciplina($disciplina->id_disciplina, $disciplina->nome_disciplina, $disciplina->ementa_disciplina, new Application_Model_Curso($disciplina->id_curso), $this->getPreRequisitos($disciplina->id_disciplina));
+                return new Application_Model_Disciplina($disciplina->id_disciplina, $disciplina->nome_disciplina, $disciplina->ementa_disciplina, new Application_Model_Curso($disciplina->id_curso), $this->getPreRequisitos($disciplina->id_disciplina), $disciplina->status);
 
             return null;
         } catch (Zend_Exception $e) {
@@ -163,7 +179,12 @@ class Application_Model_Mappers_Disciplina {
             return null;
         }
     }
-
+    
+    /**
+     * Busca os pré requisitos ativos da disciplina selecionada
+     * @param int $id_disciplina
+     * @return null|\Application_Model_Disciplina[]
+     */
     public function getPreRequisitos($id_disciplina) {
         try {
             if (!$this->db_disciplina instanceof Application_Model_DbTable_Disciplina)
@@ -173,7 +194,8 @@ class Application_Model_Mappers_Disciplina {
                     ->setIntegrityCheck(false)
                     ->from('disciplina')
                     ->joinInner('disciplina_pre_requisitos', 'disciplina_pre_requisitos.id_disciplina_pre_requisito = disciplina.id_disciplina')
-                    ->where('disciplina_pre_requisitos.id_disciplina = ?', (int) $id_disciplina);
+                    ->where('disciplina_pre_requisitos.id_disciplina = ?', (int) $id_disciplina)
+                    ->where('disciplina.status = ?', Application_Model_Disciplina::status_ativo);
 
             $disciplinas = $this->db_disciplina->fetchAll($select);
 
@@ -181,7 +203,7 @@ class Application_Model_Mappers_Disciplina {
                 $array_disciplinas = array();
 
                 foreach ($disciplinas as $disciplina)
-                    $array_disciplinas[] = new Application_Model_Disciplina($disciplina->id_disciplina_pre_requisito, $disciplina->nome_disciplina, null, new Application_Model_Curso($disciplina->id_curso));
+                    $array_disciplinas[] = new Application_Model_Disciplina($disciplina->id_disciplina_pre_requisito, $disciplina->nome_disciplina, null, new Application_Model_Curso($disciplina->id_curso), $disciplina->status);
 
                 return $array_disciplinas;
             }
@@ -191,7 +213,12 @@ class Application_Model_Mappers_Disciplina {
             return null;
         }
     }
-
+    
+    /**
+     * Busca as disciplinas com o id's indicados. Utilizado para exibir as disciplinas do professor
+     * @param int[] $array_ids
+     * @return null|\Application_Model_Disciplina[]
+     */
     public function buscaDisciplinasByID($array_ids) {
         try {
             if (!empty($array_ids) && is_array($array_ids)) {
@@ -211,9 +238,9 @@ class Application_Model_Mappers_Disciplina {
 
                 if (!empty($disciplinas)) {
                     $array_disciplinas = array();
-                    
+
                     foreach ($disciplinas as $disciplina)
-                        $array_disciplinas[] = new Application_Model_Disciplina($disciplina->id_disciplina, $disciplina->nome_disciplina, null, new Application_Model_Curso($disciplina->id_curso, $disciplina->nome_curso));
+                        $array_disciplinas[] = new Application_Model_Disciplina($disciplina->id_disciplina, $disciplina->nome_disciplina, null, new Application_Model_Curso($disciplina->id_curso, $disciplina->nome_curso, $disciplina->status));
 
                     return $array_disciplinas;
                 }

@@ -502,9 +502,7 @@ class AlunoController extends Zend_Controller_Action {
                         $this->_helper->redirector->goToRoute(array('controller' => 'aluno', 'action' => 'index'), null, true);
 
                     if ($form_desligamento->isValid($dados)) {
-                        $aluno = new Application_Model_Aluno((int) base64_decode($form_desligamento->getValue('id_aluno')), null, null, Application_Model_Aluno::$status_desligado, $form_desligamento->getValue('data_desligamento'), $form_desligamento->getValue(
-                                        'motivo_desligamento'));
-
+                        $aluno = new Application_Model_Aluno((int) base64_decode($form_desligamento->getValue('id_aluno')), null, null, Application_Model_Aluno::$status_desligado, $form_desligamento->getValue('data_desligamento'), $form_desligamento->getValue('motivo_desligamento'));
                         if ($mapper_aluno->desligarAluno($aluno))
                             $this->view->mensagem = "O aluno foi desligado com sucesso.";
                         else

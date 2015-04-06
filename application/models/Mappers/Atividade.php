@@ -130,7 +130,7 @@ class Application_Model_Mappers_Atividade {
         try {
             $mapper_periodo = new Application_Model_Mappers_Periodo();
             $periodo_atual = $mapper_periodo->getPeriodoAtual();
-            
+
             if ($atividade instanceof Application_Model_Atividade && $periodo_atual instanceof Application_Model_Periodo) {
                 $this->db_atividade = new Application_Model_DbTable_Atividade();
 
@@ -174,6 +174,7 @@ class Application_Model_Mappers_Atividade {
                     ->setIntegrityCheck(false)
                     ->joinInner('turma_atividades', 'atividade.id_atividade = turma_atividades.id_atividade')
                     ->joinInner('turma', 'turma_atividades.id_turma = turma.id_turma', array('nome_turma', 'id_disciplina'))
+                    ->joinInner('periodo', 'turma.id_periodo = periodo.id_periodo', array('id_periodo', 'is_atual'))
                     ->joinInner('disciplina', 'turma.id_disciplina = disciplina.id_disciplina', array('nome_disciplina'));
 
             if (!empty($id_turma))
@@ -189,7 +190,7 @@ class Application_Model_Mappers_Atividade {
                     $array_atividades = array();
 
                     foreach ($atividades as $atividade)
-                        $array_atividades[] = new Application_Model_Atividade($atividade->id_atividade, new Application_Model_Turma($atividade->id_turma, $atividade->nome_turma, null, null, null, null, new Application_Model_Disciplina($atividade->id_disciplina, $atividade->nome_disciplina)), $atividade->nome, $atividade->valor_total, $atividade->descricao, $atividade->data_funcionamento);
+                        $array_atividades[] = new Application_Model_Atividade($atividade->id_atividade, new Application_Model_Turma($atividade->id_turma, $atividade->nome_turma, null, null, null, null, new Application_Model_Disciplina($atividade->id_disciplina, $atividade->nome_disciplina), null, null, new Application_Model_Periodo($atividade->id_periodo, $atividade->is_atual)), $atividade->nome, $atividade->valor_total, $atividade->descricao, $atividade->data_funcionamento);
 
                     return $array_atividades;
                 }
@@ -210,13 +211,14 @@ class Application_Model_Mappers_Atividade {
                     ->from('atividade')
                     ->joinInner('turma_atividades', 'atividade.id_atividade = turma_atividades.id_atividade')
                     ->joinInner('turma', 'turma.id_turma = turma_atividades.id_turma', array('id_turma', 'id_disciplina'))
+                    ->joinInner('periodo', 'turma.id_periodo = periodo.id_periodo', array('id_periodo', 'is_atual'))
                     ->joinInner('disciplina', 'turma.id_disciplina = disciplina.id_disciplina', array('id_curso'))
                     ->where('atividade.id_atividade = ?', (int) $id_atividade);
 
             $atividade = $this->db_atividade->fetchRow($select);
 
             if (!empty($atividade))
-                return new Application_Model_Atividade($atividade->id_atividade, new Application_Model_Turma($atividade->id_turma, null, null, null, null, null, new Application_Model_Disciplina($atividade->id_disciplina, null, null, new Application_Model_Curso($atividade->id_curso))), $atividade->nome, $atividade->valor_total, $atividade->descricao, $atividade->data_funcionamento);
+                return new Application_Model_Atividade($atividade->id_atividade, new Application_Model_Turma($atividade->id_turma, null, null, null, null, null, new Application_Model_Disciplina($atividade->id_disciplina, null, null, new Application_Model_Curso($atividade->id_curso)), null, null, new Application_Model_Periodo($atividade->id_periodo, $atividade->is_atual)), $atividade->nome, $atividade->valor_total, $atividade->descricao, $atividade->data_funcionamento);
 
             return null;
         } catch (Zend_Exception $e) {
@@ -255,7 +257,7 @@ class Application_Model_Mappers_Atividade {
                     $array[$turma_atividade->id_turma]['id_atividade_turma'] = $turma_atividade->id_atividades_turma;
                     $array[$turma_atividade->id_turma]['id_atividade'] = $turma_atividade->id_atividade;
                 }
-                
+
                 return $array;
             }
             return null;
