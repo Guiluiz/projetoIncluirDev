@@ -7,7 +7,7 @@
 class Application_Model_Mappers_Turma {
 
     private $db_turma;
-    
+
     /**
      * Inclui a turma especificada no banco de dados
      * @param Application_Model_Turma $turma
@@ -36,7 +36,7 @@ class Application_Model_Mappers_Turma {
             return false;
         }
     }
-    
+
     /**
      * Altera a turma especificada no banco de dados
      * @param Application_Model_Turma $turma
@@ -67,7 +67,7 @@ class Application_Model_Mappers_Turma {
             return false;
         }
     }
-    
+
     /**
      * Exclui a turma com o id especificado do banco de dados
      * @param int $id_turma
@@ -83,7 +83,31 @@ class Application_Model_Mappers_Turma {
             return false;
         }
     }
-    
+
+    /**
+     * Altera o status das turmas da disciplina especificada para cancelado
+     * @param int $ids_disciplinas
+     * @return boolean
+     */
+    public function cancelarTurmasByDisciplinas($ids_disciplinas) {
+        try {
+            if (!empty($ids_disciplinas)) {
+                $this->db_turma = new Application_Model_DbTable_Turma();
+
+                $where = "( ";
+
+                foreach ($ids_disciplinas as $id)
+                    $where .= $this->db_turma->getAdapter()->quoteInto('id_disciplina = ?', (int) $id) . " OR ";
+
+                $where = substr($where, 0, -4) . ")";
+                $this->db_turma->update(array('status' => Application_Model_Turma::$status_cancelada), $where);
+            }
+            return true;
+        } catch (Zend_Exception $e) {
+            return false;
+        }
+    }
+
     /**
      * Altera o status da turma especificada para cancelado
      * @param int $id_turma
@@ -98,7 +122,7 @@ class Application_Model_Mappers_Turma {
             return false;
         }
     }
-    
+
     /**
      * Retorna a quantidade de alunos da(s) turma(s) e outras informações de acordo com o parâmetro
      * @param int|null $id_turma Indica a turma que terá a quantidade retornada, caso seja nulo as quantidades de todas as turmas são buscadas
@@ -177,7 +201,7 @@ class Application_Model_Mappers_Turma {
             return null;
         }
     }
-    
+
     /**
      * Busca as turmas de acordo com os filtros indicados
      * @param type $filtros_busca
@@ -223,7 +247,7 @@ class Application_Model_Mappers_Turma {
             return null;
         }
     }
-    
+
     /**
      * Retorna a turma de acordo com o id especificado. Os campos de período e ativa,
      * são necessários para evitar a alteração de turmas canceladas ou de períodos passados.
@@ -301,10 +325,10 @@ class Application_Model_Mappers_Turma {
 
                 if (!empty($turmas)) {
                     $array_turmas = array();
-                    
+
                     foreach ($turmas as $turma)
                         $array_turmas[$turma->id_turma] = new Application_Model_Turma($turma->id_turma, $turma->nome_turma, null, null, $turma->horario_inicio, $turma->horario_fim, new Application_Model_Disciplina($turma->id_disciplina, $turma->nome_disciplina, null, new Application_Model_Curso($turma->id_curso, $turma->nome_curso)), null, new Application_Model_Periodo($turma->id_periodo));
-                    
+
                     return $array_turmas;
                 }
             }
@@ -474,10 +498,10 @@ class Application_Model_Mappers_Turma {
 
                 if (!empty($turmas)) {
                     $array_turmas = array();
-                    
+
                     foreach ($turmas as $turma)
                         $array_turmas[$turma->id_turma] = new Application_Model_Turma($turma->id_turma, $turma->nome_turma, null, null, null, null, new Application_Model_Disciplina($turma->id_disciplina, $turma->nome_disciplina, null, new Application_Model_Curso($turma->id_curso, $turma->nome_curso)), null, new Application_Model_Periodo($turma->id_periodo));
-                    
+
                     return $array_turmas;
                 }
             }

@@ -53,7 +53,7 @@ class AtividadeController extends Zend_Controller_Action {
             $form_atividade = new Application_Form_FormAtividade();
             $mapper_curso = new Application_Model_Mappers_Curso();
 
-            $form_atividade->initializeCursos($mapper_curso->buscaCursos());
+            $form_atividade->initializeCursos($mapper_curso->buscaCursos(array('status' => Application_Model_Curso::status_ativo)));
             $this->view->form = $form_atividade;
 
             if ($this->getRequest()->isPost()) {
@@ -115,7 +115,7 @@ class AtividadeController extends Zend_Controller_Action {
                     $mapper_turma = new Application_Model_Mappers_Turma();
 
                     $form_atividade->populate($atividade->parseArray(true));
-                    $form_atividade->initializeCursos($mapper_curso->buscaCursos(), $atividade->getTurma()->getDisciplina()->getCurso()->getIdCurso(true));
+                    $form_atividade->initializeCursos($mapper_curso->buscaCursos(array('status' => Application_Model_Curso::status_ativo)), $atividade->getTurma()->getDisciplina()->getCurso()->getIdCurso(true));
                     $form_atividade->initializeDisciplinas($mapper_disciplina->buscaDisciplinas(array('id_curso' => $atividade->getTurma()->getDisciplina()->getCurso()->getIdCurso()), null), $atividade->getTurma()->getDisciplina()->getIdDisciplina(true));
                     $form_atividade->initializeTurmas($mapper_turma->buscaTurmas(array('disciplina' => $atividade->getTurma()->getDisciplina()->getIdDisciplina(true)), null), $atividade->getTurma()->getIdTurma(true));
 
@@ -167,7 +167,7 @@ class AtividadeController extends Zend_Controller_Action {
                     $mapper_turma = new Application_Model_Mappers_Turma();
 
                     $form_atividade->populate($atividade->parseArray(true));
-                    $form_atividade->initializeCursos($mapper_curso->buscaCursos(), $atividade->getTurma()->getDisciplina()->getCurso()->getIdCurso(true));
+                    $form_atividade->initializeCursos($mapper_curso->buscaCursos(array('status' => Application_Model_Curso::status_ativo)), $atividade->getTurma()->getDisciplina()->getCurso()->getIdCurso(true));
                     $form_atividade->initializeDisciplinas($mapper_disciplina->buscaDisciplinas(array('id_curso' => $atividade->getTurma()->getDisciplina()->getCurso()->getIdCurso()), null), $atividade->getTurma()->getDisciplina()->getIdDisciplina(true));
                     $form_atividade->initializeTurmas(
                             $mapper_turma->buscaTurmas(array(

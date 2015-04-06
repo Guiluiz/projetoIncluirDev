@@ -82,7 +82,7 @@ class CursoController extends Zend_Controller_Action {
 
             $curso = $mapper_curso->buscaCursoByID($id_curso);
 
-            if ($curso instanceof Application_Model_Curso) {
+            if ($curso instanceof Application_Model_Curso && $curso->getStatus() == Application_Model_Curso::status_ativo) {
                 $form_alteracao->populate($curso->parseArray(true));
                 return;
             }
@@ -91,12 +91,48 @@ class CursoController extends Zend_Controller_Action {
     }
 
     public function excluirAction() {
+        /* $id_curso = (int) base64_decode($this->getParam('curso'));
+
+          if ($id_curso > 0) {
+          $this->view->title = "Projeto Incluir - Excluir Curso";
+          $form_exclusao = new Application_Form_FormCurso();
+          $form_exclusao->limpaValidadores();
+
+          $mapper_curso = new Application_Model_Mappers_Curso();
+          $this->view->form = $form_exclusao;
+
+          if ($this->getRequest()->isPost()) {
+          $dados = $this->getRequest()->getPost();
+
+          if (isset($dados['cancelar']))
+          $this->_helper->redirector->goToRoute(array('controller' => 'curso', 'action' => 'index'), null, true);
+
+          if ($form_exclusao->isValid($dados)) {
+          if ($mapper_curso->excluirCurso((int) base64_decode($form_exclusao->getValue('id_curso')))) {
+          $form_exclusao->reset();
+          $this->view->mensagem = "Curso excluído com sucesso!";
+          } else
+          $this->view->mensagem = "O curso não foi excluído. Por favor, tente novamente ou contate o administrador do sistema.<br/>";
+          }
+          }
+
+          $curso = $mapper_curso->buscaCursoByID($id_curso);
+
+          if ($curso instanceof Application_Model_Curso)
+          $form_exclusao->populate($curso->parseArray(true));
+          else
+          $this->view->not_found = true;
+          return;
+          }
+          $this->_helper->redirector->goToRoute(array('controller' => 'error', 'action' => 'error'), null, true); */
+    }
+
+    public function cancelarAction() {
         $id_curso = (int) base64_decode($this->getParam('curso'));
 
         if ($id_curso > 0) {
-            $this->view->title = "Projeto Incluir - Excluir Curso";
-            $form_exclusao = new Application_Form_FormCurso();
-            $form_exclusao->limpaValidadores();
+            $this->view->title = "Projeto Incluir - Cancelar Curso";
+            $form_exclusao = new Application_Form_FormConfirmacao();
 
             $mapper_curso = new Application_Model_Mappers_Curso();
             $this->view->form = $form_exclusao;
@@ -108,20 +144,27 @@ class CursoController extends Zend_Controller_Action {
                     $this->_helper->redirector->goToRoute(array('controller' => 'curso', 'action' => 'index'), null, true);
 
                 if ($form_exclusao->isValid($dados)) {
-                    if ($mapper_curso->excluirCurso((int) base64_decode($form_exclusao->getValue('id_curso')))) {
-                        $form_exclusao->reset();
-                        $this->view->mensagem = "Curso excluído com sucesso!";
-                    } else
-                        $this->view->mensagem = "O curso não foi excluído. Por favor, tente novamente ou contate o administrador do sistema.<br/>";
+                    $mapper_disciplina = new Application_Model_Mappers_Disciplina();
+                    $mapper_curso = new Application_Model_Mappers_Curso();
+                    $mapper_turma = new Application_Model_Mappers_Turma();
+                    $id_curso = (int) base64_decode($form_exclusao->getValue('id_curso'));
+                    
+                    if ($mapper_curso->cancelarCurso($id_curso)
+                            && $mapper_disciplina->cancelarDisciplinaByCurso($id_curso)
+                            && $mapper_turma->cancelarTurmasByDisciplinas($mapper_disciplina->buscaDisciplinasByCurso($id_curso)))
+                    $this->view->mensagem = "Curso cancelado com sucesso!";
+                    else
+                        $this->view->mensagem = "O curso não foi cancelado. Por favor, tente novamente ou contate o administrador do sistema.<br/>";
                 }
             }
-            
+
             $curso = $mapper_curso->buscaCursoByID($id_curso);
+
+            if ($curso instanceof Application_Model_Curso && $curso->getStatus() == Application_Model_Curso::status_ativo){
+                $form_exclusao->populate(array('id' => $curso->getIdCurso(true)));
+                $this->view->curso = $curso;
+            }
             
-            if ($curso instanceof Application_Model_Curso)
-                $form_exclusao->populate($curso->parseArray(true));
-            else
-                $this->view->not_found = true;
             return;
         }
         $this->_helper->redirector->goToRoute(array('controller' => 'error', 'action' => 'error'), null, true);

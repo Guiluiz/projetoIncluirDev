@@ -99,6 +99,21 @@ class Application_Model_Mappers_Disciplina {
     }
 
     /**
+     * Altera o status das disciplinas do curso especificado para cancelado
+     * @param int $id_curso
+     * @return boolean
+     */
+    public function cancelarDisciplinaByCurso($id_curso) {
+        try {
+            $this->db_disciplina = new Application_Model_DbTable_Disciplina();
+            $this->db_disciplina->update(array('status' => Application_Model_Disciplina::status_inativo), $this->db_disciplina->getAdapter()->quoteInto('id_curso = ?', (int) $id_curso));
+            return true;
+        } catch (Zend_Exception $e) {
+            throw $e;
+        }
+    }
+
+    /**
      * Altera o status da disciplina especificada para cancelado
      * @param int $id_disciplina
      * @return boolean
@@ -137,9 +152,12 @@ class Application_Model_Mappers_Disciplina {
             if (!empty($filtros_busca['id_curso']))
                 $select->where('disciplina.id_curso = ?', (int) $filtros_busca['id_curso']);
 
+            if (!empty($filtros_busca['status']))
+                $select->where('disciplina.status = ?', (int) $filtros_busca['status']);
+
             if (empty($paginator)) {
                 $disciplinas = $this->db_disciplina->fetchAll($select->order('curso.nome_curso'));
-                
+
                 if (!empty($disciplinas)) {
                     $array_disciplinas = array();
 
@@ -179,7 +197,7 @@ class Application_Model_Mappers_Disciplina {
             return null;
         }
     }
-    
+
     /**
      * Busca os pré requisitos ativos da disciplina selecionada
      * @param int $id_disciplina
@@ -213,7 +231,7 @@ class Application_Model_Mappers_Disciplina {
             return null;
         }
     }
-    
+
     /**
      * Busca as disciplinas com o id's indicados. Utilizado para exibir as disciplinas do professor
      * @param int[] $array_ids
@@ -246,6 +264,33 @@ class Application_Model_Mappers_Disciplina {
                 }
             }
             return null;
+        } catch (Zend_Exception $e) {
+            echo $e->getMessage();
+            return null;
+        }
+    }
+
+    /**
+     * Busca as disciplinas do curso especificado
+     * @param int $id_curso
+     * @return \Application_Model_Disciplina[]|null
+     */
+    public function buscaDisciplinasByCurso($id_curso) {
+        try {
+            $this->db_disciplina = new Application_Model_DbTable_Disciplina();
+            $select = $this->db_disciplina->select()
+                    ->from('disciplina', array('id_disciplina'))
+                    ->where('id_curso = ?', (int) $id_curso);
+
+            $disciplinas = $this->db_disciplina->fetchAll($select);
+            $array_disciplinas = array();
+
+            if (!empty($disciplinas)) {
+                foreach ($disciplinas as $disciplina)
+                    $array_disciplinas[] = $disciplina->id_disciplina;
+            }
+            
+            return $array_disciplinas;
         } catch (Zend_Exception $e) {
             echo $e->getMessage();
             return null;

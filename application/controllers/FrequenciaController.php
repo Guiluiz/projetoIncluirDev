@@ -24,7 +24,7 @@ class FrequenciaController extends Zend_Controller_Action {
                 $calendario_atual = $calendario_academico->getDatasByPeriodo($periodo->getPeriodoAtual());
 
                 $mapper_curso = new Application_Model_Mappers_Curso();
-                $form_frequencia->initializeCursos($mapper_curso->buscaCursos());
+                $form_frequencia->initializeCursos($mapper_curso->buscaCursos(array('status' => Application_Model_Curso::status_ativo)));
 
                 $this->view->form = $form_frequencia;
                 $this->view->datas_atividade = json_encode($calendario_atual->parseArray(true));

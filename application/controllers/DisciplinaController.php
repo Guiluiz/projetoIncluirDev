@@ -46,7 +46,7 @@ class DisciplinaController extends Zend_Controller_Action {
         $mapper_cursos = new Application_Model_Mappers_Curso();
         $mapper_disciplina = new Application_Model_Mappers_Disciplina();
 
-        $form_cadastro->initializeCursos($mapper_cursos->buscaCursos());
+        $form_cadastro->initializeCursos($mapper_cursos->buscaCursos(array('status' => Application_Model_Curso::status_ativo)));
         $this->view->form = $form_cadastro;
 
         if ($this->getRequest()->isPost()) {
@@ -117,7 +117,7 @@ class DisciplinaController extends Zend_Controller_Action {
                 $mapper_cursos = new Application_Model_Mappers_Curso();
                 $form_alteracao->populate($disciplina->parseArray(true));
 
-                $form_alteracao->initializeCursos($mapper_cursos->buscaCursos(), $disciplina->getCurso()->getIdCurso(true));
+                $form_alteracao->initializeCursos($mapper_cursos->buscaCursos(array('status' => Application_Model_Curso::status_ativo)), $disciplina->getCurso()->getIdCurso(true));
                 $form_alteracao->initializeDisciplinas($mapper_disciplina->buscaDisciplinas(array('id_curso' => $disciplina->getCurso()->getIdCurso()), null, $disciplina->getIdDisciplina()));
 
                 $this->view->pre_requisitos = $disciplina->getPreRequisitos();
@@ -187,7 +187,7 @@ class DisciplinaController extends Zend_Controller_Action {
                         $id_exclude = base64_decode($this->getRequest()->getParam('id_disciplina_exclude'));
 
                     $mapper_disciplina = new Application_Model_Mappers_Disciplina();
-                    $disciplinas = $mapper_disciplina->buscaDisciplinas(array('id_curso' => $id_curso), null, $id_exclude);
+                    $disciplinas = $mapper_disciplina->buscaDisciplinas(array('id_curso' => $id_curso, 'status' => Application_Model_Disciplina::status_ativo), null, $id_exclude);
 
                     $array_disciplinas = array();
 
@@ -228,8 +228,12 @@ class DisciplinaController extends Zend_Controller_Action {
                     $this->_helper->redirector->goToRoute(array('controller' => 'disciplina', 'action' => 'index'), null, true);
 
                 if ($form_confirmacao->isValid($dados)) {
-                    if ($mapper_disciplina->cancelarDisciplina((int) base64_decode($form_confirmacao->getValue('id')))) 
-                        $this->view->mensagem = "Disciplina excluída com sucesso!";
+                    $mapper_turma = new Application_Model_Mappers_Turma();
+                    $id_disciplina = (int) base64_decode($form_confirmacao->getValue('id'));
+                    
+                    if ($mapper_disciplina->cancelarDisciplina($id_disciplina)
+                            && $mapper_turma->cancelarTurmasByDisciplinas(array($id_disciplina))) 
+                        $this->view->mensagem = "Disciplina cancelada com sucesso!";
                     else
                         $this->view->mensagem = "A disciplina não foi cancelada. Por favor, tente novamente ou contate o administrador do sistema,<br/>";
                 }

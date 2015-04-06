@@ -50,7 +50,7 @@ class AlunoController extends Zend_Controller_Action {
             $alimentos = $mapper_alimentos->buscaAlimentos();
 
             $form_cadastro->initializeAlimentos($alimentos);
-            $form_cadastro->initializeCursos($mapper_curso->buscaCursos());
+            $form_cadastro->initializeCursos($mapper_curso->buscaCursos(array('status' => Application_Model_Curso::status_ativo)));
 
             $this->view->form = $form_cadastro;
 
@@ -135,7 +135,7 @@ class AlunoController extends Zend_Controller_Action {
                 $alimentos = $mapper_alimentos->buscaAlimentos();
 
                 $form_alteracao->initializeAlimentos($alimentos);
-                $form_alteracao->initializeCursos($mapper_curso->buscaCursos());
+                $form_alteracao->initializeCursos($mapper_curso->buscaCursos(array('status' => Application_Model_Curso::status_ativo)));
 
                 $this->view->form = $form_alteracao;
 
@@ -200,7 +200,7 @@ class AlunoController extends Zend_Controller_Action {
     }
 
     public function excluirAction() {
-        $this->view->title = "Projeto Incluir - Excluir Aluno";
+        /*$this->view->title = "Projeto Incluir - Excluir Aluno";
         $periodo = new Application_Model_Mappers_Periodo();
 
         if (!$periodo->verificaFimPeriodo()) {
@@ -259,7 +259,7 @@ class AlunoController extends Zend_Controller_Action {
                 return;
             }
             $this->_helper->redirector->goToRoute(array('controller' => 'error', 'action' => 'error'), null, true);
-        }
+        }*/
     }
 
     /**

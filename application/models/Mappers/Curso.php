@@ -81,6 +81,21 @@ class Application_Model_Mappers_Curso {
             return false;
         }
     }
+    
+    /**
+     * Altera o status do curso especificado para cancelado
+     * @param int $id_curso
+     * @return boolean
+     */
+    public function cancelarCurso($id_curso) {
+        try {
+            $this->db_curso = new Application_Model_DbTable_Curso();
+            $this->db_curso->update(array('status' => Application_Model_Curso::status_inativo), $this->db_curso->getAdapter()->quoteInto('id_curso = ?', (int) $id_curso));
+            return true;
+        } catch (Zend_Exception $e) {
+            return false;
+        }
+    }
 
     /**
      * Busca os cursos de acordo com os filtros especificados
@@ -92,21 +107,24 @@ class Application_Model_Mappers_Curso {
         try {
             $this->db_curso = new Application_Model_DbTable_Curso();
             $select = $this->db_curso->select()
-                    ->from('curso', array('id_curso', 'nome_curso'))
+                    ->from('curso', array('id_curso', 'nome_curso', 'status'))
                     ->order('nome_curso ASC');
 
             if (!empty($filtros_busca['nome_curso']))
                 $select->where('nome_curso LIKE ?', '%' . $filtros_busca['nome_curso'] . '%');
+            
+            if (!empty($filtros_busca['curso']))
+                $select->where('status = ?', $filtros_busca['status']);
 
             if (empty($paginator)) {
                 $cursos = $this->db_curso->fetchAll($select);
+                
                 if (!empty($cursos)) {
                     $array_cursos = array();
-                    foreach ($cursos as $curso) {
-                        $array_cursos[] = new Application_Model_Curso(
-                                $curso->id_curso, $curso->nome_curso
-                        );
-                    }
+                    
+                    foreach ($cursos as $curso) 
+                        $array_cursos[] = new Application_Model_Curso($curso->id_curso, $curso->nome_curso);
+                    
                     return $array_cursos;
                 }
                 return null;
@@ -131,11 +149,9 @@ class Application_Model_Mappers_Curso {
 
             $curso = $this->db_curso->fetchRow($select);
 
-            if (!empty($curso)) {
-                return new Application_Model_Curso(
-                        $curso->id_curso, $curso->nome_curso, $curso->descricao_curso
-                );
-            }
+            if (!empty($curso)) 
+                return new Application_Model_Curso($curso->id_curso, $curso->nome_curso, $curso->descricao_curso, $curso->status);
+            
             return null;
         } catch (Zend_Exception $e) {
             echo $e->getMessage();

@@ -15,7 +15,7 @@ class NotaController extends Zend_Controller_Action {
                 $form_lancamento_nota = new Application_Form_FormNotaAluno();
 
                 $mapper_curso = new Application_Model_Mappers_Curso();
-                $form_lancamento_nota->initializeCursos($mapper_curso->buscaCursos());
+                $form_lancamento_nota->initializeCursos($mapper_curso->buscaCursos(array('status' => Application_Model_Curso::status_ativo)));
 
                 $this->view->form = $form_lancamento_nota;
 
@@ -42,7 +42,8 @@ class NotaController extends Zend_Controller_Action {
                             $this->view->mensagem = "Houve problemas para efetuar o lançamento";
 
                         $form_lancamento_nota->reset();
-                    } else
+                    }
+                    else
                         $this->view->mensagem = "Houve problemas para efetuar o lançamento";
                 }
             } else

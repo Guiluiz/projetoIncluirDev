@@ -38,6 +38,10 @@ class VoluntarioController extends Zend_Controller_Action {
         $form_cadastro = new Application_Form_FormVoluntario();
         $this->view->form = $form_cadastro;
 
+        // campo de curso não precisa ser populado
+        $mapper_cursos = new Application_Model_Mappers_Curso();
+        $form_cadastro->initializeCursos($mapper_cursos->buscaCursos(array('status' => Application_Model_Curso::status_ativo)));
+
         if ($this->getRequest()->isPost()) {
             $dados = $this->getRequest()->getPost();
             if (isset($dados['cancelar']))
@@ -78,9 +82,6 @@ class VoluntarioController extends Zend_Controller_Action {
             if (!empty($dados['disciplinas']))
                 $this->view->disciplinas = $mapper_disciplina->buscaDisciplinasByID($dados['disciplinas']);
         }
-        // campo de curso não precisa ser populado
-        $mapper_cursos = new Application_Model_Mappers_Curso();
-        $form_cadastro->initializeCursos($mapper_cursos->buscaCursos());
     }
 
     public function alterarAction() {
@@ -105,7 +106,8 @@ class VoluntarioController extends Zend_Controller_Action {
 
                         foreach ($dados['disciplinas'] as $disciplina)
                             $voluntario->addDisciplinasMinistradas(new Application_Model_Disciplina(base64_decode($disciplina)));
-                    } else
+                    } 
+                    else
                         $voluntario = new Application_Model_Voluntario(base64_decode($form_alteracao->getValue('id_voluntario')), $form_alteracao->getValue('nome'), $form_alteracao->getValue('cpf'), $form_alteracao->getValue('rg'), $form_alteracao->getValue('data_nascimento'), $form_alteracao->getValue('email'), $form_alteracao->getValue('formacao'), $form_alteracao->getValue('profissao'), $form_alteracao->getValue('telefone_fixo'), $form_alteracao->getValue('telefone_celular'), $form_alteracao->getValue('endereco'), $form_alteracao->getValue('bairro'), $form_alteracao->getValue('cidade'), $form_alteracao->getValue('estado'), $form_alteracao->getValue('numero'), $form_alteracao->getValue('complemento'), $form_alteracao->getValue('cep'), $form_alteracao->getValue('carga_horaria'), $form_alteracao->getValue('data_inicio'), null, null, Application_Model_Voluntario::$status_ativo, $form_alteracao->getValue('conhecimento'), $form_alteracao->getValue('disponibilidade'));
 
                     $tipos_atividades = array(Application_Model_Voluntario::$atividade_informatica => 'funcao_informatica', Application_Model_Voluntario::$atividade_marketing => 'funcao_marketing', Application_Model_Voluntario::$atividade_rh => 'funcao_rh', Application_Model_Voluntario::$atividade_secretaria => 'funcao_secretaria');
@@ -128,7 +130,7 @@ class VoluntarioController extends Zend_Controller_Action {
 
                 $form_alteracao->populate($voluntario->parseArray(true));
                 $form_alteracao->setEstadoCidade($voluntario->getCidade(), $voluntario->getEstado());
-                $form_alteracao->initializeCursos($mapper_cursos->buscaCursos());
+                $form_alteracao->initializeCursos($mapper_cursos->buscaCursos(array('status' => Application_Model_Curso::status_ativo)));
 
                 if ($voluntario instanceof Application_Model_Professor)
                     $this->view->disciplinas = $voluntario->getDisciplinasMinistradas();
@@ -343,11 +345,11 @@ class VoluntarioController extends Zend_Controller_Action {
             if ($this->getRequest()->isPost()) {
                 //$aux = base64_decode($this->getParam('setor'));
                 //$setor = ($aux == 'all') ? '' : (int) $aux;
-                
+
                 $mapper_voluntario = new Application_Model_Mappers_Voluntario();
                 $voluntarios = $mapper_voluntario->getAllVoluntarios();
                 $array_voluntarios = array();
-                
+
                 if (!empty($voluntarios)) {
                     $i = 0;
                     foreach ($voluntarios as $voluntario) {

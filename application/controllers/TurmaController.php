@@ -54,7 +54,7 @@ class TurmaController extends Zend_Controller_Action {
             $form_cadastro = new Application_Form_FormTurma();
             $mapper_cursos = new Application_Model_Mappers_Curso();
 
-            $form_cadastro->initializeCursos($mapper_cursos->buscaCursos());
+            $form_cadastro->initializeCursos($mapper_cursos->buscaCursos(array('status' => Application_Model_Curso::status_ativo)));
             $this->view->form = $form_cadastro;
 
             if ($this->getRequest()->isPost()) {
@@ -145,7 +145,7 @@ class TurmaController extends Zend_Controller_Action {
                     if ($turma->hasProfessores())
                         $this->view->professores = $turma->getProfessores();
 
-                    $form_alteracao->initializeCursos($mapper_cursos->buscaCursos(), $turma->getDisciplina()->getCurso()->getIdCurso(true));
+                    $form_alteracao->initializeCursos($mapper_cursos->buscaCursos(array('status' => Application_Model_Curso::status_ativo)), $turma->getDisciplina()->getCurso()->getIdCurso(true));
                     $form_alteracao->initializeDisciplinas($mapper_disciplinas->buscaDisciplinas(array('id_curso' => $turma->getDisciplina()->getCurso()->getIdCurso())), $turma->getDisciplina()->getIdDisciplina(true));
                     $form_alteracao->initializeProfessores($mapper_voluntarios->getProfessoresByDisciplina($turma->getDisciplina()->getIdDisciplina()));
                     $this->view->form = $form_alteracao;

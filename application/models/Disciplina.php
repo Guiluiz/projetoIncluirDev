@@ -46,7 +46,7 @@ class Application_Model_Disciplina {
         $this->curso = $curso;
         $this->pre_requisitos = array();
         $this->addPreRequisitos($pre_requisito);
-        $this->status = $status;
+        $this->status = (int)$status;
     }
 
     /**

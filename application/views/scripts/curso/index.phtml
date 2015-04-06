@@ -10,18 +10,25 @@
     <?php if (count($this->resultado_busca) > 0) : ?>
         <div id='resultado-busca'>
             <h3>Resultados da Busca</h3>
-            <span>Foram encontrados (<?=$this->resultado_busca->getTotalItemCount() ?>) registros</span>
+            <span>Foram encontrados (<?= $this->resultado_busca->getTotalItemCount() ?>) registros</span>
             <table>
                 <tr>
                     <th>Nome do Curso</th>
-                    <th>Opções</th>
+                    <th colspan="2">Opções</th>
                 </tr>
 
-                <?php foreach ($this->resultado_busca as $alimento) : ?>
+                <?php foreach ($this->resultado_busca as $curso) : ?>
                     <tr>
-                        <td><?= $alimento->getNomeCurso() ?></td>
-                        <td><a href='<?= $this->url(array('controller' => 'curso', 'action' => 'alterar', 'curso' => $alimento->getIdCurso(true)), null, true) ?>'>Alterar</a></td>                     
-                        <!--<td><a href='<?= $this->url(array('controller' => 'curso', 'action' => 'excluir', 'curso' => $alimento->getIdcurso(true)), null, true) ?>'>Excluir</a></td>-->
+                        <td><?= $curso->getNomeCurso() ?></td>
+                        <?php if ($curso->getStatus() == Application_Model_Curso::status_ativo): ?>
+                            <td><a href='<?= $this->url(array('controller' => 'curso', 'action' => 'alterar', 'curso' => $curso->getIdCurso(true)), null, true) ?>'>Alterar</a></td>                     
+                            <td><a href='<?= $this->url(array('controller' => 'curso', 'action' => 'cancelar', 'curso' => $curso->getIdCurso(true)), null, true) ?>'>Cancelar</a></td>                     
+                            <!--<td><a href='<?= $this->url(array('controller' => 'curso', 'action' => 'excluir', 'curso' => $curso->getIdcurso(true)), null, true) ?>'>Excluir</a></td>-->
+
+                        <?php else: ?>
+                            <td> - </td>
+
+                        <?php endif ?>
                     </tr>
                 <?php endforeach; ?>
             </table>
