@@ -17,7 +17,7 @@
                     <th>Data</th>
                     <th>Valor</th>
                     <th>Turma</th>
-                    <th <?php echo (!$this->inativo) ? 'colspan=2' : '' ?>>Opções</th>
+                    <th colspan="2">Opções</th>
                 </tr>
 
                 <?php
@@ -34,7 +34,7 @@
                             <td><a href='<?= $this->url(array('controller' => 'atividade', 'action' => 'excluir', 'atividade' => $atividade->getIdAtividade(true)), null, true) ?>'>Excluir</a></td>
 
                         <?php else: ?>
-                            <td> - </td>
+                            <td colspan="2"> - </td>
                         <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>
