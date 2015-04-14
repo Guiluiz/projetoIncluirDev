@@ -177,7 +177,6 @@ var controle_notas = (function() {
 
         notas.container_atividade.find('select').change(function() { // exibe os campos para preenchimento de nota c/ as notas já preenchidas(se houver)
             if ($(this).find('option:selected').val().length > 0) {
-                console.log($(this).find('option:selected').val());
                 var notas_alunos = $('#alunos_turma_notas').find('td[id*="aluno_nota"]');
                 var opcao = $(this).find('option:selected');
                 var max = parseFloat($(opcao).attr('valor'));
@@ -222,7 +221,7 @@ var controle_notas = (function() {
                     });
                 });
             }
-            
+
             else
                 notas.printAlunos();
         });
@@ -237,10 +236,12 @@ var controle_notas = (function() {
             var ultima_coluna = $(this).children().last();
             var val = ultima_coluna.find('input').val();
 
-            if (parseInt(val) == 0)
-                val = 0;
+            if (val != undefined) {
+                if (isNaN(parseFloat(val)))
+                    val = 0;
 
-            ultima_coluna.html(val);
+                ultima_coluna.html(val);
+            }
 
         });
 

@@ -68,8 +68,8 @@ var controle_frequencia_aluno = (function() {
         });
 
         frequencia.form.submit(function(event) {
-            if ($('input[id^="campo_frequencia_"]').length == 0) {
-                exibeMensagem('Você deve escolher a data e fazer os lançamentos', 'Lançamento de notas');
+            if ($('input[class="check_frequencia"]').length == 0) {
+                exibeMensagem('Você deve escolher a data e fazer os lançamentos', 'Lançamento de Frequência');
                 event.preventDefault();
                 return;
             }
