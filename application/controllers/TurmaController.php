@@ -271,7 +271,6 @@ class TurmaController extends Zend_Controller_Action {
             $this->_helper->viewRenderer->setNoRender(true);
 
             if ($this->_request->isPost()) {
-                //$id_turma = $this->getRequest()->getParam('id_turma');
                 $id_disciplina = (int) base64_decode($this->getRequest()->getParam('id_disciplina'));
                 $id_aluno = (int) base64_decode($this->getRequest()->getParam('id_aluno'));
 
@@ -291,6 +290,7 @@ class TurmaController extends Zend_Controller_Action {
                         $array_pre_requisitos[$i]['nome_pre_requisito'] = $pre_requisito->getNomeDisciplina();
                         $i++;
                     }
+                    
                     if (!empty($id_aluno)) {
                         $mapper_turmas = new Application_Model_Mappers_Turma();
                         $mapper_alunos = new Application_Model_Mappers_Aluno();
@@ -299,7 +299,7 @@ class TurmaController extends Zend_Controller_Action {
 
                         if (!empty($turmas)) {
                             $is_reprovado = $mapper_alunos->verificaPreRequisitosAluno($id_aluno, $turmas);
-
+                            
                             if (!is_null($is_reprovado)) {
                                 echo json_encode($is_reprovado);
                                 return;

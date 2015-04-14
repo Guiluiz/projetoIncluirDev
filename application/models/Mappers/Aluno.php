@@ -1075,7 +1075,7 @@ class Application_Model_Mappers_Aluno {
                     $aprovado = null;
 
                     foreach ($turmas_aluno as $turma) {
-                        if (is_null($turma->aprovado)) {
+                        if (!is_null($turma->aprovado)) {
                             if ((int) $turma->aprovado)
                                 return true;
 

@@ -103,7 +103,7 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Abstract {
                                 $soma_alimentos = 0.0;
                                 $situacao = $opcoes_aluno['situacao_turmas'][$turma->getIdTurma(true)];
                                 $num_recibo = $opcoes_aluno['recibos_turmas'][$turma->getIdTurma(true)];
-                                
+
                                 if (isset($opcoes_aluno['alimentos'][$turma->getIdTurma(true)])) {
                                     foreach ($opcoes_aluno['alimentos'][$turma->getIdTurma(true)] as $quantidade)
                                         $soma_alimentos += (float) $quantidade;
@@ -111,8 +111,8 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Abstract {
 
                                 $table .= '<tr class="pagamento_' . $this->removeInvalidCaracteres($this->filtro_string->filter($turma->getDisciplina()->getNomeDisciplina() . '_' . $turma->getNomeTurma())) . '">'
                                         . '<input type="hidden" name="pagamento_turmas[' . $turma->getIdTurma(true) . ']" value="' . $valor_pago . '"/>'
-                                        . '<td>' . $turma->getDisciplina()->getNomeDisciplina() . ' - ' . $turma->getNomeTurma() . ' | ' . $turma->getHorarioInicio() . ' - ' . $turma->getHorarioFim() . '</td>'
-                                        . '<td><input type="hidden" name="recibos_turmas[' . $turma->getIdTurma(true) . ']" value="' . $num_recibo . '"/>'.$num_recibo.'</td>'
+                                        . '<td class="nome_turma">' . $turma->getDisciplina()->getNomeDisciplina() . ' - ' . $turma->getNomeTurma() . ' | ' . $turma->getHorarioInicio() . ' - ' . $turma->getHorarioFim() . '</td>'
+                                        . '<td><input type="hidden" name="recibos_turmas[' . $turma->getIdTurma(true) . ']" value="' . $num_recibo . '"/>' . $num_recibo . '</td>'
                                         . '<td class="valor_pago">' . $valor_pago . '</td>'
                                         . '<td class="quant_alimento">' . $soma_alimentos . '</td>'
                                         . '<td class="condicao"><input type="hidden" name="condicao_turmas[' . $turma->getIdTurma(true) . ']" value="' . $opcoes_aluno['condicao'][$turma->getIdTurma(true)] . '"><input type="hidden" name="tipo_isencao_pendencia_turmas[' . $turma->getIdTurma(true) . ']" value="">' . $tipos_condicao[$opcoes_aluno['condicao'][$turma->getIdTurma(true)]] . '</td>'
@@ -154,7 +154,7 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Abstract {
                     foreach ($values as $turma) {
                         if ($turma instanceof Application_Model_Turma) {
                             $liberacao = ((isset($opcoes_aluno[$turma->getIdTurma(true)])) ? $opcoes_aluno[$turma->getIdTurma(true)] : '');
-                            $table .= '<tr class="' . $this->removeInvalidCaracteres($this->filtro_string->filter($turma->getDisciplina()->getNomeDisciplina() . '_' . $turma->getNomeTurma())) . '"><input type="hidden" name="turmas[]" value="' . $turma->getIdTurma(true) . '"/><td>' . $turma->getDisciplina()->getCurso()->getNomeCurso() . '</td><td>' . $turma->getDisciplina()->getNomeDisciplina() . '</td><td>' . $turma->getNomeTurma() . ' | ' . $turma->getHorarioInicio() . ' - ' . $turma->getHorarioFim() . '</td><td><input type="hidden" name="liberacao[' . $turma->getIdTurma(true) . ']" value="' . $liberacao . '"/>' . $liberacao . '</td>' . '<td><div class="alterar_turma">Alterar</div><div class="excluir_turma">Excluir</div></td></tr>';
+                            $table .= '<tr class="' . $this->removeInvalidCaracteres($this->filtro_string->filter($turma->getDisciplina()->getNomeDisciplina() . '_' . $turma->getNomeTurma())) . '"><input type="hidden" name="turmas[]" value="' . $turma->getIdTurma(true) . '"/><td>' . $turma->getDisciplina()->getCurso()->getNomeCurso() . '</td><td>' . $turma->getDisciplina()->getNomeDisciplina() . '</td><td class="turma_aluno" id="' . $turma->getIdTurma(true) . '" hora_inicio="' . $turma->getHorarioInicio() . '" hora_fim="' . $turma->getHorarioFim() . '" data_inicio="' . $turma->getDataInicio(true) . '" data_fim="' . $turma->getDataFim(true) . '">' . $turma->getNomeTurma() . ' | ' . $turma->getHorarioInicio() . ' - ' . $turma->getHorarioFim() . '</td><td><input type="hidden" name="liberacao[' . $turma->getIdTurma(true) . ']" value="' . $liberacao . '"/>' . $liberacao . '</td>' . '<td><div class="alterar_turma">Alterar</div><div class="excluir_turma">Excluir</div></td></tr>';
                         } else {
                             $valido = false;
                             break;

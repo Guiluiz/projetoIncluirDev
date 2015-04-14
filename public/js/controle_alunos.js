@@ -85,15 +85,26 @@ var controle_aluno = (function() {
 
         // em caso de alterção de aluno, ou correção no cadastro após enviar a requisição, o servidor exibe os dados 
         // em um container, que deve ser movido para o lugar certo;
-        
+
         if (aluno.container_turmas_pre_definidas.length == 1) {
             aluno.container_turmas_aluno.append(aluno.container_turmas_pre_definidas.children()).show();
-            
+
             aluno.campo_quantidade_turmas.val(aluno.container_turmas_aluno.find('tr').length - 1);
             aluno.eventExcluirTurmaAluno();
+            aluno.eventAlterarTurmaAluno();
 
             aluno.container_opcoes_turmas_aluno.show();
             aluno.container_campo_condicao_matricula.hide(); // nesse caso pagamento já foi registrado, nâo é necessário exibir o campo de condição
+
+            //inclui os horários das turmas para comparação
+
+            $('.turma_aluno').each(function() {
+                aluno.addHorarioAlteracaoTurma($(this).attr('id'),
+                        Date.parse($(this).attr('hora_inicio')),
+                        Date.parse($(this).attr('hora_fim')),
+                        helpers.parseDate($(this).attr('data_inicio')),
+                        helpers.parseDate($(this).attr('data_fim')))
+            });
         }
 
         if (aluno.container_alimentos_pre_definidos.length == 1) {
@@ -107,7 +118,6 @@ var controle_aluno = (function() {
 
             //Exibe a tabela de alimentos da turma indicada
             $(aluno.getIdAlimentosTurma()).show();
-
         }
 
         if (aluno.container_pagamentos_pre_definidos.length == 1) {
@@ -336,9 +346,6 @@ var controle_aluno = (function() {
                 aluno.container_campo_isencao_pendencia.hide().find('select').attr('disabled', 'disabled');
 
         }
-        //}
-        //else
-        //   exibeMensagem('Um pagamento já foi registrado para essa turma. Caso queira fazer alguma alteração, exclua o pagamento primeiro.', 'Inclusão de Turmas');
     };
 
     aluno.gerenciaTipoIsencaoPendencia = function() {
@@ -355,17 +362,6 @@ var controle_aluno = (function() {
             aluno.container_alimento.show();
             aluno.container_pagamento.show();
         }
-        /*else{
-         aluno.container_alimento.find('input,select,button').attr('disabled','disabled');
-         aluno.container_pagamento.find('input,select,button').attr('disabled','disabled');
-         
-         aluno.container_alimento.hide();
-         aluno.container_pagamento.hide();
-         
-         aluno.table_gerenciamento_alimentos.hide();
-         }*/
-
-
     };
 
     aluno.gerenciaMudancaTurmaAluno = function() {
@@ -416,6 +412,23 @@ var controle_aluno = (function() {
                     horario_fim: aluno.getHoraFinal(),
                     data_inicio: aluno.getDataInicial(),
                     data_fim: aluno.getDataFinal()
+                }
+        );
+    };
+
+    /**
+     * Adiciona o horário de uma turma do aluno, já incluída e salva. Utilizado para fazer verificação se há aulas que interferem em seus horários
+     * @param {type} id_turma
+     * @returns {undefined}
+     */
+    aluno.addHorarioAlteracaoTurma = function(id, hora_inicial, hora_final, data_inicial, data_final) {
+        aluno.horarios_turmas_incluidas.push(
+                {
+                    id_turma: id,
+                    horario_inicio: hora_inicial,
+                    horario_fim: hora_final,
+                    data_inicio: data_inicial,
+                    data_fim: data_final
                 }
         );
     };
@@ -670,7 +683,7 @@ var controle_aluno = (function() {
                 var id_nova_turma = aluno.getIdTurma();
                 var aux_class = linha_turma.attr('class'); // a linha correspondente a turma armazena o id para retirar os pagamentos/alimentos da turma
                 var linha_pagamento = $('.pagamento_' + aux_class);
-
+                
                 linha_turma.replaceWith('<tr class="' + aluno.getNameTurmaAluno() + '"><input type="hidden" name="turmas[]" value="' + id_nova_turma + '"/><td>' + aluno.campo_curso.find('option:selected').html() + '</td><td>' + aluno.campo_disciplina.find('option:selected').html() + '</td><td>' + aluno.campo_turma.find('option:selected').html() + '</td><td><input type="hidden" name="liberacao[' + id_nova_turma + ']" value="' + aluno.liberacao_turma + '"/>' + aluno.liberacao_turma + '</td><td><div class="alterar_turma">Alterar</div><div class="excluir_turma" >Excluir</div></td></tr>');
                 aluno.select_turma_pagamento.find('option[value="' + id_turma_antiga + '"]').replaceWith('<option value="' + id_nova_turma + '">' + aluno.getNameTurmaAluno(true) + '</option>');
 
