@@ -46,7 +46,7 @@ class CursoController extends Zend_Controller_Action {
             if ($form_cadastro->isValid($dados)) {
                 $mapper_curso = new Application_Model_Mappers_Curso();
 
-                if ($mapper_curso->addCurso(new Application_Model_Curso(null, $form_cadastro->getValue('nome_curso'), $form_cadastro->getValue('descricao_curso')))) {
+                if ($mapper_curso->addCurso(new Application_Model_Curso(null, $form_cadastro->getValue('nome_curso'), $form_cadastro->getValue('descricao_curso'), Application_Model_Curso::status_ativo))) {
                     $form_cadastro->reset();
                     $this->view->mensagem = "Curso cadastrado com sucesso!";
                 } else
@@ -73,7 +73,7 @@ class CursoController extends Zend_Controller_Action {
                     $this->_helper->redirector->goToRoute(array('controller' => 'curso', 'action' => 'index'), null, true);
 
                 if ($form_alteracao->isValid($dados)) {
-                    if ($mapper_curso->alterarCurso(new Application_Model_Curso((int) base64_decode($form_alteracao->getValue('id_curso')), $form_alteracao->getValue('nome_curso'), $form_alteracao->getValue('descricao_curso'))))
+                    if ($mapper_curso->alterarCurso(new Application_Model_Curso((int) base64_decode($form_alteracao->getValue('id_curso')), $form_alteracao->getValue('nome_curso'), $form_alteracao->getValue('descricao_curso'), Application_Model_Curso::status_ativo)))
                         $this->view->mensagem = "Curso alterado com sucesso!";
                     else
                         $this->view->mensagem = "O curso não foi alterado.<br/>Por favor, verifique se há algum curso cadastrado com o nome especificado";
@@ -147,12 +147,13 @@ class CursoController extends Zend_Controller_Action {
                     $mapper_disciplina = new Application_Model_Mappers_Disciplina();
                     $mapper_curso = new Application_Model_Mappers_Curso();
                     $mapper_turma = new Application_Model_Mappers_Turma();
-                    $id_curso = (int) base64_decode($form_exclusao->getValue('id_curso'));
+                    $id_curso = (int) base64_decode($form_exclusao->getValue('id'));
                     
                     if ($mapper_curso->cancelarCurso($id_curso)
                             && $mapper_disciplina->cancelarDisciplinaByCurso($id_curso)
                             && $mapper_turma->cancelarTurmasByDisciplinas($mapper_disciplina->buscaDisciplinasByCurso($id_curso)))
                     $this->view->mensagem = "Curso cancelado com sucesso!";
+                    
                     else
                         $this->view->mensagem = "O curso não foi cancelado. Por favor, tente novamente ou contate o administrador do sistema.<br/>";
                 }

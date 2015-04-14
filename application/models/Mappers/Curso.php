@@ -113,7 +113,7 @@ class Application_Model_Mappers_Curso {
             if (!empty($filtros_busca['nome_curso']))
                 $select->where('nome_curso LIKE ?', '%' . $filtros_busca['nome_curso'] . '%');
             
-            if (!empty($filtros_busca['curso']))
+            if (!empty($filtros_busca['status']))
                 $select->where('status = ?', $filtros_busca['status']);
 
             if (empty($paginator)) {

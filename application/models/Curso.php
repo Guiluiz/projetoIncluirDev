@@ -81,7 +81,8 @@ class Application_Model_Curso {
         return array(
             'id_curso' => $this->getIdCurso($isView),
             'nome_curso' => $this->nome_curso,
-            'descricao_curso' => $this->descricao_curso
+            'descricao_curso' => $this->descricao_curso,
+            'status' => $this->status
         );
     }
 

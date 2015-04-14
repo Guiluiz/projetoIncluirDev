@@ -56,7 +56,7 @@ class DisciplinaController extends Zend_Controller_Action {
                 $this->_helper->redirector->goToRoute(array('controller' => 'disciplina', 'action' => 'index'), null, true);
 
             if ($form_cadastro->isValid($dados)) {
-                $disciplina = new Application_Model_Disciplina(null, $form_cadastro->getValue('nome_disciplina'), $form_cadastro->getValue('ementa_disciplina'), new Application_Model_Curso(base64_decode($form_cadastro->getValue('id_curso'))));
+                $disciplina = new Application_Model_Disciplina(null, $form_cadastro->getValue('nome_disciplina'), $form_cadastro->getValue('ementa_disciplina'), new Application_Model_Curso(base64_decode($form_cadastro->getValue('id_curso'))), null, Application_Model_Disciplina::status_ativo);
 
                 if (!empty($dados['pre_requisitos'])) {
                     foreach ($dados['pre_requisitos'] as $pre_requisito)
@@ -97,7 +97,7 @@ class DisciplinaController extends Zend_Controller_Action {
                     $this->_helper->redirector->goToRoute(array('controller' => 'disciplina', 'action' => 'index'), null, true);
 
                 if ($form_alteracao->isValid($dados)) {
-                    $disciplina = new Application_Model_Disciplina(base64_decode($form_alteracao->getValue('id_disciplina')), $form_alteracao->getValue('nome_disciplina'), $form_alteracao->getValue('ementa_disciplina'), new Application_Model_Curso(base64_decode($form_alteracao->getValue('id_curso'))));
+                    $disciplina = new Application_Model_Disciplina(base64_decode($form_alteracao->getValue('id_disciplina')), $form_alteracao->getValue('nome_disciplina'), $form_alteracao->getValue('ementa_disciplina'), new Application_Model_Curso(base64_decode($form_alteracao->getValue('id_curso'))), null, Application_Model_Disciplina::status_ativo);
 
                     if (!empty($dados['pre_requisitos'])) {
                         foreach ($dados['pre_requisitos'] as $pre_requisito)

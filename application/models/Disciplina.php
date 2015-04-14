@@ -121,7 +121,8 @@ class Application_Model_Disciplina {
             'id_disciplina' => $this->getIdDisciplina($isView),
             'nome_disciplina' => $this->nome_disciplina,
             'ementa_disciplina' => $this->ementa_disciplina,
-            'id_curso' => $this->curso->getIdCurso()
+            'id_curso' => $this->curso->getIdCurso(),
+            'status' => $this->status
         );
     }
 
