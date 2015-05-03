@@ -1,0 +1,23 @@
+<?php if ($this->curso instanceof Application_Model_Curso): ?>
+    <div class="container-aviso">
+        <div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
+            <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+                <strong>Atenção: </strong> Mensagem
+            </p>   
+        </div>
+    </div>
+
+    <h2>Informações do Curso</h2>
+
+    <table class="form-dados" style="width: 20%;">
+        <tr>
+            <th>Nome: </th><td><?= $this->curso->getNomeCurso() ?></td>
+        </tr>
+    </table>
+
+    <?= $this->form ?>
+
+<?php else: ?>
+    <p>Curso não foi encontrado ou ele já foi ativado</p>
+
+<?php endif; ?>

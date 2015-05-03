@@ -215,10 +215,10 @@ class DisciplinaController extends Zend_Controller_Action {
 
         if ($id_disciplina > 0) {
             $this->view->title = "Projeto Incluir - Cancelar Disciplina";
-            
+
             $form_confirmacao = new Application_Form_FormConfirmacao();
             $mapper_disciplina = new Application_Model_Mappers_Disciplina();
-            
+
             $this->view->form = $form_confirmacao;
 
             if ($this->getRequest()->isPost()) {
@@ -230,22 +230,57 @@ class DisciplinaController extends Zend_Controller_Action {
                 if ($form_confirmacao->isValid($dados)) {
                     $mapper_turma = new Application_Model_Mappers_Turma();
                     $id_disciplina = (int) base64_decode($form_confirmacao->getValue('id'));
-                    
-                    if ($mapper_disciplina->cancelarDisciplina($id_disciplina)
-                            && $mapper_turma->cancelarTurmasByDisciplinas(array($id_disciplina))) 
+
+                    if ($mapper_disciplina->cancelarDisciplina($id_disciplina) && $mapper_turma->cancelarTurmasByDisciplinas(array($id_disciplina)))
                         $this->view->mensagem = "Disciplina cancelada com sucesso!";
                     else
                         $this->view->mensagem = "A disciplina não foi cancelada. Por favor, tente novamente ou contate o administrador do sistema,<br/>";
                 }
             }
-            
+
             $disciplina = $mapper_disciplina->buscaDisciplinaByID($id_disciplina);
 
-            if ($disciplina instanceof Application_Model_Disciplina && $disciplina->getStatus() == Application_Model_Disciplina::status_ativo){
+            if ($disciplina instanceof Application_Model_Disciplina && $disciplina->getStatus() == Application_Model_Disciplina::status_ativo) {
                 $form_confirmacao->populate(array('id' => $disciplina->getIdDisciplina(true)));
                 $this->view->disciplina = $disciplina;
             }
-            
+
+            return;
+        }
+        $this->_helper->redirector->goToRoute(array('controller' => 'error', 'action' => 'error'), null, true);
+    }
+
+    public function ativarAction() {
+        $this->view->title = "Projeto Incluir - Ativação de Disciplina";
+
+        $id_disciplina = (int) base64_decode($this->getParam('disciplina'));
+
+        if ($id_disciplina > 0) {
+            $form_ativacao = new Application_Form_FormConfirmacao();
+            $mapper_disciplina = new Application_Model_Mappers_Disciplina();
+
+            $this->view->form = $form_ativacao;
+
+            if ($this->getRequest()->isPost()) {
+                $dados = $this->getRequest()->getPost();
+                if (isset($dados['cancelar']))
+                    $this->_helper->redirector->goToRoute(array('controller' => 'disciplina', 'action' => 'index'), null, true);
+
+                if ($form_ativacao->isValid($dados)) {
+                    if ($mapper_disciplina->ativarDisciplina((int) base64_decode($form_ativacao->getValue('id'))))
+                        $this->view->mensagem = "A disciplina foi restaurada com sucesso.";
+                    else
+                        $this->view->mensagem = "A disciplina não foi restaurada, por favor consulte o administrador do sistema para mais informações.";
+                }
+            } 
+            else {
+                $disciplina = $mapper_disciplina->buscaDisciplinaByID($id_disciplina);
+
+                if ($disciplina instanceof Application_Model_Disciplina && $disciplina->getStatus() == Application_Model_Disciplina::status_inativo) {
+                    $form_ativacao->populate(array('id' => $disciplina->getIdDisciplina(true)));
+                    $this->view->disciplina = $disciplina;
+                }
+            }
             return;
         }
         $this->_helper->redirector->goToRoute(array('controller' => 'error', 'action' => 'error'), null, true);

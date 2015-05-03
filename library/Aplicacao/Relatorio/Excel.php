@@ -193,16 +193,17 @@ class Aplicacao_Relatorio_Excel {
                     $new_sheet->setCellValue('E5', 'RG');
                     $new_sheet->setCellValue('F5', 'Email');
                     $new_sheet->setCellValue('G5', 'Endereço');
-                    $new_sheet->setCellValue('H5', 'Número');
-                    $new_sheet->setCellValue('I5', 'Complemento');
-                    $new_sheet->setCellValue('J5', 'CEP');
-                    $new_sheet->setCellValue('K5', 'Cidade');
-                    $new_sheet->setCellValue('L5', 'Estado');
-                    $new_sheet->setCellValue('M5', 'Telefone 1');
-                    $new_sheet->setCellValue('N5', 'Telefone 2');
-                    $new_sheet->setCellValue('O5', 'Escolaridade');
-                    $new_sheet->setCellValue('P5', 'Pagamentos / Alimentos / Quantidades');
-                    $new_sheet->setCellValue('Q5', 'Pagamento Liberado');
+                    $new_sheet->setCellValue('H5', 'Bairro');
+                    $new_sheet->setCellValue('I5', 'Número');
+                    $new_sheet->setCellValue('J5', 'Complemento');
+                    $new_sheet->setCellValue('K5', 'CEP');
+                    $new_sheet->setCellValue('L5', 'Cidade');
+                    $new_sheet->setCellValue('M5', 'Estado');
+                    $new_sheet->setCellValue('N5', 'Telefone 1');
+                    $new_sheet->setCellValue('O5', 'Telefone 2');
+                    $new_sheet->setCellValue('P5', 'Escolaridade');
+                    $new_sheet->setCellValue('Q5', 'Pagamentos / Alimentos / Quantidades');
+                    $new_sheet->setCellValue('R5', 'Pagamento Liberado');
 
                     $new_sheet->getColumnDimension('A')->setWidth(50);
                     $new_sheet->getColumnDimension('B')->setAutoSize(true);
@@ -221,6 +222,7 @@ class Aplicacao_Relatorio_Excel {
                     $new_sheet->getColumnDimension('O')->setAutoSize(true);
                     $new_sheet->getColumnDimension('P')->setAutoSize(true);
                     $new_sheet->getColumnDimension('Q')->setAutoSize(true);
+                    $new_sheet->getColumnDimension('R')->setAutoSize(true);
 
                     $i = 6;
                     foreach ($alunos_turma as $aluno) {
@@ -235,13 +237,14 @@ class Aplicacao_Relatorio_Excel {
                             $new_sheet->setCellValue('F' . $i, $aluno->getEmail());
                             $new_sheet->setCellValue('G' . $i, $aluno->getEndereco());
                             $new_sheet->setCellValue('H' . $i, $aluno->getBairro());
-                            $new_sheet->setCellValue('I' . $i, $aluno->getComplemento());
-                            $new_sheet->setCellValue('J' . $i, $aluno->getCep());
-                            $new_sheet->setCellValue('K' . $i, $aluno->getCidade());
-                            $new_sheet->setCellValue('L' . $i, $aluno->getEstado());
-                            $new_sheet->setCellValue('M' . $i, $aluno->getTelefoneFixo());
-                            $new_sheet->setCellValue('N' . $i, $aluno->getTelefoneCelular());
-                            $new_sheet->setCellValue('O' . $i, $aluno->getEscolaridade());
+                            $new_sheet->setCellValue('I' . $i, $aluno->getNumeroEndereco());
+                            $new_sheet->setCellValue('J' . $i, $aluno->getComplemento());
+                            $new_sheet->setCellValue('K' . $i, $aluno->getCep());
+                            $new_sheet->setCellValue('L' . $i, $aluno->getCidade());
+                            $new_sheet->setCellValue('M' . $i, $aluno->getEstado());
+                            $new_sheet->setCellValue('N' . $i, $aluno->getTelefoneFixo());
+                            $new_sheet->setCellValue('O' . $i, $aluno->getTelefoneCelular());
+                            $new_sheet->setCellValue('P' . $i, $aluno->getEscolaridade());
 
                             $aux_pagamento = '';
                             $aux_situacao = '';
@@ -253,6 +256,8 @@ class Aplicacao_Relatorio_Excel {
 
                                 $aux_situacao .= $pagamento->getSituacao();
                                 $aux_pagamento .= "R$" . $pagamento->getValorPagamento(true) . "\n";
+                                $aux_pagamento .= "Condição: " . $pagamento->getCondicaoMatriculaToString() . "\n";
+                                $aux_pagamento .= "Recibo: " . $pagamento->getReciboToString() . "\n";
 
                                 if ($pagamento->hasAlimentos()) {
                                     $aux_pagamento .= "Alimento(s)/Quantidade: \n";
@@ -265,7 +270,7 @@ class Aplicacao_Relatorio_Excel {
                             $new_sheet->setCellValue('P' . $i, $aux_pagamento);
                             $new_sheet->setCellValue('Q' . $i, $aux_situacao);
 
-                            $new_sheet->getStyle('A' . $i . ':Q' . $i)->applyFromArray(
+                            $new_sheet->getStyle('A' . $i . ':R' . $i)->applyFromArray(
                                     array('alignment' => array(
                                             'wrap' => true,
                                             'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
@@ -280,7 +285,7 @@ class Aplicacao_Relatorio_Excel {
                             );
 
                             if ($i % 2 != 0) {
-                                $new_sheet->getStyle('A' . $i . ':Q' . $i)->applyFromArray(
+                                $new_sheet->getStyle('A' . $i . ':R' . $i)->applyFromArray(
                                         array(
                                             'fill' => array(
                                                 'type' => PHPExcel_Style_Fill::FILL_SOLID,
@@ -294,7 +299,7 @@ class Aplicacao_Relatorio_Excel {
                     }
                     $linhas += $i;
                     //$new_sheet->getStyle('A0:P' . $linhas)->getAlignment()->setWrapText(true);
-                    $new_sheet->getStyle('A5:Q5')->applyFromArray(
+                    $new_sheet->getStyle('A5:R5')->applyFromArray(
                             array('borders' => array(
                                     'allborders' => array(
                                         'style' => PHPExcel_Style_Border::BORDER_THIN,
@@ -407,16 +412,17 @@ class Aplicacao_Relatorio_Excel {
                 $sheet->setCellValue('F5', 'RG');
                 $sheet->setCellValue('G5', 'Email');
                 $sheet->setCellValue('H5', 'Endereço');
-                $sheet->setCellValue('I5', 'Número');
-                $sheet->setCellValue('J5', 'Complemento');
-                $sheet->setCellValue('K5', 'CEP');
-                $sheet->setCellValue('L5', 'Cidade');
-                $sheet->setCellValue('M5', 'Estado');
-                $sheet->setCellValue('N5', 'Telefone 1');
-                $sheet->setCellValue('O5', 'Telefone 2');
-                $sheet->setCellValue('P5', 'Escolaridade');
-                $sheet->setCellValue('Q5', 'Pagamentos / Alimentos / Quantidades');
-                $sheet->setCellValue('R5', 'Pagamento Liberado');
+                $sheet->setCellValue('I5', 'Bairro');
+                $sheet->setCellValue('J5', 'Número');
+                $sheet->setCellValue('K5', 'Complemento');
+                $sheet->setCellValue('L5', 'CEP');
+                $sheet->setCellValue('M5', 'Cidade');
+                $sheet->setCellValue('N5', 'Estado');
+                $sheet->setCellValue('O5', 'Telefone 1');
+                $sheet->setCellValue('P5', 'Telefone 2');
+                $sheet->setCellValue('Q5', 'Escolaridade');
+                $sheet->setCellValue('R5', 'Pagamentos / Alimentos / Quantidades');
+                $sheet->setCellValue('S5', 'Pagamento Liberado');
 
                 $sheet->getColumnDimension('A')->setWidth(50);
                 $sheet->getColumnDimension('B')->setAutoSize(true);
@@ -436,6 +442,7 @@ class Aplicacao_Relatorio_Excel {
                 $sheet->getColumnDimension('P')->setAutoSize(true);
                 $sheet->getColumnDimension('Q')->setAutoSize(true);
                 $sheet->getColumnDimension('R')->setAutoSize(true);
+                $sheet->getColumnDimension('S')->setAutoSize(true);
 
                 $objDrawing = new PHPExcel_Worksheet_Drawing();
                 $objDrawing->setName('Logo Projeto Incluir')
@@ -460,13 +467,14 @@ class Aplicacao_Relatorio_Excel {
                         $sheet->setCellValue('G' . $i, $aluno->getEmail());
                         $sheet->setCellValue('H' . $i, $aluno->getEndereco());
                         $sheet->setCellValue('I' . $i, $aluno->getBairro());
-                        $sheet->setCellValue('J' . $i, $aluno->getComplemento());
-                        $sheet->setCellValue('K' . $i, $aluno->getCep());
-                        $sheet->setCellValue('L' . $i, $aluno->getCidade());
-                        $sheet->setCellValue('M' . $i, $aluno->getEstado());
-                        $sheet->setCellValue('N' . $i, $aluno->getTelefoneFixo());
-                        $sheet->setCellValue('O' . $i, $aluno->getTelefoneCelular());
-                        $sheet->setCellValue('P' . $i, $aluno->getEscolaridade());
+                        $sheet->setCellValue('J' . $i, $aluno->getNumeroEndereco());
+                        $sheet->setCellValue('K' . $i, $aluno->getComplemento());
+                        $sheet->setCellValue('L' . $i, $aluno->getCep());
+                        $sheet->setCellValue('M' . $i, $aluno->getCidade());
+                        $sheet->setCellValue('N' . $i, $aluno->getEstado());
+                        $sheet->setCellValue('O' . $i, $aluno->getTelefoneFixo());
+                        $sheet->setCellValue('P' . $i, $aluno->getTelefoneCelular());
+                        $sheet->setCellValue('Q' . $i, $aluno->getEscolaridade());
 
                         if ($aluno->hasTurmas()) {
                             $aux_turma = '';
@@ -488,6 +496,8 @@ class Aplicacao_Relatorio_Excel {
 
                                             $aux_situacao .= $pagamento->getSituacao();
                                             $aux_pagamento .= "R$" . $pagamento->getValorPagamento(true) . "\n";
+                                            $aux_pagamento .= "Condição: " . $pagamento->getCondicaoMatriculaToString() . "\n";
+                                            $aux_pagamento .= "Recibo: " . $pagamento->getReciboToString() . "\n";
 
                                             if ($pagamento->hasAlimentos()) {
                                                 $aux_pagamento .= "Alimento(s)/Quantidade: \n";
@@ -497,15 +507,15 @@ class Aplicacao_Relatorio_Excel {
                                             }
                                         }
 
-                                        $sheet->setCellValue('Q' . $i, $aux_pagamento);
-                                        $sheet->setCellValue('R' . $i, $aux_situacao);
+                                        $sheet->setCellValue('R' . $i, $aux_pagamento);
+                                        $sheet->setCellValue('S' . $i, $aux_situacao);
                                         $sheet->setCellValue('B' . $i, $aux_nome_turma);
                                     }
                                 }
                             }
                         }
 
-                        $sheet->getStyle('A' . $i . ':R' . $i)->applyFromArray(
+                        $sheet->getStyle('A' . $i . ':S' . $i)->applyFromArray(
                                 array('alignment' => array(
                                         'wrap' => true,
                                         'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
@@ -520,7 +530,7 @@ class Aplicacao_Relatorio_Excel {
                         );
 
                         if ($i % 2 != 0) {
-                            $sheet->getStyle('A' . $i . ':R' . $i)->applyFromArray(
+                            $sheet->getStyle('A' . $i . ':S' . $i)->applyFromArray(
                                     array(
                                         'fill' => array(
                                             'type' => PHPExcel_Style_Fill::FILL_SOLID,
@@ -533,10 +543,9 @@ class Aplicacao_Relatorio_Excel {
                     }
                 }
 
-
                 $linhas += $i;
                 //$new_sheet->getStyle('A0:P' . $linhas)->getAlignment()->setWrapText(true);
-                $sheet->getStyle('A5:R5')->applyFromArray(
+                $sheet->getStyle('A5:S5')->applyFromArray(
                         array('borders' => array(
                                 'allborders' => array(
                                     'style' => PHPExcel_Style_Border::BORDER_THIN,

@@ -96,6 +96,21 @@ class Application_Model_Mappers_Curso {
             return false;
         }
     }
+    
+    /**
+     * Altera o status do curso especificado para ativo
+     * @param int $id_curso
+     * @return boolean
+     */
+    public function ativarCurso($id_curso) {
+        try {
+            $this->db_curso = new Application_Model_DbTable_Curso();
+            $this->db_curso->update(array('status' => Application_Model_Curso::status_ativo), $this->db_curso->getAdapter()->quoteInto('id_curso = ?', (int) $id_curso));
+            return true;
+        } catch (Zend_Exception $e) {
+            return false;
+        }
+    }
 
     /**
      * Busca os cursos de acordo com os filtros especificados

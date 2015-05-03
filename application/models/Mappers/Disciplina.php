@@ -127,7 +127,23 @@ class Application_Model_Mappers_Disciplina {
             return false;
         }
     }
+    
+    /**
+     * Altera o status da disciplina especificada para ativo
+     * @param int $id_disciplina
+     * @return boolean
+     */
+    public function ativarDisciplina($id_disciplina) {
+        try {
+            $this->db_disciplina = new Application_Model_DbTable_Disciplina();
+            $this->db_disciplina->update(array('status' => Application_Model_Disciplina::status_ativo), $this->db_disciplina->getAdapter()->quoteInto('id_disciplina = ?', (int) $id_disciplina));
+            return true;
+        } catch (Zend_Exception $e) {
+            return false;
+        }
+    }
 
+    
     /**
      * Busca os disciplinas de acordo com os filtros especificados
      * @param array $filtros_busca

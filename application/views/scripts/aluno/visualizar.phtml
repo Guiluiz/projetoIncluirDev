@@ -104,9 +104,7 @@ if ($this->aluno instanceof Application_Model_Aluno):
                 if ($calendario->getPeriodoCalendario()->isPeriodoAtual()) {
                     $array_turmas_periodo_atual['atual'] = $aux;
                     $array_turmas_periodo_atual['periodo'] = $calendario->getPeriodoCalendario()->getIdPeriodo();
-                }
-                
-                else
+                } else
                     $array_turmas_periodo_antigo[$calendario->getPeriodoCalendario()->getIdPeriodo()] = $aux;
             }
         }
@@ -117,8 +115,10 @@ if ($this->aluno instanceof Application_Model_Aluno):
         <?php if (!empty($array_turmas_periodo_atual['atual'])): ?>
             <table class="form_incrementa visualizacao" style="width: 80%;">
                 <tr>
-                    <th style="width: 16.6%">Turma</th>
-                    <th style="width: 16.6%">Situação</th>
+                    <th style="width: 8.3%">Turma</th>
+                    <th style="width: 8.3%">Condição de Matrícula</th>
+                    <th style="width: 8.3%">Situação</th>
+                    <th style="width: 8.3%">Recibo</th>
                     <th style="width: 5%">Valor Pago</th>
                     <th style="width: 27%">Notas</th>
                     <th style="width: 16.6%">Frequência</th>
@@ -131,7 +131,9 @@ if ($this->aluno instanceof Application_Model_Aluno):
                     ?>
                     <tr>
                         <td><?php echo $turma[Application_Model_Aluno::$index_turma]->toString() ?></td>
+                        <td><?php echo $turma[Application_Model_Aluno::$index_pagamento_turma]->getCondicaoMatriculaToString() ?></td>
                         <td><?php echo $turma[Application_Model_Aluno::$index_pagamento_turma]->getSituacao() ?></td>
+                        <td><?php echo $turma[Application_Model_Aluno::$index_pagamento_turma]->getReciboToString() ?></td>
                         <td><?php echo $turma[Application_Model_Aluno::$index_pagamento_turma]->getValorPagamento() ?></td>
                         <td>
                             <?php foreach ($turma[Application_Model_Aluno::$index_notas_turma] as $nota): ?>
@@ -150,7 +152,7 @@ if ($this->aluno instanceof Application_Model_Aluno):
                 ?>
             </table>
 
-        <?php else:?>
+        <?php else: ?>
             <p>O aluno não foi cadastrado em nenhuma turma do período atual, ou o período ainda não foi inicializado.</p>
 
         <?php endif; ?>
@@ -163,8 +165,10 @@ if ($this->aluno instanceof Application_Model_Aluno):
             <?php if (!empty($turmas_periodos)): ?>
                 <table class="form_incrementa visualizacao" style="width: 80%;">
                     <tr>
-                        <th style="width: 16.6%">Turma</th>
-                        <th style="width: 16.6%">Situação</th>
+                        <th style="width: 8.3%">Turma</th>
+                        <th style="width: 8.3%">Condição de Matrícula</th>
+                        <th style="width: 8.3%">Situação</th>
+                        <th style="width: 8.3%">Recibo</th>
                         <th style="width: 5%">Valor Pago</th>
                         <th style="width: 27%">Notas</th>
                         <th style="width: 16.6%">Frequência</th>
@@ -175,7 +179,9 @@ if ($this->aluno instanceof Application_Model_Aluno):
                         ?>
                         <tr>
                             <td><?php echo $turma[Application_Model_Aluno::$index_turma]->toString() ?></td>
+                            <td><?php echo $turma[Application_Model_Aluno::$index_pagamento_turma]->getCondicaoMatriculaToString() ?></td>
                             <td><?php echo $turma[Application_Model_Aluno::$index_pagamento_turma]->getSituacao() ?></td>
+                            <td><?php echo $turma[Application_Model_Aluno::$index_pagamento_turma]->getReciboToString() ?></td>
                             <td><?php echo $turma[Application_Model_Aluno::$index_pagamento_turma]->getValorPagamento() ?></td>
                             <td>
                                 <?php foreach ($turma[Application_Model_Aluno::$index_notas_turma] as $nota): ?>

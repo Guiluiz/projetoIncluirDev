@@ -211,6 +211,11 @@ var controle_aluno = (function() {
                     exibeMensagem('Se inseriu uma turma você deve registrar o pagamento dela.', 'Cadastro de Aluno');
                     return false;
                 }
+
+                if (aluno.campo_quantidade_turmas.val() != quantidade_pagamentos) {
+                    exibeMensagem('Você não inseriu o total de turmas indicado.', 'Cadastro de Aluno');
+                    return false;
+                }
                 return true;
             });
         }
@@ -683,7 +688,7 @@ var controle_aluno = (function() {
                 var id_nova_turma = aluno.getIdTurma();
                 var aux_class = linha_turma.attr('class'); // a linha correspondente a turma armazena o id para retirar os pagamentos/alimentos da turma
                 var linha_pagamento = $('.pagamento_' + aux_class);
-                
+
                 linha_turma.replaceWith('<tr class="' + aluno.getNameTurmaAluno() + '"><input type="hidden" name="turmas[]" value="' + id_nova_turma + '"/><td>' + aluno.campo_curso.find('option:selected').html() + '</td><td>' + aluno.campo_disciplina.find('option:selected').html() + '</td><td>' + aluno.campo_turma.find('option:selected').html() + '</td><td><input type="hidden" name="liberacao[' + id_nova_turma + ']" value="' + aluno.liberacao_turma + '"/>' + aluno.liberacao_turma + '</td><td><div class="alterar_turma">Alterar</div><div class="excluir_turma" >Excluir</div></td></tr>');
                 aluno.select_turma_pagamento.find('option[value="' + id_turma_antiga + '"]').replaceWith('<option value="' + id_nova_turma + '">' + aluno.getNameTurmaAluno(true) + '</option>');
 

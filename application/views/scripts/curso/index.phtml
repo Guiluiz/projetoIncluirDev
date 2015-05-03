@@ -26,7 +26,7 @@
                             <!--<td><a href='<?= $this->url(array('controller' => 'curso', 'action' => 'excluir', 'curso' => $curso->getIdcurso(true)), null, true) ?>'>Excluir</a></td>-->
 
                         <?php else: ?>
-                            <td colspan="2"> - </td>
+                            <td colspan="2"><a href='<?= $this->url(array('controller' => 'curso', 'action' => 'ativar', 'curso' => $curso->getIdCurso(true)), null, true) ?>'>Ativar</a></td>
 
                         <?php endif ?>
                     </tr>

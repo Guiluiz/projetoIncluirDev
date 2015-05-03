@@ -55,13 +55,13 @@ class Application_Model_Pagamento {
      * @var int 
      */
     private $tipo_isencao_pendencia;
-    
+
     /**
      *
      * @var int 
      */
     private $num_recibo;
-    
+
     public function __construct($id_pagamento, $situacao, $valor = null, $alimento = null, $quantidade = null, $condicao = null, $isencao_pendencia = null, $recibo = null) {//$turma, $situacao = null, $valor = null, $alimento = null, $quantidade = null) {
         $this->id_pagamento = ((!empty($id_pagamento)) ? (int) $id_pagamento : null);
         $this->situacao = $this->parseSituacao($situacao);
@@ -81,6 +81,23 @@ class Application_Model_Pagamento {
 
     public function getCondicaoPagamento() {
         return $this->condicao;
+    }
+
+    public function getCondicaoMatriculaToString() {
+        $nomes = array(Application_Model_Pagamento::$pagamento_normal => 'Normal',
+            Application_Model_Pagamento::$pagamento_isento_parcial => 'Isento Parcial',
+            Application_Model_Pagamento::$pagamento_isento_total => 'Isento Total',
+            Application_Model_Pagamento::$pagamento_pendente_parcial => 'Pendente Parcial',
+            Application_Model_Pagamento::$pagamento_pendente_total => 'Pendente Total');
+
+        $nomes_isencao_pendencia = array(Application_Model_Pagamento::$isencao_pendencia_alimento => 'Alimento',
+            Application_Model_Pagamento::$isencao_pendencia_alimento_pagamento => 'Alimento e Pagamento',
+            Application_Model_Pagamento::$isencao_pendencia_pagamento => 'Pagamento');
+
+        if ($this->condicao == Application_Model_Pagamento::$pagamento_isento_parcial || $this->condicao == Application_Model_Pagamento::$pagamento_pendente_parcial)
+            return $nomes[$this->condicao] . ' | ' . $nomes_isencao_pendencia[$this->tipo_isencao_pendencia];
+
+        return $nomes[$this->condicao];
     }
 
     public function getTipoIsencaoPendencia() {
@@ -104,7 +121,7 @@ class Application_Model_Pagamento {
         }
         return null;
     }
-    
+
     /**
      * Inclui um alimento e a quantidade dele no pagamento.
      * @param Application_Model_Alimento $alimento
@@ -119,7 +136,7 @@ class Application_Model_Pagamento {
             }
         }
     }
-    
+
     /**
      * Retorna o array de alimentos e suas quantidades do pagamento
      * @return array
@@ -133,7 +150,7 @@ class Application_Model_Pagamento {
             return true;
         return false;
     }
-    
+
     /**
      * Retorna um array com as informações do pagamento
      * @param boolean $isView
@@ -168,7 +185,7 @@ class Application_Model_Pagamento {
         }
         return $aux;
     }
-    
+
     /**
      * Retorna o valor do pagamento
      * @param boolean $isView Indica o formato do retorno
@@ -179,7 +196,7 @@ class Application_Model_Pagamento {
             return number_format((float) $this->valor, 2, ',', '');
         return $this->valor;
     }
-    
+
     /**
      * Retorna a situação do pagamento. 
      * @param boolean $isView 
@@ -191,10 +208,16 @@ class Application_Model_Pagamento {
         return $this->situacao;
     }
 
-    public function getRecibo(){
+    public function getRecibo() {
         return $this->num_recibo;
     }
-    
+
+    public function getReciboToString() {
+        if (!empty($this->num_recibo))
+            return $this->num_recibo;
+        return '-';
+    }
+
 }
 
 ?>

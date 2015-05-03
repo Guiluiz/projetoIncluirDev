@@ -148,12 +148,9 @@ class CursoController extends Zend_Controller_Action {
                     $mapper_curso = new Application_Model_Mappers_Curso();
                     $mapper_turma = new Application_Model_Mappers_Turma();
                     $id_curso = (int) base64_decode($form_exclusao->getValue('id'));
-                    
-                    if ($mapper_curso->cancelarCurso($id_curso)
-                            && $mapper_disciplina->cancelarDisciplinaByCurso($id_curso)
-                            && $mapper_turma->cancelarTurmasByDisciplinas($mapper_disciplina->buscaDisciplinasByCurso($id_curso)))
-                    $this->view->mensagem = "Curso cancelado com sucesso!";
-                    
+
+                    if ($mapper_curso->cancelarCurso($id_curso) && $mapper_disciplina->cancelarDisciplinaByCurso($id_curso) && $mapper_turma->cancelarTurmasByDisciplinas($mapper_disciplina->buscaDisciplinasByCurso($id_curso)))
+                        $this->view->mensagem = "Curso cancelado com sucesso!";
                     else
                         $this->view->mensagem = "O curso não foi cancelado. Por favor, tente novamente ou contate o administrador do sistema.<br/>";
                 }
@@ -161,11 +158,47 @@ class CursoController extends Zend_Controller_Action {
 
             $curso = $mapper_curso->buscaCursoByID($id_curso);
 
-            if ($curso instanceof Application_Model_Curso && $curso->getStatus() == Application_Model_Curso::status_ativo){
+            if ($curso instanceof Application_Model_Curso && $curso->getStatus() == Application_Model_Curso::status_ativo) {
                 $form_exclusao->populate(array('id' => $curso->getIdCurso(true)));
                 $this->view->curso = $curso;
             }
-            
+
+            return;
+        }
+        $this->_helper->redirector->goToRoute(array('controller' => 'error', 'action' => 'error'), null, true);
+    }
+
+    public function ativarAction() {
+        $this->view->title = "Projeto Incluir - Ativação de Curso";
+
+        $id_curso = (int) base64_decode($this->getParam('curso'));
+
+        if ($id_curso > 0) {
+            $form_ativacao = new Application_Form_FormConfirmacao();
+            $mapper_curso = new Application_Model_Mappers_Curso();
+
+            $this->view->form = $form_ativacao;
+
+            if ($this->getRequest()->isPost()) {
+                $dados = $this->getRequest()->getPost();
+                if (isset($dados['cancelar']))
+                    $this->_helper->redirector->goToRoute(array('controller' => 'curso', 'action' => 'index'), null, true);
+
+                if ($form_ativacao->isValid($dados)) {
+                    if ($mapper_curso->ativarCurso((int) base64_decode($form_ativacao->getValue('id'))))
+                        $this->view->mensagem = "O curso foi restaurado com sucesso. Você deve ativar as disciplinas desejadas";
+                    else
+                        $this->view->mensagem = "O curso não foi restaurado, por favor consulte o administrador do sistema para mais informações.";
+                }
+            } 
+            else {
+                $curso = $mapper_curso->buscaCursoByID($id_curso);
+
+                if ($curso instanceof Application_Model_Curso && $curso->getStatus() == Application_Model_Curso::status_inativo) {
+                    $form_ativacao->populate(array('id' => $curso->getIdCurso(true)));
+                    $this->view->curso = $curso;
+                }
+            }
             return;
         }
         $this->_helper->redirector->goToRoute(array('controller' => 'error', 'action' => 'error'), null, true);
