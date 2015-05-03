@@ -267,8 +267,8 @@ class Aplicacao_Relatorio_Excel {
                                 }
                             }
 
-                            $new_sheet->setCellValue('P' . $i, $aux_pagamento);
-                            $new_sheet->setCellValue('Q' . $i, $aux_situacao);
+                            $new_sheet->setCellValue('Q' . $i, $aux_pagamento);
+                            $new_sheet->setCellValue('R' . $i, $aux_situacao);
 
                             $new_sheet->getStyle('A' . $i . ':R' . $i)->applyFromArray(
                                     array('alignment' => array(
