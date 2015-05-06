@@ -28,7 +28,7 @@
                             <td><a href='<?= $this->url(array('controller' => 'disciplina', 'action' => 'cancelar', 'disciplina' => $disciplina->getIdDisciplina(true)), null, true) ?>'>Cancelar</a></td>                     
 
                         <?php else: ?>
-                            <td colspan="2"><a href='<?= $this->url(array('controller' => 'curso', 'action' => 'ativar', 'disciplina' => $curso->getIdCurso(true)), null, true) ?>'>Ativar</a></td>
+                            <td colspan="2"><a href='<?= $this->url(array('controller' => 'disciplina', 'action' => 'ativar', 'disciplina' => $disciplina->getIdDisciplina(true)), null, true) ?>'>Ativar</a></td>
                         <?php endif; ?>
             <!--<td><a href='<?= $this->url(array('controller' => 'disciplina', 'action' => 'excluir', 'disciplina' => $disciplina->getIdDisciplina(true)), null, true) ?>'>Excluir</a></td>-->
                     </tr>
